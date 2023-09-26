@@ -95,20 +95,8 @@ function processTree(nodes, edges, setNodes, setEdges) {
     };
   });
 
-  // TODO -> Prune nodes
-  let nodesToDelete = [];
-  let edgesToDelete = [];
-
-  setNodes((nds) => 
-    nds
-    .filter(node => !nodesToDelete.includes(node.id))
-    .map(node => node)
-  );
-  setEdges((eds) => 
-    eds
-    .filter(edge => !edgesToDelete.includes(edge.id))
-    .map(edge => edge)
-  );
+  setNodes((nds) => nds.map(node => node));
+  setEdges((eds) => eds.map(edge => edge));
 }
 
 function Graph() {
@@ -145,7 +133,6 @@ function Graph() {
       if (relativeChild == null) {
         let newNode = {
           id: uuid4(),
-          deletable: false,
           type: "relativeNode",
           position: { x: parent.position.x + 150, y: parent.position.y + 150 },
           data: {

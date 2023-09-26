@@ -18,6 +18,9 @@ export default () => {
       <div className="dndnode proportionalNode" onDragStart={(event) => onDragStart(event, 'proportionalNode')} draggable>
         Proportional Node
       </div>
+      <div className="dndnode relativeNode" onDragStart={(event) => onDragStart(event, 'relativeNode')} draggable>
+        Relative Node
+      </div>
       <div className="dndnode leafNode" onDragStart={(event) => onDragStart(event, 'leafNode')} draggable>
         Leaf Node
       </div>
