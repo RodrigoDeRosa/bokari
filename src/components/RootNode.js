@@ -1,11 +1,12 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
+import formatCurrency from '../utils/currency';
 
 export default memo(({ data, isConnectable }) => {
   return (
     <>
       <p>{data.label}</p>
-      <p>{data.value}</p>
+      <p>{formatCurrency(data.value)}</p>
       <Handle
         type="source"
         position={Position.Bottom}
