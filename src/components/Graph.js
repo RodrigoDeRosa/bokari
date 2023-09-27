@@ -17,6 +17,7 @@ import connectNodes from "../utils/connectNodes";
 import { initialNodes, initialEdges } from "../data/exampleData";
 import updateSelectedNode from "../utils/updateNode";
 import createNode from "../utils/createNode";
+import NodeEditor from "./NodeEditor";
 
 const nodeTypes = {
   fixedNode: FixedNode,
@@ -46,30 +47,33 @@ function Graph() {
   const [nodeValue, setNodeValue] = useState("");
   const [nodeProportion, setNodeProportion] = useState("");
 
-  useEffect(() => {
-    updateSelectedNode(nodes, "label", nodeName, setNodes);
-  }, [nodeName]);
+  useEffect(() => updateSelectedNode(nodes, "label", nodeName, setNodes), [
+    nodeName,
+  ]);
 
-  useEffect(() => {
-    updateSelectedNode(nodes, "value", parseFloat(nodeValue), setNodes);
-  }, [nodeValue]);
+  useEffect(
+    () => updateSelectedNode(nodes, "value", parseFloat(nodeValue), setNodes),
+    [nodeValue]
+  );
 
-  useEffect(() => {
-    updateSelectedNode(
-      nodes,
-      "proportion",
-      parseFloat(nodeProportion),
-      setNodes
-    );
-  }, [nodeProportion]);
+  useEffect(
+    () =>
+      updateSelectedNode(
+        nodes,
+        "proportion",
+        parseFloat(nodeProportion),
+        setNodes
+      ),
+    [nodeProportion]
+  );
 
-  useEffect(() => {
-    localStorage.setItem("nodes", JSON.stringify(nodes));
-  }, [nodes]);
+  useEffect(() => localStorage.setItem("nodes", JSON.stringify(nodes)), [
+    nodes,
+  ]);
 
-  useEffect(() => {
-    localStorage.setItem("edges", JSON.stringify(edges));
-  }, [edges]);
+  useEffect(() => localStorage.setItem("edges", JSON.stringify(edges)), [
+    edges,
+  ]);
 
   const onConnect = useCallback(
     (params) => connectNodes(nodes, edges, params, setNodes, setEdges),
@@ -82,18 +86,12 @@ function Graph() {
   }, []);
 
   const onDrop = useCallback(
-    (event) => {
-      createNode(event, reactFlowInstance, reactFlowWrapper, setNodes);
-    },
+    (event) => createNode(event, reactFlowInstance, reactFlowWrapper, setNodes),
     [reactFlowInstance]
   );
 
-  useEffect(
-    () => updateTree(nodes, edges, setNodes, setEdges), 
-    [nodes, edges]
-  )
+  useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges]);
 
-  const selectedNode = nodes.find((node) => node.selected);
   return (
     <div className="dndflow">
       <ReactFlowProvider>
@@ -109,32 +107,12 @@ function Graph() {
             onDrop={onDrop}
             onDragOver={onDragOver}
           >
-            <div className="updatenode__controls">
-              <label>Label:</label>
-              <input
-                value={selectedNode?.data.label}
-                onChange={(evt) => setNodeName(evt.target.value)}
-              />
-
-              <label className="updatenode__bglabel">Value:</label>
-              <input
-                type="number"
-                disabled={
-                  selectedNode?.type !== "fixedNode" &&
-                  selectedNode?.type !== "rootNode"
-                }
-                value={selectedNode?.data.value}
-                onChange={(evt) => setNodeValue(evt.target.value)}
-              />
-
-              <label className="updatenode__bglabel">Proportion:</label>
-              <input
-                type="number"
-                disabled={selectedNode?.type !== "proportionalNode"}
-                value={selectedNode?.data.proportion}
-                onChange={(evt) => setNodeProportion(evt.target.value)}
-              />
-            </div>
+            <NodeEditor
+              selectedNode={nodes.find((node) => node.selected)}
+              setNodeName={setNodeName}
+              setNodeValue={setNodeValue}
+              setNodeProportion={setNodeProportion}
+            />
           </ReactFlow>
         </div>
         <Sidebar />

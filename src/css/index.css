@@ -123,6 +123,10 @@ code {
   margin-top: 10px;
 }
 
+.updatenode__bginput {
+  margin-top: 5px;
+}
+
 
 .dndflow {
   flex-direction: column;
