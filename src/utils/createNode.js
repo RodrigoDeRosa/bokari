@@ -24,7 +24,11 @@ export default function createNode(
     type,
     position,
     data: { label: `${type}`, value: 0, proportion: 0 },
+    selected: true,
   };
 
-  setNodes((nd) => nd.concat(newNode));
+  setNodes((nodes) => {
+    nodes.forEach((node) => node.selected = false);
+    return nodes.concat(newNode)
+  });
 }

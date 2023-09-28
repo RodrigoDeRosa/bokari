@@ -15,6 +15,14 @@ export default memo(({ data, isConnectable }) => {
       />
       <p>{data.label}</p>
       <p>{formatCurrency(data.value)}</p>
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="a"
+        style={{ background: '#555' }}
+        isConnectable={isConnectable}
+        isConnectableEnd={false}
+      />
     </>
   );
 });
