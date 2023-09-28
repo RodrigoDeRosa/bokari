@@ -10,11 +10,11 @@ import FixedNode from "./FixedNode";
 import ProportionalNode from "./ProportionalNode";
 import RelativeNode from "./RelativeNode";
 import RootNode from "./RootNode";
-import LeafNode from "./LeafNode";
+import AggregatorNode from "./AggregatorNode";
 import Sidebar from "./Sidebar";
 import updateTree from "../utils/updateTree";
 import connectNodes from "../utils/connectNodes";
-import { initialNodes, initialEdges } from "../data/exampleData";
+import { exampleNodes, exampleEdges } from "../data/exampleData";
 import updateSelectedNode from "../utils/updateNode";
 import createNode from "../utils/createNode";
 import NodeEditor from "./NodeEditor";
@@ -24,7 +24,7 @@ const nodeTypes = {
   proportionalNode: ProportionalNode,
   relativeNode: RelativeNode,
   rootNode: RootNode,
-  leafNode: LeafNode,
+  aggregatorNode: AggregatorNode,
 };
 
 function useLocalStorage(key, initialValue) {
@@ -33,14 +33,23 @@ function useLocalStorage(key, initialValue) {
     : initialValue;
 }
 
+function updateLeafNodes(nodes) {
+  return nodes.map((node) => {
+    node.type = node.type === "leafNode" ? "aggregatorNode" : node.type;
+    return node;
+  });
+}
+
 function Graph() {
   const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(
-    useLocalStorage("nodes", initialNodes)
-  );
-  const [edges, setEdges, onEdgesChange] = useEdgesState(
-    useLocalStorage("edges", initialEdges)
-  );
+  
+  // TODO -> Remove this after a while where we consider every possible 
+  // user doesn't have "leafNode" in their localStorage anymore
+  const initialNodes = updateLeafNodes(useLocalStorage("nodes", exampleNodes));
+  const initialEdges = useLocalStorage("edges", exampleEdges);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [nodeName, setNodeName] = useState("");

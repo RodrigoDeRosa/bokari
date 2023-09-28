@@ -1,4 +1,4 @@
-export const initialNodes = [
+export const exampleNodes = [
   {
     id: "0",
     type: "rootNode",
@@ -45,7 +45,7 @@ export const initialNodes = [
   },
   {
     id: "55d9f88e-b4aa-4538-888e-ffaf31dcd13f",
-    type: "leafNode",
+    type: "aggregatorNode",
     position: { x: 258, y: 601 },
     data: { label: "Base Expenses", value: 1368.35, proportion: 0 },
     width: 100,
@@ -143,7 +143,7 @@ export const initialNodes = [
   },
   {
     id: "2fb2efae-032a-40ff-9f55-ba76f44e6147",
-    type: "leafNode",
+    type: "aggregatorNode",
     position: { x: 995, y: 590 },
     data: { label: "Transfer to Broker", value: 804.865, proportion: 0 },
     width: 100,
@@ -154,7 +154,7 @@ export const initialNodes = [
   },
   {
     id: "70a984e2-db51-4f09-a71f-e1e03c64f6d0",
-    type: "leafNode",
+    type: "aggregatorNode",
     position: { x: 755, y: 578 },
     data: {
       label: "Transfer to Savings Account",
@@ -169,7 +169,7 @@ export const initialNodes = [
   },
 ];
 
-export const initialEdges = [
+export const exampleEdges = [
   {
     source: "5b3dada3-9e29-44a8-bfae-358de5fc2bc5",
     sourceHandle: "a",

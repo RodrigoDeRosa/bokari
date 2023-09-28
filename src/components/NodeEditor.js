@@ -2,7 +2,7 @@ const displayableTypes = {
   ["rootNode"]: "Root Node",
   ["proportionalNode"]: "Proportional Node",
   ["fixedNode"]: "Fixed Node",
-  ["leafNode"]: "Aggregator Node",
+  ["aggregatorNode"]: "Aggregator Node",
   ["relativeNode"]: "Relative Node",
 };
 

@@ -40,7 +40,7 @@ export default function connectNodes(
   setEdges((eds) => addEdge(edgeParams, eds));
 
   let target = nodes.filter((node) => node.id === edgeParams.target)[0];
-  if (target.type === "leafNode") return;
+  if (target.type === "aggregatorNode") return;
 
   let source = nodes.filter((node) => node.id === edgeParams.source)[0];
   createOrUpdateRelativeNode(source, target, nodes, edges, setNodes, setEdges);

@@ -45,15 +45,15 @@ export default function updateTree(nodes, edges, setNodes, setEdges) {
     }
   });
 
-  let leafNodes = nodes.filter((node) => node.type === "leafNode");
-  leafNodes.forEach((leafNode) => {
-    let parents = getIncomers(leafNode, nodes, edges);
+  let aggregatorNodes = nodes.filter((node) => node.type === "aggregatorNode");
+  aggregatorNodes.forEach((aggregatorNode) => {
+    let parents = getIncomers(aggregatorNode, nodes, edges);
     let totalValue = parents.reduce(
       (acc, parent) => acc + parent.data.value,
       0
     );
-    leafNode.data = {
-      ...leafNode.data,
+    aggregatorNode.data = {
+      ...aggregatorNode.data,
       value: totalValue,
     };
   });
