@@ -22,6 +22,9 @@ export default () => {
       <div className="dndnode aggregatorNode" onDragStart={(event) => onDragStart(event, 'aggregatorNode')} draggable>
         Aggregator Node
       </div>
+      <div className="dndnode fixedGroupNode" onDragStart={(event) => onDragStart(event, 'fixedGroupNode')} draggable>
+        Fixed Group Node
+      </div>
     </aside>
   );
 };

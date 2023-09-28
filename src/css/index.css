@@ -102,6 +102,24 @@ code {
   }
 }
 
+.react-flow__node-fixedGroupNode {
+  border-radius: 3px;
+  width: 200px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  border-width: 2px;
+  border-style: solid;
+  border-color: #2f4b7c;
+  background-color: #2f4b7c;
+  &.selectable.selected {
+    color: #2f4b7c;
+    border-color: #2f4b7c;
+    background-color: white;
+  }
+}
+
 .react_flow__edge {
   stroke: #000;
   stroke-width: 4px;
@@ -182,6 +200,11 @@ code {
     border-color: #ff6361;
     background-color: #ff6361;
   }
+  &.fixedGroupNode {
+    color: white;
+    border-color: #2f4b7c;
+    background-color: #2f4b7c;
+  }
 }
 
 .dndflow .reactflow-wrapper {
@@ -202,4 +225,58 @@ code {
     width: 20%;
     max-width: 250px;
   }
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  margin-left: 6px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+.icon-button:hover {
+  color: #666;
+}
+
+.icon-button:active {
+  color: red;
+}
+
+.no-bullets {
+  list-style-type: none;
+  border: 1px solid white;
+  padding: 2px;
+  border-radius: 4px;
+  margin: 4px;
+}
+
+.no-bullets li {
+  margin-bottom: 4px;
+}
+
+.input-group {
+  display: flex;
+  padding: 3px;
+  align-items: center;
+  gap: 3px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  width: 10px;
+}
+
+.input-group button {
+  border: none;
+  cursor: pointer;
+  margin: 0;
 }

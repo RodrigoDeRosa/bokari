@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
-import formatCurrency from '../utils/currency';
+import formatCurrency from '../../utils/currency';
 
 export default memo(({ data, isConnectable }) => {
   return (

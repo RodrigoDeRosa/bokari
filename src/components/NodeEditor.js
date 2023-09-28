@@ -4,6 +4,7 @@ const displayableTypes = {
   ["fixedNode"]: "Fixed Node",
   ["aggregatorNode"]: "Aggregator Node",
   ["relativeNode"]: "Relative Node",
+  ["fixedGroupNode"]: "Fixed Group Node",
 };
 
 function NodeData({ selectedNode, setNodeName }) {

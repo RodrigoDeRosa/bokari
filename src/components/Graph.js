@@ -1,16 +1,18 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import ReactFlow, {
   ReactFlowProvider,
+  Controls,
+  ControlButton,
   useNodesState,
   useEdgesState,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
-import FixedNode from "./FixedNode";
-import ProportionalNode from "./ProportionalNode";
-import RelativeNode from "./RelativeNode";
-import RootNode from "./RootNode";
-import AggregatorNode from "./AggregatorNode";
+import FixedNode from "./nodes/FixedNode";
+import ProportionalNode from "./nodes/ProportionalNode";
+import RelativeNode from "./nodes/RelativeNode";
+import RootNode from "./nodes/RootNode";
+import AggregatorNode from "./nodes/AggregatorNode";
 import Sidebar from "./Sidebar";
 import updateTree from "../utils/updateTree";
 import connectNodes from "../utils/connectNodes";
@@ -18,6 +20,7 @@ import { exampleNodes, exampleEdges } from "../data/exampleData";
 import updateSelectedNode from "../utils/updateNode";
 import createNode from "../utils/createNode";
 import NodeEditor from "./NodeEditor";
+import FixedGroupNode from "./nodes/FixedGroupNode";
 
 const nodeTypes = {
   fixedNode: FixedNode,
@@ -25,6 +28,7 @@ const nodeTypes = {
   relativeNode: RelativeNode,
   rootNode: RootNode,
   aggregatorNode: AggregatorNode,
+  fixedGroupNode: FixedGroupNode,
 };
 
 function useLocalStorage(key, initialValue) {
@@ -42,6 +46,7 @@ function updateLeafNodes(nodes) {
 
 function Graph() {
   const reactFlowWrapper = useRef(null);
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
   
   // TODO -> Remove this after a while where we consider every possible 
   // user doesn't have "leafNode" in their localStorage anymore
@@ -50,7 +55,6 @@ function Graph() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
   const [nodeName, setNodeName] = useState("");
   const [nodeValue, setNodeValue] = useState("");
@@ -76,13 +80,18 @@ function Graph() {
     [nodeProportion]
   );
 
-  useEffect(() => localStorage.setItem("nodes", JSON.stringify(nodes)), [
-    nodes,
-  ]);
-
-  useEffect(() => localStorage.setItem("edges", JSON.stringify(edges)), [
-    edges,
-  ]);
+  const saveToLocalStorage = () => {
+    console.log("Saving to local storage");
+    localStorage.setItem("nodes", JSON.stringify(nodes));
+    localStorage.setItem("edges", JSON.stringify(edges));
+  }
+  
+  const resetGraph = () => {
+    localStorage.removeItem("nodes");
+    localStorage.removeItem("edges");
+    setNodes(exampleNodes);
+    setEdges(exampleEdges);
+  }
 
   const onConnect = useCallback(
     (params) => connectNodes(nodes, edges, params, setNodes, setEdges),
@@ -116,6 +125,10 @@ function Graph() {
             onDrop={onDrop}
             onDragOver={onDragOver}
           >
+            <Controls showFitView={false} showZoom={false} showInteractive={false}>
+              <button onClick={saveToLocalStorage}>Save</button>
+              <button onClick={resetGraph}>Reset</button>
+            </Controls>
             <NodeEditor
               selectedNode={nodes.find((node) => node.selected)}
               setNodeName={setNodeName}
