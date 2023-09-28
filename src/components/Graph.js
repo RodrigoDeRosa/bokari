@@ -110,6 +110,18 @@ function Graph() {
 
   useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges]);
 
+  useEffect(() => {
+    const saveBeforeExit = () => {
+      localStorage.setItem("nodes", JSON.stringify(nodes));
+      localStorage.setItem("edges", JSON.stringify(edges));
+    };
+  
+    window.addEventListener("beforeunload", saveBeforeExit);
+    return () => {
+      window.removeEventListener("beforeunload", saveBeforeExit);
+    };
+  }, [nodes, edges]);
+
   return (
     <div className="dndflow">
       <ReactFlowProvider>
