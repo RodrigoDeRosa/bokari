@@ -1,28 +1,37 @@
-import { memo } from 'react';
-import { Handle, Position } from 'reactflow';
-import formatCurrency from '../../utils/currency';
+import { Handle, Position } from "reactflow";
+import formatCurrency from "../../utils/currency";
+import EditableLabel from "../attributes/EditableLabel";
+import Node from "./Node";
 
-export default memo(({ data, isConnectable }) => {
-  return (
-    <>
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{ background: '#555' }}
-        onConnect={(params) => console.log('handle onConnect', params)}
-        isConnectable={isConnectable}
-        isConnectableStart={false}
-      />
-      <p>{data.label}</p>
-      <p>{formatCurrency(data.value)}</p>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        id="a"
-        style={{ background: '#555' }}
-        isConnectable={isConnectable}
-        isConnectableEnd={false}
-      />
-    </>
-  );
-});
+class AggregatorNode extends Node {
+  render() {
+    const { data, isConnectable } = this.props;
+
+    return (
+      <>
+        <Handle
+          type="target"
+          position={Position.Top}
+          style={{ background: "#555" }}
+          isConnectable={isConnectable}
+          isConnectableStart={false}
+        />
+        <EditableLabel
+          initialValue={data.label}
+          onUpdate={this.handleLabelChange}
+        />
+        <p>{formatCurrency(data.value)}</p>
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          id="a"
+          style={{ background: "#555" }}
+          isConnectable={isConnectable}
+          isConnectableEnd={false}
+        />
+      </>
+    );
+  }
+}
+
+export default AggregatorNode;

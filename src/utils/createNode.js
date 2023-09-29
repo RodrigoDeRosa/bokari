@@ -23,7 +23,7 @@ export default function createNode(
     id: uuid4(),
     type,
     position,
-    data: { label: `${type}`, value: 0, proportion: 0, children: [] },
+    data: { label: `Node Name`, value: 0, proportion: 0, children: [] },
     selected: true,
   };
 

@@ -1,14 +1,14 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -28,6 +28,41 @@ code {
     background-color: white;
     color: #003f5c;
   }
+}
+
+.editable-field {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: middle;
+
+  margin: 0;
+  padding: 4px;
+  border: 1px solid transparent;
+  line-height: 1.5;
+
+  text-align: center;
+  background: none;
+  width: 100%;
+  box-sizing: border-box;
+  color: inherit;
+  
+  outline: none;
+  resize: none;
+  overflow: auto;
+  appearance: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.editable-field:focus {
+  outline: none;
+  box-shadow: 0 0 3px #003f5c;
 }
 
 .react-flow__node-relativeNode {
@@ -117,6 +152,10 @@ code {
     color: #2f4b7c;
     border-color: #2f4b7c;
     background-color: white;
+    
+    .no-bullets {
+      border: 1px solid #2f4b7c;  
+    }
   }
 }
 
@@ -144,7 +183,6 @@ code {
 .updatenode__bginput {
   margin-top: 5px;
 }
-
 
 .dndflow {
   flex-direction: column;
@@ -178,7 +216,7 @@ code {
   &.rootNode {
     color: white;
     border-color: #ffa600;
-    background-color: #ffa600; 
+    background-color: #ffa600;
   }
   &.fixedNode {
     color: white;

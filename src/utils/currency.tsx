@@ -1,7 +1,10 @@
 export default function formatCurrency(
-  value: number,
+  value: number | null | undefined,
   currency: string = "EUR"
 ) {
+  if (value == null) {
+    return "";
+  }
   const hasDecimalPart = value % 1 !== 0;
   const maximumFractionDigits = hasDecimalPart ? 2 : 0;
 

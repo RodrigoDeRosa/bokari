@@ -2,7 +2,6 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import ReactFlow, {
   ReactFlowProvider,
   Controls,
-  ControlButton,
   useNodesState,
   useEdgesState,
 } from "reactflow";
@@ -17,9 +16,7 @@ import Sidebar from "./Sidebar";
 import updateTree from "../utils/updateTree";
 import connectNodes from "../utils/connectNodes";
 import { exampleNodes, exampleEdges } from "../data/exampleData";
-import updateSelectedNode from "../utils/updateNode";
 import createNode from "../utils/createNode";
-import NodeEditor from "./NodeEditor";
 import FixedGroupNode from "./nodes/FixedGroupNode";
 
 const nodeTypes = {
@@ -47,8 +44,8 @@ function updateLeafNodes(nodes) {
 function Graph() {
   const reactFlowWrapper = useRef(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
-  
-  // TODO -> Remove this after a while where we consider every possible 
+
+  // TODO -> Remove this after a while where we consider every possible
   // user doesn't have "leafNode" in their localStorage anymore
   const initialNodes = updateLeafNodes(useLocalStorage("nodes", exampleNodes));
   const initialEdges = useLocalStorage("edges", exampleEdges);
@@ -56,42 +53,17 @@ function Graph() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const [nodeName, setNodeName] = useState("");
-  const [nodeValue, setNodeValue] = useState("");
-  const [nodeProportion, setNodeProportion] = useState("");
-
-  useEffect(() => updateSelectedNode(nodes, "label", nodeName, setNodes), [
-    nodeName,
-  ]);
-
-  useEffect(
-    () => updateSelectedNode(nodes, "value", parseFloat(nodeValue), setNodes),
-    [nodeValue]
-  );
-
-  useEffect(
-    () =>
-      updateSelectedNode(
-        nodes,
-        "proportion",
-        parseFloat(nodeProportion),
-        setNodes
-      ),
-    [nodeProportion]
-  );
-
   const saveToLocalStorage = () => {
-    console.log("Saving to local storage");
     localStorage.setItem("nodes", JSON.stringify(nodes));
     localStorage.setItem("edges", JSON.stringify(edges));
-  }
-  
+  };
+
   const resetGraph = () => {
     localStorage.removeItem("nodes");
     localStorage.removeItem("edges");
     setNodes(exampleNodes);
     setEdges(exampleEdges);
-  }
+  };
 
   const onConnect = useCallback(
     (params) => connectNodes(nodes, edges, params, setNodes, setEdges),
@@ -105,7 +77,7 @@ function Graph() {
 
   const onDrop = useCallback(
     (event) => createNode(event, reactFlowInstance, reactFlowWrapper, setNodes),
-    [reactFlowInstance]
+    [reactFlowInstance, reactFlowWrapper]
   );
 
   useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges]);
@@ -115,19 +87,41 @@ function Graph() {
       localStorage.setItem("nodes", JSON.stringify(nodes));
       localStorage.setItem("edges", JSON.stringify(edges));
     };
-  
+
     window.addEventListener("beforeunload", saveBeforeExit);
     return () => {
       window.removeEventListener("beforeunload", saveBeforeExit);
     };
   }, [nodes, edges]);
 
+  const handleNodeDataChange = (nodeId, newData) => {
+    const updatedNodes = nodes.map((node) => {
+      if (node.id !== nodeId) return node;
+
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          ...newData,
+        },
+      };
+    });
+
+    setNodes(updatedNodes);
+  };
+
   return (
     <div className="dndflow">
       <ReactFlowProvider>
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
-            nodes={nodes}
+            nodes={nodes.map((node) => ({
+              ...node,
+              data: {
+                ...node.data,
+                handleNodeDataChange,
+              },
+            }))}
             edges={edges}
             nodeTypes={nodeTypes}
             onInit={setReactFlowInstance}
@@ -137,16 +131,14 @@ function Graph() {
             onDrop={onDrop}
             onDragOver={onDragOver}
           >
-            <Controls showFitView={false} showZoom={false} showInteractive={false}>
+            <Controls
+              showFitView={false}
+              showZoom={false}
+              showInteractive={false}
+            >
               <button onClick={saveToLocalStorage}>Save</button>
               <button onClick={resetGraph}>Reset</button>
             </Controls>
-            <NodeEditor
-              selectedNode={nodes.find((node) => node.selected)}
-              setNodeName={setNodeName}
-              setNodeValue={setNodeValue}
-              setNodeProportion={setNodeProportion}
-            />
           </ReactFlow>
         </div>
         <Sidebar />

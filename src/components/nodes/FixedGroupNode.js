@@ -1,10 +1,11 @@
-import { Component } from "react";
 import { Handle, Position } from "reactflow";
 import formatCurrency from "../../utils/currency";
 import "../../css/index.css";
 import "font-awesome/css/font-awesome.min.css";
+import EditableLabel from "../attributes/EditableLabel";
+import Node from "./Node";
 
-class FixedGroupNode extends Component {
+class FixedGroupNode extends Node {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,25 +26,25 @@ class FixedGroupNode extends Component {
       label: labelInput,
       value: parseFloat(valueInput),
     };
-    this.props.data.children.push(newChild);
 
-    this.props.data.value = this.props.data.children.reduce(
-      (total, child) => total + child.value,
-      0
-    );
+    let children = this.props.data.children.concat(newChild);
+    this.props.data.handleNodeDataChange(this.props.id, {
+      value: children.reduce((total, child) => total + child.value, 0),
+      children: children,
+    });
 
     this.setState({ labelInput: "", valueInput: "" });
   };
 
   handleDeleteChild = (indexToDelete) => {
-    this.props.data.children = this.props.data.children.filter(
+    let children = this.props.data.children.filter(
       (_, index) => index !== indexToDelete
     );
-    this.props.data.value = this.props.data.children.reduce(
-      (total, child) => total + child.value,
-      0
-    );
-    this.forceUpdate();
+
+    this.props.data.handleNodeDataChange(this.props.id, {
+      value: children.reduce((total, child) => total + child.value, 0),
+      children: children,
+    });
   };
 
   render() {
@@ -68,11 +69,13 @@ class FixedGroupNode extends Component {
           type="target"
           position={Position.Top}
           style={{ background: "#555" }}
-          onConnect={(params) => console.log("handle onConnect", params)}
           isConnectable={isConnectable}
           isConnectableStart={false}
         />
-        <p>{data.label}</p>
+        <EditableLabel
+          initialValue={data.label}
+          onUpdate={this.handleLabelChange}
+        />
         <ul className="no-bullets">{listItems}</ul>
         <label>Add Fixed Cost:</label>
         <div className="input-group">
