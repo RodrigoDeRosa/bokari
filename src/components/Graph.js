@@ -1,9 +1,9 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import ReactFlow, {
   ReactFlowProvider,
-  Controls,
   useNodesState,
   useEdgesState,
+  SelectionMode
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -18,6 +18,7 @@ import connectNodes from "../utils/connectNodes";
 import { exampleNodes, exampleEdges } from "../data/exampleData";
 import createNode from "../utils/createNode";
 import FixedGroupNode from "./nodes/FixedGroupNode";
+import Instructions from "./Instructions";
 
 const nodeTypes = {
   fixedNode: FixedNode,
@@ -80,6 +81,12 @@ function Graph() {
     [reactFlowInstance, reactFlowWrapper]
   );
 
+  useEffect(() => {
+    if (reactFlowInstance && nodes.length > 0) {
+      reactFlowInstance.fitView();
+    }
+  }, [reactFlowInstance]);
+
   useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges]);
 
   useEffect(() => {
@@ -113,6 +120,7 @@ function Graph() {
   return (
     <div className="dndflow">
       <ReactFlowProvider>
+        <Instructions saveToLocalStorage={saveToLocalStorage} resetGraph={resetGraph}/>
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes.map((node) => ({
@@ -130,16 +138,11 @@ function Graph() {
             onConnect={onConnect}
             onDrop={onDrop}
             onDragOver={onDragOver}
-          >
-            <Controls
-              showFitView={false}
-              showZoom={false}
-              showInteractive={false}
-            >
-              <button onClick={saveToLocalStorage}>Save</button>
-              <button onClick={resetGraph}>Reset</button>
-            </Controls>
-          </ReactFlow>
+            panOnScroll
+            selectionOnDrag
+            panOnDrag={[1, 2]}
+            selectionMode={SelectionMode.Partial}
+          />
         </div>
         <Sidebar />
       </ReactFlowProvider>

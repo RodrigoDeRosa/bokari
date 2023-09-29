@@ -68,7 +68,7 @@ class FixedGroupNode extends Node {
         <Handle
           type="target"
           position={Position.Top}
-          style={{ background: "#555" }}
+          style={{ background: "white", borderColor: "#555"}}
           isConnectable={isConnectable}
           isConnectableStart={false}
         />
