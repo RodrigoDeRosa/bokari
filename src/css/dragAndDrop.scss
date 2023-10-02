@@ -23,6 +23,46 @@
   }
 }
 
+.dndflow .dndnode {
+  height: 20px;
+  padding: 4px;
+  font-weight: bold;
+  border: 2px solid #1a192b;
+  border-radius: 2px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  color: white;
+
+  &.rootNode {
+    border-color: $root-node-color;
+    background-color: $root-node-color;
+  }
+  &.fixedNode {
+    border-color: $fixed-node-color;
+    background-color: $fixed-node-color;
+  }
+  &.proportionalNode {
+    border-color: $proportional-node-color;
+    background-color: $proportional-node-color;
+  }
+  &.relativeNode {
+    border-color: $relative-node-color;
+    background-color: $relative-node-color;
+  }
+  &.aggregatorNode {
+    border-color: $aggregator-node-color;
+    background-color: $aggregator-node-color;
+  }
+  &.fixedGroupNode {
+    border-color: $fixed-group-node-color;
+    background-color: $fixed-group-node-color;
+  }
+}
+
+
 .dndflow {
   flex-direction: column;
   display: flex;
@@ -44,51 +84,10 @@
   padding: 15px 10px;
   font-size: 12px;
   background: #fcfcfc;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .dndflow aside .description {
   margin-bottom: 10px;
-}
-
-.dndflow .dndnode {
-  height: 20px;
-  padding: 4px;
-  font-weight: bold;
-  border: 2px solid #1a192b;
-  border-radius: 2px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: grab;
-  &.rootNode {
-    color: white;
-    border-color: $root-node-color;
-    background-color: $root-node-color;
-  }
-  &.fixedNode {
-    color: white;
-    border-color: $fixed-node-color;
-    background-color: $fixed-node-color;
-  }
-  &.proportionalNode {
-    color: white;
-    border-color: $proportional-node-color;
-    background-color: $proportional-node-color;
-  }
-  &.relativeNode {
-    color: white;
-    border-color: $relative-node-color;
-    background-color: $relative-node-color;
-  }
-  &.aggregatorNode {
-    color: white;
-    border-color: $aggregator-node-color;
-    background-color: $aggregator-node-color;
-  }
-  &.fixedGroupNode {
-    color: white;
-    border-color: $fixed-group-node-color;
-    background-color: $fixed-group-node-color;
-  }
 }
