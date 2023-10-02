@@ -17,7 +17,7 @@ import updateTree from "../utils/updateTree";
 import connectNodes from "../utils/connectNodes";
 import { exampleNodes, exampleEdges } from "../data/exampleData";
 import createNode from "../utils/createNode";
-import FixedGroupNode from "./nodes/FixedGroupNode";
+import FixedGroupNode from "./nodes/fixedGroupNode/FixedGroupNode";
 import Instructions from "./Instructions";
 
 const nodeTypes = {

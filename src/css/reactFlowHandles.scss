@@ -1,0 +1,16 @@
+.react-flow .react-flow__handle {
+  width: 10px;
+  height: 10px;
+}
+
+.react-flow .react-flow__handle-top {
+  background-color: white;
+  border-color: #555;
+  top: -6px;
+}
+
+.react-flow .react-flow__handle-bottom {
+  background-color: #555;
+  border-color: white;
+  bottom: -6px;
+}
