@@ -1,7 +1,4 @@
-import {
-    getIncomers,
-    getOutgoers,
-  } from "reactflow";
+import { getIncomers, getOutgoers } from "reactflow";
 
 export default function updateTree(nodes, edges, setNodes, setEdges) {
   let rootNodes = nodes.filter((node) => node.type === "rootNode");
@@ -19,7 +16,7 @@ export default function updateTree(nodes, edges, setNodes, setEdges) {
 
       // Recalculate the value of each proportional node in case the parent's value changed
       children
-        .filter((child) => child.type == "proportionalNode")
+        .filter((child) => child.type === "proportionalNode")
         .forEach((child) => {
           child.data = {
             ...child.data,
@@ -34,12 +31,13 @@ export default function updateTree(nodes, edges, setNodes, setEdges) {
         .reduce((acc, child) => acc + child.data.value, 0);
       children
         .filter((child) => child.type === "relativeNode")
-        .map((child) => {
-          child.data = {
-            ...child.data,
-            value: currentNode.data.value - usedTotal,
-          };
-        });
+        .map(
+          (child) =>
+            (child.data = {
+              ...child.data,
+              value: currentNode.data.value - usedTotal,
+            })
+        );
 
       neighbors.push(...children);
     }

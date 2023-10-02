@@ -1,0 +1,38 @@
+.editable-field {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: middle;
+
+  margin: 0;
+  padding: 4px;
+  border: 1px solid transparent;
+  line-height: 1.5;
+
+  text-align: center;
+  background: none;
+  width: 100%;
+  box-sizing: border-box;
+  color: inherit;
+
+  outline: none;
+  resize: none;
+  overflow: auto;
+  appearance: none;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 3px #3b3b3b;
+  }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

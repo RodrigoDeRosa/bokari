@@ -68,7 +68,7 @@ function Graph() {
 
   const onConnect = useCallback(
     (params) => connectNodes(nodes, edges, params, setNodes, setEdges),
-    [nodes, edges]
+    [nodes, edges, setNodes, setEdges]
   );
 
   const onDragOver = useCallback((event) => {
@@ -78,7 +78,7 @@ function Graph() {
 
   const onDrop = useCallback(
     (event) => createNode(event, reactFlowInstance, reactFlowWrapper, setNodes),
-    [reactFlowInstance, reactFlowWrapper]
+    [reactFlowInstance, reactFlowWrapper, setNodes]
   );
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function Graph() {
     }
   }, [reactFlowInstance]);
 
-  useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges]);
+  useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges, setNodes, setEdges]);
 
   useEffect(() => {
     const saveBeforeExit = () => {

@@ -1,6 +1,6 @@
 import { Handle, Position } from "reactflow";
 import formatCurrency from "../../utils/currency";
-import "../../css/index.css";
+import "../../css/fixedGroupNode.scss";
 import "font-awesome/css/font-awesome.min.css";
 import EditableLabel from "../attributes/EditableLabel";
 import Node from "./Node";

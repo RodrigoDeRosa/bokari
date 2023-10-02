@@ -1,5 +1,3 @@
-import { Controls } from "reactflow";
-
 export default ({saveToLocalStorage, resetGraph}) => {
   return (
     <aside>
@@ -15,10 +13,10 @@ export default ({saveToLocalStorage, resetGraph}) => {
           one) and drag the edge to the child's top connector (the white one).
         </h4>
       </div>
-      <Controls showFitView={false} showZoom={false} showInteractive={false}>
+      <div>
         <button className="control-button save" onClick={saveToLocalStorage}>Save</button>
         <button className="control-button reset" onClick={resetGraph}>Reset</button>
-      </Controls>
+      </div>
     </aside>
   );
 };

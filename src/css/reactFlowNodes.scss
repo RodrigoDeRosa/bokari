@@ -1,0 +1,116 @@
+.react-flow__node-fixedNode {
+    border-radius: 3px;
+    width: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: $fixed-node-color;
+    background-color: $fixed-node-color;
+    color: white;
+    &.selectable.selected {
+      border-color: $fixed-node-color;
+      background-color: white;
+      color: $fixed-node-color;
+    }
+  }
+  
+  .react-flow__node-relativeNode {
+    border-radius: 3px;
+    width: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    background-color: $relative-node-color;
+    color: white;
+    border-color: $relative-node-color;
+    &.selectable.selected {
+      border-color: $relative-node-color;
+      background-color: white;
+      color: $relative-node-color;
+    }
+  }
+  
+  .react-flow__node-proportionalNode {
+    border-radius: 3px;
+    width: 100px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: $proportional-node-color;
+    background-color: $proportional-node-color;
+    color: white;
+    &.selectable.selected {
+      border-color: $proportional-node-color;
+      color: $proportional-node-color;
+      background-color: white;
+    }
+  }
+  
+  .react-flow__node-rootNode {
+    border-radius: 3px;
+    width: 100px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: $root-node-color;
+    background-color: $root-node-color;
+    &.selectable.selected {
+      color: $root-node-color;
+      border-color: $root-node-color;
+      background-color: white;
+    }
+  }
+  
+  .react-flow__node-aggregatorNode {
+    border-radius: 3px;
+    width: 100px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: $aggregator-node-color;
+    background-color: $aggregator-node-color;
+    &.selectable.selected {
+      color: $aggregator-node-color;
+      border-color: $aggregator-node-color;
+      background-color: white;
+    }
+  }
+  
+  .react-flow__node-fixedGroupNode {
+    border-radius: 3px;
+    width: 200px;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    border-width: 2px;
+    border-style: solid;
+    border-color: $fixed-group-node-color;
+    background-color: $fixed-group-node-color;
+    &.selectable.selected {
+      color: $fixed-group-node-color;
+      border-color: $fixed-group-node-color;
+      background-color: white;
+  
+      .no-bullets {
+        border: 1px solid $fixed-group-node-color;
+      }
+    }
+  }
+  
+  .react_flow__edge {
+    stroke: #000;
+    stroke-width: 4px;
+  }
