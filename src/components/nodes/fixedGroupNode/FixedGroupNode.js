@@ -62,7 +62,7 @@ const FixedGroupNode = ({ id, data }) => {
         onInputChange={handleInputChange}
         onAdd={handleAddChild}
       />
-      <p>Total: {formatCurrency(data.value)}</p>
+      <p className="non-editable-field">Total: {formatCurrency(data.value)}</p>
       <Handle
         type="source"
         position={Position.Bottom}

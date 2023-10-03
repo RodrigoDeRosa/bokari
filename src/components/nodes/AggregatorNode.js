@@ -15,7 +15,7 @@ const AggregatorNode = ({ id, data }) => {
         isConnectableStart={false}
       />
       <EditableLabel initialValue={data.label} onUpdate={handleLabelChange} />
-      <p>{formatCurrency(data.value)}</p>
+      <p className="non-editable-field">{formatCurrency(data.value)}</p>
       <Handle
         type="source"
         position={Position.Bottom}

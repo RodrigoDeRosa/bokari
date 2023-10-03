@@ -1,25 +1,39 @@
-const FixedCostInput = ({ labelInput, valueInput, onInputChange, onAdd }) => (
-  <div>
-    <label>Add Fixed Cost:</label>
-    <div className="input-group">
-      <input
-        name="labelInput"
-        value={labelInput}
-        placeholder="Name"
-        onChange={onInputChange}
-      />
-      <input
-        name="valueInput"
-        type="number"
-        value={valueInput}
-        placeholder="Value"
-        onChange={onInputChange}
-      />
-      <button className="icon-button" onClick={onAdd}>
-        <i className="fa fa-plus"></i>
-      </button>
+const FixedCostInput = ({ labelInput, valueInput, onInputChange, onAdd }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (labelInput && valueInput) {
+      onAdd();
+    }
+  };
+
+  return (
+    <div>
+      <label>Add Fixed Cost:</label>
+      <form onSubmit={handleSubmit} className="input-group">
+        <input
+          name="labelInput"
+          value={labelInput}
+          placeholder="Name"
+          onChange={onInputChange}
+          autoComplete="off"
+          required
+        />
+        <input
+          name="valueInput"
+          type="number"
+          value={valueInput}
+          placeholder="Value"
+          onChange={onInputChange}
+          autoComplete="off"
+          required
+        />
+        <button type="submit" className="icon-button">
+          <i className="fa fa-plus"></i>
+        </button>
+      </form>
     </div>
-  </div>
-);
+  );
+};
 
 export default FixedCostInput;
+

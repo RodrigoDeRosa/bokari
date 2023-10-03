@@ -24,7 +24,7 @@ const ProportionalNode = ({ id, data }) => {
         onUpdate={handleProportionChange}
         valueFormatter={(proportion) => `${proportion}%`}
       />
-      <p>{formatCurrency(data.value)}</p>
+      <p className="non-editable-field">{formatCurrency(data.value)}</p>
       <Handle
         type="source"
         position={Position.Bottom}

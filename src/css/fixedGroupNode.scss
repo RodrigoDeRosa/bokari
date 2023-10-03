@@ -1,3 +1,5 @@
+@import "variables";
+
 .icon-button {
   background: none;
   border: none;
@@ -23,7 +25,7 @@
   border: 1px solid white;
   padding: 2px;
   border-radius: 4px;
-  margin: 4px;
+  margin: 2px 5px 10px 5px;
 }
 
 .no-bullets li {
@@ -32,22 +34,52 @@
 
 .input-group {
   display: flex;
-  padding: 3px;
-  align-items: center;
   gap: 3px;
+  margin: 10px 5px;
+
+  &:focus {
+    color: $fixed-group-node-color;
+  }
 }
 
 .input-group input {
-  flex: 1;
-  padding: 4px;
-  border: none;
+  padding: 5px;
   border-radius: 4px;
-  font-size: 1em;
-  width: 10px;
+  width: 100%;
+  background: inherit;
+  color: inherit;
+  border: 1px solid white;
+  font-weight: bold;
+
+  &:focus {
+    color: $fixed-group-node-color;
+    outline-color: $fixed-group-node-color;
+  }
+
+  &::placeholder{
+    color: inherit;
+  }
+}
+
+.react-flow__node-fixedGroupNode.selectable.selected input {
+  border: 1px solid $fixed-group-node-color;
 }
 
 .input-group button {
+  background-color: $fixed-group-node-color;
   border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
   cursor: pointer;
-  margin: 0;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: white;
+    color: $fixed-group-node-color;
+  }
 }
