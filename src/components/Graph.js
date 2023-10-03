@@ -3,7 +3,7 @@ import ReactFlow, {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
-  SelectionMode
+  SelectionMode,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -12,7 +12,7 @@ import ProportionalNode from "./nodes/ProportionalNode";
 import RelativeNode from "./nodes/RelativeNode";
 import RootNode from "./nodes/RootNode";
 import AggregatorNode from "./nodes/AggregatorNode";
-import Sidebar from "./Sidebar";
+import NodeCreator from "./NodeCreator";
 import updateTree from "../utils/updateTree";
 import connectNodes from "../utils/connectNodes";
 import { exampleNodes, exampleEdges } from "../data/exampleData";
@@ -85,9 +85,18 @@ function Graph() {
     if (reactFlowInstance && nodes.length > 0) {
       reactFlowInstance.fitView();
     }
+    // We don't want to have the `nodes.length` as a dependency
+    // because we don't want the graph to fit the view every time
+    // we add or remove a node
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reactFlowInstance]);
 
-  useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [nodes, edges, setNodes, setEdges]);
+  useEffect(() => updateTree(nodes, edges, setNodes, setEdges), [
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+  ]);
 
   useEffect(() => {
     const saveBeforeExit = () => {
@@ -120,7 +129,10 @@ function Graph() {
   return (
     <div className="dndflow">
       <ReactFlowProvider>
-        <Instructions saveToLocalStorage={saveToLocalStorage} resetGraph={resetGraph}/>
+        <Instructions
+          saveToLocalStorage={saveToLocalStorage}
+          resetGraph={resetGraph}
+        />
         <div className="reactflow-wrapper" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes.map((node) => ({
@@ -144,7 +156,7 @@ function Graph() {
             selectionMode={SelectionMode.Partial}
           />
         </div>
-        <Sidebar />
+        <NodeCreator />
       </ReactFlowProvider>
     </div>
   );
