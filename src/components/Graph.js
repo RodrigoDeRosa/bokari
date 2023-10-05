@@ -34,9 +34,15 @@ function useLocalStorage(key, initialValue) {
     : initialValue;
 }
 
-function updateLeafNodes(nodes) {
+function updateNodes(nodes) {
   return nodes.map((node) => {
     node.type = node.type === "leafNode" ? "aggregatorNode" : node.type;
+    // TODO -> Just for my own already created graph since no one else probably has used this :joy:
+    if (node.type === "fixedGroupNode")
+      node.children = node.children.map(
+        (child) => (child.id = child.id || uuid4())
+      );
+
     return node;
   });
 }
@@ -47,7 +53,7 @@ function Graph() {
 
   // TODO -> Remove this after a while where we consider every possible
   // user doesn't have "leafNode" in their localStorage anymore
-  const initialNodes = updateLeafNodes(useLocalStorage("nodes", exampleNodes));
+  const initialNodes = updateNodes(useLocalStorage("nodes", exampleNodes));
   const initialEdges = useLocalStorage("edges", exampleEdges);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
