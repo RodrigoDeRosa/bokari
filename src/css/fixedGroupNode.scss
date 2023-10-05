@@ -58,6 +58,8 @@
 
   &::placeholder{
     color: inherit;
+    font-weight: normal;
+    font-style: italic;
   }
 }
 
@@ -69,11 +71,11 @@
   background-color: $fixed-group-node-color;
   border: none;
   color: white;
-  padding: 5px 10px;
+  padding: 5px 5px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 16px;
+  font-size: 12px;
   transition-duration: 0.4s;
   cursor: pointer;
   border-radius: 4px;

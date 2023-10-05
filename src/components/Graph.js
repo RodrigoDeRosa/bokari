@@ -3,7 +3,6 @@ import ReactFlow, {
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
-  SelectionMode,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -151,9 +150,6 @@ function Graph() {
             onDrop={onDrop}
             onDragOver={onDragOver}
             panOnScroll
-            selectionOnDrag
-            panOnDrag={[1, 2]}
-            selectionMode={SelectionMode.Partial}
           />
         </div>
         <NodeCreator />
