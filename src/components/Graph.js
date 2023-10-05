@@ -39,10 +39,12 @@ function updateNodes(nodes) {
   return nodes.map((node) => {
     node.type = node.type === "leafNode" ? "aggregatorNode" : node.type;
     // TODO -> Just for my own already created graph since no one else probably has used this :joy:
-    if (node.type === "fixedGroupNode")
-      node.children = node.children.map(
-        (child) => (child.id = child.id || uuid4())
-      );
+    if (node.type === "fixedGroupNode") {
+      node.children =
+        node.children == null
+          ? []
+          : node.children.map((child) => (child.id = child.id || uuid4()));
+    }
 
     return node;
   });
