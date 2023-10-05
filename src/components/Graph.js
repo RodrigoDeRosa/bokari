@@ -18,6 +18,7 @@ import { exampleNodes, exampleEdges } from "../data/exampleData";
 import createNode from "../utils/createNode";
 import FixedGroupNode from "./nodes/fixedGroupNode/FixedGroupNode";
 import Instructions from "./Instructions";
+import { v4 as uuid4 } from "uuid";
 
 const nodeTypes = {
   fixedNode: FixedNode,
