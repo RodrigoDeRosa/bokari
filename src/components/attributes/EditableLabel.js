@@ -6,13 +6,17 @@ function EditableLabel({ initialValue, onUpdate }) {
   const labelRef = useRef(null);
   const [rows, setRows] = useState(1);
 
-  const handleEdit = () => {
+  const calculateRows = () => {
     if (labelRef.current) {
       const lineHeight = parseInt(window.getComputedStyle(labelRef.current).lineHeight, 10);
       const height = labelRef.current.clientHeight;
       const calculatedRows = Math.round(height / lineHeight);
       setRows(calculatedRows);
     }
+  };
+
+  const handleEdit = () => {
+    calculateRows();
     setIsEditing(true);
   };
 
