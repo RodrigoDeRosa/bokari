@@ -8,12 +8,17 @@ import { useState } from "react";
 import useNodeHandlers from "../../../utils/useNodeHandlers";
 import ChildList from "./ChildList";
 import FixedCostInput from "./FixedCostInput";
+import { v4 as uuid4 } from "uuid";
 
 const FixedGroupNode = ({ id, data }) => {
   const [inputs, setInputs] = useState({
     labelInput: "",
     valueInput: "",
   });
+
+  const totalValue = (children) => {
+    return children.reduce((total, child) => total + child.value, 0);
+  };
 
   const { handleLabelChange } = useNodeHandlers(id, data.handleNodeDataChange);
 
@@ -24,25 +29,40 @@ const FixedGroupNode = ({ id, data }) => {
 
   const handleAddChild = () => {
     const newChild = {
+      id: uuid4(),
       label: inputs.labelInput,
       value: parseFloat(inputs.valueInput),
     };
 
     const children = [...data.children, newChild];
     data.handleNodeDataChange(id, {
-      value: children.reduce((total, child) => total + child.value, 0),
+      value: totalValue(children),
       children,
     });
 
     setInputs({ labelInput: "", valueInput: "" });
   };
 
-  const handleDeleteChild = (indexToDelete) => {
+  const handleChildUpdate = (childId, newChildData) => {
+    const children = [...data.children];
+    const childIndex = children.findIndex((child) => child.id === childId);
+    
+    if (childIndex !== -1) {
+      children[childIndex] = { ...newChildData, id: childId };
+    }
+  
+    data.handleNodeDataChange(id, {
+      value: totalValue(children),
+      children: children,
+    });
+  };
+
+  const handleDeleteChild = (idToDelete) => {
     const children = data.children.filter(
-      (_, index) => index !== indexToDelete
+      child => child.id !== idToDelete
     );
     data.handleNodeDataChange(id, {
-      value: children.reduce((total, child) => total + child.value, 0),
+      value: totalValue(children),
       children: children,
     });
   };
@@ -55,7 +75,11 @@ const FixedGroupNode = ({ id, data }) => {
         isConnectableStart={false}
       />
       <EditableLabel initialValue={data.label} onUpdate={handleLabelChange} />
-      <ChildList children={data.children} onDelete={handleDeleteChild} />
+      <ChildList
+        children={data.children}
+        onDelete={handleDeleteChild}
+        onChildEdit={handleChildUpdate}
+      />
       <FixedCostInput
         labelInput={inputs.labelInput}
         valueInput={inputs.valueInput}

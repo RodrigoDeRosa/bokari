@@ -240,14 +240,17 @@ export const exampleNodes = [
       proportion: 0,
       children: [
         {
+          id: "6a1c3dda-45fe-4361-b634-ae1297238cbc",
           label: "Rent",
           value: 1213,
         },
         {
+          id: "4d8a0775-b281-4040-a960-9436b867ecca",
           label: "Insurance",
           value: 114,
         },
         {
+          id: "24ab434e-f757-4e91-8808-046b9e97c51e",
           label: "Phone",
           value: 32,
         },
