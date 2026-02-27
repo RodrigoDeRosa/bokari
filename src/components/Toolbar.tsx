@@ -28,6 +28,7 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { useBudgetTree } from '../context/BudgetTreeContext';
 
@@ -55,6 +56,7 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
     importGraph,
     currency,
     setCurrency,
+    autoLayout,
   } = useBudgetTree();
 
   useEffect(() => {
@@ -169,6 +171,12 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
           <Tooltip title="Save (Ctrl+S)">
             <IconButton size="small" onClick={handleSave} aria-label="Save">
               <SaveIcon fontSize={isMobile ? 'small' : 'medium'} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Auto-layout (tidy up)">
+            <IconButton size="small" onClick={autoLayout} aria-label="Auto-layout">
+              <AccountTreeIcon fontSize={isMobile ? 'small' : 'medium'} />
             </IconButton>
           </Tooltip>
 

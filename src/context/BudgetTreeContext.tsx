@@ -1,6 +1,6 @@
 import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { useNodesState, useEdgesState } from '@xyflow/react';
-import type { Connection, NodeChange, EdgeChange, OnNodesChange, OnEdgesChange } from '@xyflow/react';
+import type { Connection, NodeChange, EdgeChange, OnNodesChange, OnEdgesChange, ReactFlowInstance } from '@xyflow/react';
 import type { BokariNode, BokariEdge } from '../types';
 import { exampleNodes, exampleEdges } from '../data/exampleData';
 import { loadState, saveState, clearState } from '../utils/migration';
@@ -16,6 +16,7 @@ import type { UndoRedoState, BudgetTreeSnapshot } from '../hooks/useUndoRedo';
 import updateTree from '../utils/updateTree';
 import connectNodes from '../utils/connectNodes';
 import { exportToJSON, downloadJSON, importFromJSON } from '../utils/serialization';
+import autoLayoutUtil from '../utils/autoLayout';
 
 interface BudgetTreeContextValue {
   nodes: BokariNode[];
@@ -37,6 +38,8 @@ interface BudgetTreeContextValue {
   exportGraph: () => void;
   importGraph: (json: string) => string | null;
   takeSnapshot: () => void;
+  autoLayout: () => void;
+  setReactFlowInstance: (instance: ReactFlowInstance) => void;
 }
 
 const BudgetTreeContext = createContext<BudgetTreeContextValue | null>(null);
@@ -53,6 +56,12 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
   const [nodes, setNodes, onNodesChange] = useNodesState(persisted.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(persisted.edges);
   const [currency, setCurrencyState] = useState(persisted.currency);
+
+  const reactFlowInstanceRef = useRef<ReactFlowInstance | null>(null);
+
+  const setReactFlowInstance = useCallback((instance: ReactFlowInstance) => {
+    reactFlowInstanceRef.current = instance;
+  }, []);
 
   const undoRedoRef = useRef<UndoRedoState>(
     createUndoRedoState({ nodes: persisted.nodes, edges: persisted.edges, currency: persisted.currency }),
@@ -175,6 +184,13 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
     }
   }, [setNodes, setEdges, takeSnapshot]);
 
+  const autoLayout = useCallback(() => {
+    takeSnapshot();
+    const laid = autoLayoutUtil(nodes as BokariNode[], edges);
+    setNodes(laid);
+    setTimeout(() => reactFlowInstanceRef.current?.fitView(), 0);
+  }, [nodes, edges, setNodes, takeSnapshot]);
+
   // Suppress lint warning for undoRedoVersion — it's used to trigger re-renders
   void undoRedoVersion;
 
@@ -198,6 +214,8 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
     exportGraph,
     importGraph,
     takeSnapshot,
+    autoLayout,
+    setReactFlowInstance,
   };
 
   return (
