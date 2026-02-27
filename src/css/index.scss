@@ -1,32 +1,13 @@
-@import "variables";
-@import "reactFlowNodes";
-@import "dragAndDrop";
-@import "nodeEdition";
-@import "controls";
-@import "reactFlowHandles";
+@use "variables" as *;
+@use "reactFlowNodes";
+@use "dragAndDrop";
+@use "nodeEdition";
+@use "reactFlowHandles";
 
-body {
+html, body, #root {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-
-@media screen and (min-width: 768px) {
-  .dndflow {
-    flex-direction: row;
-  }
-
-  .dndflow aside {
-    width: 20%;
-    max-width: 250px;
-  }
-}
-

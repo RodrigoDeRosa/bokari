@@ -1,116 +1,84 @@
+@use "variables" as *;
+
+// Shared base styles for all node types
+%node-base {
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  border-width: 2px;
+  border-style: solid;
+  color: white;
+  padding: 6px 4px;
+  width: 130px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+// Mixin for selected state — tinted background instead of full white
+@mixin selected-state($color) {
+  &.selectable.selected {
+    border-color: $color;
+    background-color: rgba($color, 0.12);
+    color: $color;
+    box-shadow: 0 0 0 2px rgba($color, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
 .react-flow__node-fixedNode {
-    border-radius: 3px;
-    width: 100px;
-    font-size: 12px;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    border-color: $fixed-node-color;
-    background-color: $fixed-node-color;
-    color: white;
-    &.selectable.selected {
-      border-color: $fixed-node-color;
-      background-color: white;
-      color: $fixed-node-color;
+  @extend %node-base;
+  border-color: $fixed-node-color;
+  background-color: $fixed-node-color;
+  @include selected-state($fixed-node-color);
+}
+
+.react-flow__node-relativeNode {
+  @extend %node-base;
+  border-color: $relative-node-color;
+  background-color: $relative-node-color;
+  @include selected-state($relative-node-color);
+}
+
+.react-flow__node-proportionalNode {
+  @extend %node-base;
+  border-color: $proportional-node-color;
+  background-color: $proportional-node-color;
+  @include selected-state($proportional-node-color);
+}
+
+.react-flow__node-rootNode {
+  @extend %node-base;
+  border-color: $root-node-color;
+  background-color: $root-node-color;
+  @include selected-state($root-node-color);
+}
+
+.react-flow__node-aggregatorNode {
+  @extend %node-base;
+  border-color: $aggregator-node-color;
+  background-color: $aggregator-node-color;
+  @include selected-state($aggregator-node-color);
+}
+
+.react-flow__node-fixedGroupNode {
+  @extend %node-base;
+  width: 250px;
+  border-color: $fixed-group-node-color;
+  background-color: $fixed-group-node-color;
+  @include selected-state($fixed-group-node-color);
+
+  &.selectable.selected {
+    .no-bullets {
+      border: 1px solid $fixed-group-node-color;
     }
   }
-  
-  .react-flow__node-relativeNode {
-    border-radius: 3px;
-    width: 100px;
-    font-size: 12px;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    background-color: $relative-node-color;
-    color: white;
-    border-color: $relative-node-color;
-    &.selectable.selected {
-      border-color: $relative-node-color;
-      background-color: white;
-      color: $relative-node-color;
-    }
-  }
-  
-  .react-flow__node-proportionalNode {
-    border-radius: 3px;
-    width: 100px;
-    font-size: 12px;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    border-color: $proportional-node-color;
-    background-color: $proportional-node-color;
-    color: white;
-    &.selectable.selected {
-      border-color: $proportional-node-color;
-      color: $proportional-node-color;
-      background-color: white;
-    }
-  }
-  
-  .react-flow__node-rootNode {
-    border-radius: 3px;
-    width: 100px;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    border-color: $root-node-color;
-    background-color: $root-node-color;
-    &.selectable.selected {
-      color: $root-node-color;
-      border-color: $root-node-color;
-      background-color: white;
-    }
-  }
-  
-  .react-flow__node-aggregatorNode {
-    border-radius: 3px;
-    width: 100px;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    border-color: $aggregator-node-color;
-    background-color: $aggregator-node-color;
-    &.selectable.selected {
-      color: $aggregator-node-color;
-      border-color: $aggregator-node-color;
-      background-color: white;
-    }
-  }
-  
-  .react-flow__node-fixedGroupNode {
-    border-radius: 3px;
-    width: 200px;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    border-width: 2px;
-    border-style: solid;
-    border-color: $fixed-group-node-color;
-    background-color: $fixed-group-node-color;
-    &.selectable.selected {
-      color: $fixed-group-node-color;
-      border-color: $fixed-group-node-color;
-      background-color: white;
-  
-      .no-bullets {
-        border: 1px solid $fixed-group-node-color;
-      }
-    }
-  }
-  
-  .react_flow__edge {
-    stroke: #000;
-    stroke-width: 4px;
-  }
+}
+
+.react_flow__edge {
+  stroke: #000;
+  stroke-width: 4px;
+}

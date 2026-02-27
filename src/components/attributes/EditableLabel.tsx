@@ -1,9 +1,14 @@
 import { useState, useRef } from 'react';
 
-function EditableLabel({ initialValue, onUpdate }) {
+interface EditableLabelProps {
+  initialValue: string;
+  onUpdate: (value: string) => void;
+}
+
+function EditableLabel({ initialValue, onUpdate }: EditableLabelProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedValue, setEditedValue] = useState(initialValue);
-  const labelRef = useRef(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
   const [rows, setRows] = useState(1);
 
   const calculateRows = () => {
@@ -20,7 +25,7 @@ function EditableLabel({ initialValue, onUpdate }) {
     setIsEditing(true);
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditedValue(event.target.value);
   };
 
@@ -29,10 +34,17 @@ function EditableLabel({ initialValue, onUpdate }) {
     onUpdate(editedValue);
   };
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       handleBlur();
+    }
+  };
+
+  const handleDisplayKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleEdit();
     }
   };
 
@@ -44,13 +56,18 @@ function EditableLabel({ initialValue, onUpdate }) {
       onChange={handleChange}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
+      aria-label="Edit label"
       autoFocus
     />
   ) : (
-    <p 
-      className="editable-field" 
+    <p
+      className="editable-field"
       onClick={handleEdit}
+      onKeyDown={handleDisplayKeyDown}
       ref={labelRef}
+      role="button"
+      tabIndex={0}
+      aria-label={`Label: ${initialValue}. Press Enter to edit.`}
     >
       {initialValue}
     </p>

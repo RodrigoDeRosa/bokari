@@ -1,16 +1,20 @@
 .non-editable-field {
   cursor: not-allowed;
+  margin: 0;
+  padding: 4px;
+  line-height: 1.5;
+  text-align: center;
+  word-break: break-word;
 }
 
 .editable-field {
   display: flex;
   align-items: center;
-  justify-content: center; 
+  justify-content: center;
 
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
-  line-height: inherit;
   vertical-align: middle;
 
   margin: 0;
@@ -26,8 +30,9 @@
 
   outline: none;
   resize: none;
-  overflow: auto;
+  overflow: hidden;
   appearance: none;
+  word-break: break-word;
 
   &:hover {
     cursor: pointer;
