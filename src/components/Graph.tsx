@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { ReactFlow, ReactFlowProvider, MiniMap } from '@xyflow/react';
+import { ReactFlow, MiniMap } from '@xyflow/react';
 import type { ReactFlowInstance } from '@xyflow/react';
 import Box from '@mui/material/Box';
 
@@ -13,9 +13,8 @@ import NodeCreator from './NodeCreator';
 import createNode from '../utils/createNode';
 import getFullPath from '../utils/getFullPath';
 import FixedGroupNode from './nodes/fixedGroupNode/FixedGroupNode';
-import Instructions from './Instructions';
-import Toolbar from './Toolbar';
-import { BudgetTreeProvider, useBudgetTree } from '../context/BudgetTreeContext';
+import { useBudgetTree } from '../context/BudgetTreeContext';
+import { NODE_TYPE_COLORS } from '../constants/nodeColors';
 
 const nodeTypes = {
   fixedNode: FixedNode,
@@ -26,13 +25,10 @@ const nodeTypes = {
   fixedGroupNode: FixedGroupNode,
 };
 
-function GraphInner() {
+export default function GraphView() {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reactFlowInstance, setLocalReactFlowInstance] = useState<ReactFlowInstance<any, any> | null>(null);
-  const [helpOpen, setHelpOpen] = useState(() => {
-    return !localStorage.getItem('bokari-help-dismissed');
-  });
 
   const {
     nodes,
@@ -89,20 +85,6 @@ function GraphInner() {
     setHoveredNodeId(null);
   }, []);
 
-  const handleToggleHelp = () => {
-    setHelpOpen((prev) => {
-      if (!prev === false) {
-        localStorage.setItem('bokari-help-dismissed', 'true');
-      }
-      return !prev;
-    });
-  };
-
-  const handleCloseHelp = () => {
-    setHelpOpen(false);
-    localStorage.setItem('bokari-help-dismissed', 'true');
-  };
-
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -124,55 +106,32 @@ function GraphInner() {
   }, [reactFlowInstance]);
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
-      <Toolbar onToggleHelp={handleToggleHelp} />
-      <Box sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>
-        <ReactFlow
-          nodes={styledNodes}
-          edges={styledEdges}
-          nodeTypes={nodeTypes}
-          defaultEdgeOptions={{ type: 'smoothstep' }}
-          onInit={handleInit}
-          onNodesChange={onNodesChange as (changes: import('@xyflow/react').NodeChange[]) => void}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onNodeMouseEnter={onNodeMouseEnter}
-          onNodeMouseLeave={onNodeMouseLeave}
-          panOnScroll
-        >
-          <MiniMap
-            nodeColor={(node) => {
-              switch (node.type) {
-                case 'rootNode': return '#ffbe0b';
-                case 'fixedNode': return '#fb5607';
-                case 'proportionalNode': return '#ff006e';
-                case 'relativeNode': return '#8338ec';
-                case 'aggregatorNode': return '#3a86ff';
-                case 'fixedGroupNode': return '#00916e';
-                default: return '#ccc';
-              }
-            }}
-            zoomable
-            pannable
-          />
-        </ReactFlow>
-        <NodeCreator />
-      </Box>
-      <Instructions open={helpOpen} onClose={handleCloseHelp} />
+    <Box sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>
+      <ReactFlow
+        nodes={styledNodes}
+        edges={styledEdges}
+        nodeTypes={nodeTypes}
+        defaultEdgeOptions={{ type: 'smoothstep' }}
+        onInit={handleInit}
+        onNodesChange={onNodesChange as (changes: import('@xyflow/react').NodeChange[]) => void}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseLeave={onNodeMouseLeave}
+        panOnScroll
+      >
+        <MiniMap
+          nodeColor={(node) => {
+            const type = node.type as keyof typeof NODE_TYPE_COLORS;
+            return NODE_TYPE_COLORS[type] ?? '#ccc';
+          }}
+          zoomable
+          pannable
+        />
+      </ReactFlow>
+      <NodeCreator />
     </Box>
   );
 }
-
-function Graph() {
-  return (
-    <ReactFlowProvider>
-      <BudgetTreeProvider>
-        <GraphInner />
-      </BudgetTreeProvider>
-    </ReactFlowProvider>
-  );
-}
-
-export default Graph;

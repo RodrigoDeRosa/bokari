@@ -28,3 +28,9 @@ export type NodeType =
   | 'relativeNode'
   | 'aggregatorNode'
   | 'fixedGroupNode';
+
+export interface ProjectionDataPoint {
+  year: number;
+  label: string;
+  values: Record<string, number>;
+}

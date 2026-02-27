@@ -8,14 +8,15 @@ import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import type { NodeType } from '../types';
+import { NODE_TYPE_COLORS } from '../constants/nodeColors';
 
 const NODE_TYPES: { type: NodeType; label: string; color: string }[] = [
-  { type: 'rootNode', label: 'Root', color: '#ffbe0b' },
-  { type: 'fixedNode', label: 'Fixed', color: '#fb5607' },
-  { type: 'proportionalNode', label: 'Proportional', color: '#ff006e' },
-  { type: 'relativeNode', label: 'Relative', color: '#8338ec' },
-  { type: 'aggregatorNode', label: 'Aggregator', color: '#3a86ff' },
-  { type: 'fixedGroupNode', label: 'Fixed Group', color: '#00916e' },
+  { type: 'rootNode', label: 'Root', color: NODE_TYPE_COLORS.rootNode },
+  { type: 'fixedNode', label: 'Fixed', color: NODE_TYPE_COLORS.fixedNode },
+  { type: 'proportionalNode', label: 'Proportional', color: NODE_TYPE_COLORS.proportionalNode },
+  { type: 'relativeNode', label: 'Relative', color: NODE_TYPE_COLORS.relativeNode },
+  { type: 'aggregatorNode', label: 'Aggregator', color: NODE_TYPE_COLORS.aggregatorNode },
+  { type: 'fixedGroupNode', label: 'Fixed Group', color: NODE_TYPE_COLORS.fixedGroupNode },
 ];
 
 const NodeCreator = () => {

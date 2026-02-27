@@ -18,6 +18,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import UndoIcon from '@mui/icons-material/Undo';
@@ -37,13 +39,18 @@ const CURRENCIES = [
   'MXN', 'CLP', 'COP', 'PEN', 'UYU', 'CNY', 'INR', 'KRW', 'SEK', 'NOK', 'DKK',
 ];
 
+export type TabValue = 'graph' | 'projections';
+
 interface ToolbarProps {
   onToggleHelp: () => void;
+  activeTab: TabValue;
+  onTabChange: (tab: TabValue) => void;
 }
 
-const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
+const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isGraph = activeTab === 'graph';
 
   const {
     save,
@@ -61,6 +68,7 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isGraph) return;
       const mod = e.metaKey || e.ctrlKey;
       if (mod && e.key === 'z' && !e.shiftKey) {
         e.preventDefault();
@@ -78,7 +86,7 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undoAction, redoAction, save]);
+  }, [undoAction, redoAction, save, isGraph]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -142,58 +150,83 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
     onToggleHelp();
   };
 
+  const handleTabChange = (_: React.SyntheticEvent, newValue: TabValue) => {
+    onTabChange(newValue);
+  };
+
   return (
     <>
       <AppBar position="static" color="default" elevation={1} sx={{ zIndex: 10 }}>
         <MuiToolbar variant="dense" sx={{ gap: 0.5, minHeight: 48 }}>
           <Typography
             variant="h6"
-            sx={{ fontWeight: 'bold', mr: isMobile ? 1 : 2, color: 'primary.main', fontSize: isMobile ? 16 : 20 }}
+            sx={{ fontWeight: 'bold', mr: isMobile ? 0.5 : 1, color: 'primary.main', fontSize: isMobile ? 16 : 20 }}
           >
             Bokari
           </Typography>
 
-          <Tooltip title="Undo (Ctrl+Z)">
-            <span>
-              <IconButton size="small" onClick={undoAction} disabled={!canUndo} aria-label="Undo">
-                <UndoIcon fontSize={isMobile ? 'small' : 'medium'} />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title="Redo (Ctrl+Shift+Z)">
-            <span>
-              <IconButton size="small" onClick={redoAction} disabled={!canRedo} aria-label="Redo">
-                <RedoIcon fontSize={isMobile ? 'small' : 'medium'} />
-              </IconButton>
-            </span>
-          </Tooltip>
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            sx={{
+              minHeight: 36,
+              mr: isMobile ? 0.5 : 1,
+              '& .MuiTab-root': { minHeight: 36, py: 0, px: isMobile ? 1 : 2, fontSize: isMobile ? 12 : 13 },
+            }}
+          >
+            <Tab label="Budget" value="graph" />
+            <Tab label="Projections" value="projections" />
+          </Tabs>
 
-          <Tooltip title="Save (Ctrl+S)">
-            <IconButton size="small" onClick={handleSave} aria-label="Save">
-              <SaveIcon fontSize={isMobile ? 'small' : 'medium'} />
-            </IconButton>
-          </Tooltip>
+          {isGraph && (
+            <>
+              <Tooltip title="Undo (Ctrl+Z)">
+                <span>
+                  <IconButton size="small" onClick={undoAction} disabled={!canUndo} aria-label="Undo">
+                    <UndoIcon fontSize={isMobile ? 'small' : 'medium'} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Redo (Ctrl+Shift+Z)">
+                <span>
+                  <IconButton size="small" onClick={redoAction} disabled={!canRedo} aria-label="Redo">
+                    <RedoIcon fontSize={isMobile ? 'small' : 'medium'} />
+                  </IconButton>
+                </span>
+              </Tooltip>
 
-          <Tooltip title="Auto-layout (tidy up)">
-            <IconButton size="small" onClick={autoLayout} aria-label="Auto-layout">
-              <AccountTreeIcon fontSize={isMobile ? 'small' : 'medium'} />
-            </IconButton>
-          </Tooltip>
+              <Tooltip title="Save (Ctrl+S)">
+                <IconButton size="small" onClick={handleSave} aria-label="Save">
+                  <SaveIcon fontSize={isMobile ? 'small' : 'medium'} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Auto-layout (tidy up)">
+                <IconButton size="small" onClick={autoLayout} aria-label="Auto-layout">
+                  <AccountTreeIcon fontSize={isMobile ? 'small' : 'medium'} />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
 
           {/* Desktop: show all controls inline */}
           {!isMobile && (
             <>
-              <Tooltip title="Export as JSON">
-                <IconButton size="small" onClick={exportGraph} aria-label="Export budget">
-                  <FileDownloadIcon />
-                </IconButton>
-              </Tooltip>
+              {isGraph && (
+                <>
+                  <Tooltip title="Export as JSON">
+                    <IconButton size="small" onClick={exportGraph} aria-label="Export budget">
+                      <FileDownloadIcon />
+                    </IconButton>
+                  </Tooltip>
 
-              <Tooltip title="Import JSON">
-                <IconButton size="small" onClick={handleImportClick} aria-label="Import budget">
-                  <FileUploadIcon />
-                </IconButton>
-              </Tooltip>
+                  <Tooltip title="Import JSON">
+                    <IconButton size="small" onClick={handleImportClick} aria-label="Import budget">
+                      <FileUploadIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
 
               <Select
                 size="small"
@@ -209,17 +242,21 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
 
               <Box sx={{ flex: 1 }} />
 
-              <Tooltip title="Reset to example">
-                <IconButton size="small" onClick={() => setResetDialogOpen(true)} aria-label="Reset budget">
-                  <RestartAltIcon />
-                </IconButton>
-              </Tooltip>
+              {isGraph && (
+                <>
+                  <Tooltip title="Reset to example">
+                    <IconButton size="small" onClick={() => setResetDialogOpen(true)} aria-label="Reset budget">
+                      <RestartAltIcon />
+                    </IconButton>
+                  </Tooltip>
 
-              <Tooltip title="Help">
-                <IconButton size="small" onClick={onToggleHelp} aria-label="Toggle help">
-                  <HelpOutlineIcon />
-                </IconButton>
-              </Tooltip>
+                  <Tooltip title="Help">
+                    <IconButton size="small" onClick={onToggleHelp} aria-label="Toggle help">
+                      <HelpOutlineIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              )}
             </>
           )}
 
@@ -240,13 +277,15 @@ const Toolbar = ({ onToggleHelp }: ToolbarProps) => {
 
               <Box sx={{ flex: 1 }} />
 
-              <IconButton
-                size="small"
-                onClick={(e) => setMenuAnchor(e.currentTarget)}
-                aria-label="More actions"
-              >
-                <MoreVertIcon />
-              </IconButton>
+              {isGraph && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => setMenuAnchor(e.currentTarget)}
+                  aria-label="More actions"
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              )}
               <Menu
                 anchorEl={menuAnchor}
                 open={Boolean(menuAnchor)}
