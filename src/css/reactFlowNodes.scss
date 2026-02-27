@@ -82,3 +82,20 @@
   stroke: #000;
   stroke-width: 4px;
 }
+
+// Path highlighting on hover
+.react-flow__node.dimmed {
+  opacity: 0.2;
+  transition: opacity 0.2s ease;
+}
+
+.react-flow__edge.dimmed .react-flow__edge-path {
+  opacity: 0.1;
+  transition: opacity 0.2s ease;
+}
+
+.react-flow__edge.highlighted .react-flow__edge-path {
+  stroke: #333;
+  stroke-width: 2.5px;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}

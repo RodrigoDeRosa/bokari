@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useRef } from 'react';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { ReactFlow, ReactFlowProvider, MiniMap } from '@xyflow/react';
 import type { ReactFlowInstance } from '@xyflow/react';
 import Box from '@mui/material/Box';
@@ -11,6 +11,7 @@ import RootNode from './nodes/RootNode';
 import AggregatorNode from './nodes/AggregatorNode';
 import NodeCreator from './NodeCreator';
 import createNode from '../utils/createNode';
+import getFullPath from '../utils/getFullPath';
 import FixedGroupNode from './nodes/fixedGroupNode/FixedGroupNode';
 import Instructions from './Instructions';
 import Toolbar from './Toolbar';
@@ -51,6 +52,43 @@ function GraphInner() {
     setReactFlowInstance(instance as ReactFlowInstance);
   }, [setReactFlowInstance]);
 
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
+  const highlightPath = useMemo(() => {
+    if (!hoveredNodeId) return null;
+    return getFullPath(hoveredNodeId, edges);
+  }, [hoveredNodeId, edges]);
+
+  const styledNodes = useMemo(() => {
+    return nodes.map((node) => {
+      const dimmed = highlightPath && !highlightPath.nodeIds.has(node.id);
+      return {
+        ...node,
+        data: { ...node.data, handleNodeDataChange, currency },
+        className: dimmed ? 'dimmed' : undefined,
+      };
+    });
+  }, [nodes, highlightPath, handleNodeDataChange, currency]);
+
+  const styledEdges = useMemo(() => {
+    return edges.map((edge) => {
+      const onPath = highlightPath?.edgeIds.has(edge.id);
+      const dimmed = highlightPath && !onPath;
+      return {
+        ...edge,
+        className: dimmed ? 'dimmed' : onPath ? 'highlighted' : undefined,
+      };
+    });
+  }, [edges, highlightPath]);
+
+  const onNodeMouseEnter = useCallback((_: React.MouseEvent, node: { id: string }) => {
+    setHoveredNodeId(node.id);
+  }, []);
+
+  const onNodeMouseLeave = useCallback(() => {
+    setHoveredNodeId(null);
+  }, []);
+
   const handleToggleHelp = () => {
     setHelpOpen((prev) => {
       if (!prev === false) {
@@ -90,15 +128,8 @@ function GraphInner() {
       <Toolbar onToggleHelp={handleToggleHelp} />
       <Box sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>
         <ReactFlow
-          nodes={nodes.map((node) => ({
-            ...node,
-            data: {
-              ...node.data,
-              handleNodeDataChange,
-              currency,
-            },
-          }))}
-          edges={edges}
+          nodes={styledNodes}
+          edges={styledEdges}
           nodeTypes={nodeTypes}
           defaultEdgeOptions={{ type: 'smoothstep' }}
           onInit={handleInit}
@@ -107,6 +138,8 @@ function GraphInner() {
           onConnect={onConnect}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseLeave={onNodeMouseLeave}
           panOnScroll
         >
           <MiniMap
