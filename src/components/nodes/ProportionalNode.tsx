@@ -20,6 +20,14 @@ const ProportionalNode = ({ id, data }: NodeProps<RuntimeNode>) => {
   const exceedsProportion = proportion > 100;
 
   const handleInvestmentToggle = useCallback(() => {
+    if (!data.isInvestment) {
+      const conflicts = data.getInvestmentConflicts(id);
+      if (conflicts.length > 0) {
+        const descriptions = conflicts.map((c) => `${c.label} (${c.direction})`).join(', ');
+        data.setInvestmentError(`Cannot mark as investment — conflicts with: ${descriptions}`);
+        return;
+      }
+    }
     data.handleNodeDataChange(id, {
       isInvestment: !data.isInvestment,
       ...(!data.isInvestment && data.expectedReturn === undefined && { expectedReturn: 7 }),

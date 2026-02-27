@@ -1,7 +1,9 @@
 import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { useNodesState, useEdgesState } from '@xyflow/react';
 import type { Connection, NodeChange, EdgeChange, OnNodesChange, OnEdgesChange, ReactFlowInstance } from '@xyflow/react';
-import type { BokariNode, BokariEdge } from '../types';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import type { BokariNode, BokariEdge, InvestmentConflict } from '../types';
 import { exampleNodes, exampleEdges } from '../data/exampleData';
 import { loadState, saveState, clearState } from '../utils/migration';
 import {
@@ -17,6 +19,7 @@ import updateTree from '../utils/updateTree';
 import connectNodes from '../utils/connectNodes';
 import { exportToJSON, downloadJSON, importFromJSON } from '../utils/serialization';
 import autoLayoutUtil from '../utils/autoLayout';
+import { findInvestmentConflicts } from '../utils/investmentValidation';
 
 interface BudgetTreeContextValue {
   nodes: BokariNode[];
@@ -27,6 +30,8 @@ interface BudgetTreeContextValue {
   onEdgesChange: OnEdgesChange<BokariEdge>;
   onConnect: (connection: Connection) => void;
   handleNodeDataChange: (nodeId: string, newData: Record<string, unknown>) => void;
+  getInvestmentConflicts: (nodeId: string) => InvestmentConflict[];
+  setInvestmentError: (message: string | null) => void;
   setNodes: React.Dispatch<React.SetStateAction<BokariNode[]>>;
   setEdges: React.Dispatch<React.SetStateAction<BokariEdge[]>>;
   save: () => void;
@@ -58,6 +63,7 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
   const [currency, setCurrencyState] = useState(persisted.currency);
 
   const reactFlowInstanceRef = useRef<ReactFlowInstance | null>(null);
+  const [investmentError, setInvestmentError] = useState<string | null>(null);
 
   const setReactFlowInstance = useCallback((instance: ReactFlowInstance) => {
     reactFlowInstanceRef.current = instance;
@@ -111,6 +117,10 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
       }),
     );
   }, [setNodes]);
+
+  const getInvestmentConflicts = useCallback((nodeId: string): InvestmentConflict[] => {
+    return findInvestmentConflicts(nodeId, nodes as BokariNode[], edges);
+  }, [nodes, edges]);
 
   const onConnect = useCallback(
     (params: Connection) => {
@@ -203,6 +213,8 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
     onEdgesChange,
     onConnect,
     handleNodeDataChange,
+    getInvestmentConflicts,
+    setInvestmentError,
     setNodes,
     setEdges,
     save,
@@ -221,6 +233,20 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
   return (
     <BudgetTreeContext.Provider value={value}>
       {children}
+      <Snackbar
+        open={investmentError !== null}
+        autoHideDuration={4000}
+        onClose={() => setInvestmentError(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          severity="warning"
+          variant="filled"
+          onClose={() => setInvestmentError(null)}
+        >
+          {investmentError}
+        </Alert>
+      </Snackbar>
     </BudgetTreeContext.Provider>
   );
 }

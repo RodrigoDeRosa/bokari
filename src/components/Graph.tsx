@@ -38,6 +38,8 @@ export default function GraphView() {
     onEdgesChange,
     onConnect,
     handleNodeDataChange,
+    getInvestmentConflicts,
+    setInvestmentError,
     setNodes,
     takeSnapshot,
     setReactFlowInstance,
@@ -60,11 +62,11 @@ export default function GraphView() {
       const dimmed = highlightPath && !highlightPath.nodeIds.has(node.id);
       return {
         ...node,
-        data: { ...node.data, handleNodeDataChange, currency },
+        data: { ...node.data, handleNodeDataChange, getInvestmentConflicts, setInvestmentError, currency },
         className: dimmed ? 'dimmed' : undefined,
       };
     });
-  }, [nodes, highlightPath, handleNodeDataChange, currency]);
+  }, [nodes, highlightPath, handleNodeDataChange, getInvestmentConflicts, setInvestmentError, currency]);
 
   const styledEdges = useMemo(() => {
     return edges.map((edge) => {

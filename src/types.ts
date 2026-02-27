@@ -15,8 +15,15 @@ export interface NodeData extends Record<string, unknown> {
   expectedReturn?: number;  // annual %, default 7
 }
 
+export interface InvestmentConflict {
+  label: string;
+  direction: 'upstream' | 'downstream';
+}
+
 export interface RuntimeNodeData extends NodeData {
   handleNodeDataChange: (id: string, data: Record<string, unknown>) => void;
+  getInvestmentConflicts: (nodeId: string) => InvestmentConflict[];
+  setInvestmentError: (message: string | null) => void;
   currency: string;
 }
 
