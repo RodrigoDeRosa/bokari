@@ -11,6 +11,8 @@ export interface NodeData extends Record<string, unknown> {
   value: number;
   proportion?: number;
   children?: FixedGroupChild[];
+  isInvestment?: boolean;
+  expectedReturn?: number;  // annual %, default 7
 }
 
 export interface RuntimeNodeData extends NodeData {
@@ -29,8 +31,24 @@ export type NodeType =
   | 'aggregatorNode'
   | 'fixedGroupNode';
 
-export interface ProjectionDataPoint {
+export interface InvestmentYearData {
   year: number;
+  monthlyContribution: number;
+  cumulativeContributions: number;
+  portfolioValue: number;
+  growth: number; // portfolioValue - cumulativeContributions
+}
+
+export interface InvestmentNodeProjection {
+  nodeId: string;
   label: string;
-  values: Record<string, number>;
+  expectedReturn: number;
+  yearlyData: InvestmentYearData[];
+}
+
+export interface InvestmentProjectionResult {
+  horizonYears: number;
+  incomeGrowthPct: number;
+  nodes: InvestmentNodeProjection[];
+  totals: InvestmentYearData[];
 }

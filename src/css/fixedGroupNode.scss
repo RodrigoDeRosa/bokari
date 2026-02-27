@@ -39,51 +39,90 @@
 
 .no-bullets {
   list-style-type: none;
-  border: 1px solid white;
-  padding: 2px;
-  border-radius: 4px;
-  margin: 2px 2px 6px 2px;
+  background: rgba(0, 0, 0, 0.12);
+  padding: 3px 5px;
+  border-radius: 5px;
+  margin: 4px 0 6px 0;
 }
 
-.no-bullets li {
-  margin-bottom: 2px;
-}
-
-.input-group {
-  display: flex;
-  gap: 2px;
-  margin: 6px 2px;
-
-  &:focus {
-    color: $fixed-group-node-color;
-  }
+.no-bullets li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .fixed-group-child {
   display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 2px;
+  gap: 2px;
 
-  margin: 2px;
+  // Override editable-field defaults inside child rows
+  .editable-field {
+    width: auto;
+    padding: 1px 2px;
+    line-height: 1.3;
+  }
+
+  // Label takes remaining space, left-aligned
+  .editable-field:first-of-type {
+    flex: 1;
+    text-align: left;
+    justify-content: flex-start;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Value stays compact, right-aligned
+  .editable-field:nth-of-type(2) {
+    flex-shrink: 0;
+    text-align: right;
+    justify-content: flex-end;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.85;
+  }
+
+  .icon-button {
+    flex-shrink: 0;
+    margin-left: 2px;
+    opacity: 0.3;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.input-group {
+  display: flex;
+  gap: 3px;
+  margin: 4px 0;
+  align-items: center;
+
+  &:focus {
+    color: $fixed-group-node-color;
+  }
 }
 
 .input-group input {
-  padding: 3px;
+  padding: 3px 4px;
   border-radius: 4px;
   width: 100%;
-  background: inherit;
+  background: rgba(0, 0, 0, 0.1);
   color: inherit;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   font-weight: bold;
+  font-size: 11px;
 
   &:focus {
     color: $fixed-group-node-color;
     outline-color: $fixed-group-node-color;
+    background: white;
   }
 
   &::placeholder{
-    color: inherit;
+    color: rgba(255, 255, 255, 0.6);
     font-weight: normal;
     font-style: italic;
   }
@@ -94,20 +133,19 @@
 }
 
 .input-group button {
-  background-color: $fixed-group-node-color;
+  background-color: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
   padding: 3px 5px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-size: 12px;
-  transition-duration: 0.4s;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.15s;
 
   &:hover {
-    background-color: white;
-    color: $fixed-group-node-color;
+    background-color: rgba(255, 255, 255, 0.4);
   }
 }

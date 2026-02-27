@@ -1,17 +1,10 @@
 import { useMemo } from 'react';
 import Box from '@mui/material/Box';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import type { ProjectionDataPoint } from '../../types';
-
-interface Series {
-  id: string;
-  label: string;
-  color: string;
-}
+import type { InvestmentProjectionResult } from '../../types';
 
 interface ProjectionChartProps {
-  data: ProjectionDataPoint[];
-  series: Series[];
+  result: InvestmentProjectionResult;
   currency: string;
 }
 
@@ -22,15 +15,16 @@ function formatCurrency(value: number, currency: string): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
-export default function ProjectionChart({ data, series, currency }: ProjectionChartProps) {
+export default function ProjectionChart({ result, currency }: ProjectionChartProps) {
   const chartData = useMemo(() => {
-    return data.map((point) => ({
-      label: point.label,
-      ...point.values,
+    return result.totals.map((d) => ({
+      label: d.year === 0 ? 'Now' : `Year ${d.year}`,
+      contributions: d.cumulativeContributions,
+      growth: d.growth,
     }));
-  }, [data]);
+  }, [result]);
 
-  if (series.length === 0 || data.length === 0) return null;
+  if (chartData.length === 0) return null;
 
   return (
     <Box sx={{ width: '100%', height: 320 }}>
@@ -45,24 +39,32 @@ export default function ProjectionChart({ data, series, currency }: ProjectionCh
           />
           <Tooltip
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formatter={(value: any, name: any) => {
-              const s = series.find((s) => s.id === name);
-              return [formatCurrency(Number(value ?? 0), currency), s?.label ?? name];
-            }}
+            formatter={(value: any, name: any) => [
+              formatCurrency(Number(value ?? 0), currency),
+              name === 'contributions' ? 'Contributions' : 'Growth',
+            ]}
           />
-          {series.length > 1 && <Legend />}
-          {series.map((s) => (
-            <Area
-              key={s.id}
-              type="monotone"
-              dataKey={s.id}
-              name={s.id}
-              stroke={s.color}
-              fill={s.color}
-              fillOpacity={0.15}
-              strokeWidth={2}
-            />
-          ))}
+          <Legend />
+          <Area
+            type="monotone"
+            dataKey="contributions"
+            name="Contributions"
+            stackId="portfolio"
+            stroke="#00916e"
+            fill="#00916e"
+            fillOpacity={0.4}
+            strokeWidth={2}
+          />
+          <Area
+            type="monotone"
+            dataKey="growth"
+            name="Growth"
+            stackId="portfolio"
+            stroke="#ff006e"
+            fill="#ff006e"
+            fillOpacity={0.3}
+            strokeWidth={2}
+          />
         </AreaChart>
       </ResponsiveContainer>
     </Box>

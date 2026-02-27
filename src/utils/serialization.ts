@@ -19,6 +19,8 @@ interface ExportNode {
     value: number;
     proportion?: number;
     children?: { id: string; label: string; value: number }[];
+    isInvestment?: boolean;
+    expectedReturn?: number;
   };
 }
 
@@ -44,6 +46,8 @@ export function exportToJSON(nodes: BokariNode[], edges: BokariEdge[], currency:
         value: node.data.value,
         ...(node.data.proportion !== undefined && { proportion: node.data.proportion }),
         ...(node.data.children && { children: node.data.children }),
+        ...(node.data.isInvestment && { isInvestment: node.data.isInvestment }),
+        ...(node.data.expectedReturn !== undefined && { expectedReturn: node.data.expectedReturn }),
       },
     })),
     edges: edges.map((edge) => ({
@@ -115,6 +119,8 @@ export function importFromJSON(json: string): { nodes: BokariNode[]; edges: Boka
         value: node.data.value,
         proportion: node.data.proportion,
         children: node.data.children,
+        isInvestment: node.data.isInvestment,
+        expectedReturn: node.data.expectedReturn,
       },
     })),
     edges: data.edges.map((edge) => ({

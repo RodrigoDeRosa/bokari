@@ -73,7 +73,7 @@
 
   &.selectable.selected {
     .no-bullets {
-      border: 1px solid $fixed-group-node-color;
+      background: rgba($fixed-group-node-color, 0.15);
     }
   }
 }
@@ -98,4 +98,74 @@
   stroke: #333;
   stroke-width: 2.5px;
   transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+// Investment badge on nodes
+.investment-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 3px;
+  padding: 1px 0;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.15s ease;
+
+  .investment-icon {
+    opacity: 0.7;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+
+    .investment-icon {
+      opacity: 1;
+    }
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.25);
+
+    .investment-icon {
+      opacity: 1;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+  }
+}
+
+.investment-return-label {
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.9;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.investment-return-input {
+  width: 28px;
+  font-size: 9px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  padding: 0 2px;
+  outline: none;
+  text-align: center;
+
+  -moz-appearance: textfield;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }

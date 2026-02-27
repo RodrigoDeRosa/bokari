@@ -1,48 +1,32 @@
-import type { BokariNode, BokariEdge, ProjectionDataPoint } from '../types';
+import type { BokariNode, BokariEdge, InvestmentYearData, InvestmentNodeProjection, InvestmentProjectionResult } from '../types';
 import updateTree from './updateTree';
 
-/**
- * Compound growth via Future Value of Annuity.
- * Returns an array of length (horizonYears + 1), where index 0 = 0.
- */
-export function computeCompoundGrowth(
-  monthlyContribution: number,
-  annualReturnPct: number,
-  horizonYears: number,
-): number[] {
-  const r = annualReturnPct / 100 / 12;
-  const result: number[] = [0];
-
-  for (let year = 1; year <= horizonYears; year++) {
-    const n = year * 12;
-    if (r === 0) {
-      result.push(monthlyContribution * n);
-    } else {
-      result.push(monthlyContribution * ((Math.pow(1 + r, n) - 1) / r));
-    }
-  }
-
-  return result;
-}
-
-/**
- * Budget over time — scales root node values by annual growth, recalculates tree,
- * and extracts values for selected nodes.
- */
-export function computeBudgetOverTime(
+export function computeInvestmentProjection(
   nodes: BokariNode[],
   edges: BokariEdge[],
-  selectedNodeIds: string[],
-  annualGrowthPct: number,
+  incomeGrowthPct: number,
   horizonYears: number,
-): ProjectionDataPoint[] {
-  const g = annualGrowthPct / 100;
-  const result: ProjectionDataPoint[] = [];
+): InvestmentProjectionResult {
+  const g = incomeGrowthPct / 100;
+
+  // Find investment nodes
+  const investmentNodeIds = nodes
+    .filter((n) => n.data.isInvestment)
+    .map((n) => n.id);
+
+  if (investmentNodeIds.length === 0) {
+    return { horizonYears, incomeGrowthPct, nodes: [], totals: [] };
+  }
+
+  // For each year, scale roots and recalculate tree to get monthly contributions
+  const yearlyContributions: Map<string, number[]> = new Map();
+  for (const id of investmentNodeIds) {
+    yearlyContributions.set(id, []);
+  }
 
   for (let year = 0; year <= horizonYears; year++) {
     const scaleFactor = Math.pow(1 + g, year);
 
-    // Scale root nodes; leave everything else as-is for updateTree to recalculate
     const scaledNodes: BokariNode[] = nodes.map((node) => {
       if (node.type === 'rootNode') {
         return { ...node, data: { ...node.data, value: node.data.value * scaleFactor } };
@@ -52,18 +36,87 @@ export function computeBudgetOverTime(
 
     const computed = updateTree(scaledNodes, edges);
 
-    const values: Record<string, number> = {};
-    for (const id of selectedNodeIds) {
-      const node = computed.find((n) => n.id === id);
-      values[id] = node ? node.data.value : 0;
+    for (const id of investmentNodeIds) {
+      const found = computed.find((n) => n.id === id);
+      yearlyContributions.get(id)!.push(found ? found.data.value : 0);
     }
-
-    result.push({
-      year,
-      label: year === 0 ? 'Now' : `Year ${year}`,
-      values,
-    });
   }
 
-  return result;
+  // For each investment node, compute month-by-month compounding
+  const nodeProjections: InvestmentNodeProjection[] = investmentNodeIds.map((id) => {
+    const sourceNode = nodes.find((n) => n.id === id)!;
+    const expectedReturn = sourceNode.data.expectedReturn ?? 7;
+    const monthlyRate = expectedReturn / 100 / 12;
+    const contributions = yearlyContributions.get(id)!;
+
+    const yearlyData: InvestmentYearData[] = [];
+    let portfolio = 0;
+    let totalContributed = 0;
+
+    for (let year = 0; year <= horizonYears; year++) {
+      const monthlyContribution = contributions[year];
+
+      if (year === 0) {
+        // Year 0 = "Now", just record the starting point
+        yearlyData.push({
+          year,
+          monthlyContribution,
+          cumulativeContributions: 0,
+          portfolioValue: 0,
+          growth: 0,
+        });
+        continue;
+      }
+
+      // Simulate 12 months for this year
+      for (let month = 0; month < 12; month++) {
+        portfolio = (portfolio + monthlyContribution) * (1 + monthlyRate);
+        totalContributed += monthlyContribution;
+      }
+
+      yearlyData.push({
+        year,
+        monthlyContribution,
+        cumulativeContributions: totalContributed,
+        portfolioValue: portfolio,
+        growth: portfolio - totalContributed,
+      });
+    }
+
+    return {
+      nodeId: id,
+      label: sourceNode.data.label,
+      expectedReturn,
+      yearlyData,
+    };
+  });
+
+  // Compute totals across all nodes
+  const totals: InvestmentYearData[] = [];
+  for (let year = 0; year <= horizonYears; year++) {
+    const total: InvestmentYearData = {
+      year,
+      monthlyContribution: 0,
+      cumulativeContributions: 0,
+      portfolioValue: 0,
+      growth: 0,
+    };
+
+    for (const proj of nodeProjections) {
+      const yd = proj.yearlyData[year];
+      total.monthlyContribution += yd.monthlyContribution;
+      total.cumulativeContributions += yd.cumulativeContributions;
+      total.portfolioValue += yd.portfolioValue;
+      total.growth += yd.growth;
+    }
+
+    totals.push(total);
+  }
+
+  return {
+    horizonYears,
+    incomeGrowthPct,
+    nodes: nodeProjections,
+    totals,
+  };
 }
