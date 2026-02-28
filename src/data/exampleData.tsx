@@ -1,371 +1,298 @@
-export const exampleNodes = [
+import autoLayout from '../utils/autoLayout';
+import type { BokariNode, BokariEdge } from '../types';
+
+const rawNodes = [
+  // ── Tier 0: Income sources ──────────────────────────────────────
   {
-    id: "0",
+    id: "salary",
     type: "rootNode",
-    position: {
-      x: 634,
-      y: 100,
-    },
+    position: { x: 450, y: 50 },
     data: {
-      label: "Bank Balance",
-      value: 4302.21,
-      proportion: 0,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 634,
-      y: 100,
+      label: "Salary",
+      value: 5000,
+      annualGrowth: 3,
     },
   },
   {
-    id: "8b706699-e87c-4dd8-a8b1-e3160d0b3689",
-    type: "relativeNode",
-    position: {
-      x: 838,
-      y: 201,
-    },
+    id: "side-hustle",
+    type: "rootNode",
+    position: { x: 850, y: 50 },
     data: {
-      label: "Post Expenses",
-      value: 1619.08,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    positionAbsolute: {
-      x: 838,
-      y: 201,
-    },
-    dragging: false,
-  },
-  {
-    id: "0873ae13-2120-4af9-889f-82681e851e4a",
-    type: "fixedNode",
-    position: {
-      x: 588,
-      y: 599,
-    },
-    data: {
-      label: "Monthly Budget",
+      label: "Side Hustle",
       value: 1000,
-      proportion: 0,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 588,
-      y: 599,
+      annualGrowth: 5,
     },
   },
+
+  // ── Tier 1: Aggregator ─────────────────────────────────────────
   {
-    id: "bc0857be-6c86-40e2-a4d6-8eb8e3621a95",
-    type: "fixedNode",
-    position: {
-      x: 435,
-      y: 600,
-    },
+    id: "total-income",
+    type: "aggregatorNode",
+    position: { x: 650, y: 230 },
     data: {
-      label: "Credit Card",
-      value: 324.13,
-      proportion: 0,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 435,
-      y: 600,
+      label: "Total Income",
+      value: 6000,
     },
   },
+
+  // ── Tier 2: 50 / 30 / 20 split ────────────────────────────────
   {
-    id: "bb25f5d1-5947-4b2c-914d-e01aefb71f8a",
+    id: "needs",
     type: "proportionalNode",
-    position: {
-      x: 714,
-      y: 312,
-    },
+    position: { x: 200, y: 410 },
     data: {
-      label: "Cash Savings",
-      value: 809.54,
+      label: "Needs",
+      value: 3000,
       proportion: 50,
-      isInvestment: true,
-      expectedReturn: 2,
-    },
-    width: 100,
-    height: 82,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 714,
-      y: 312,
     },
   },
   {
-    id: "8812b0d6-82d9-455c-901d-8a5fb8c974a4",
+    id: "wants",
     type: "proportionalNode",
-    position: {
-      x: 856,
-      y: 447,
-    },
+    position: { x: 650, y: 410 },
     data: {
-      label: "S&P ETF",
-      value: 566.6779999999999,
-      proportion: 70,
-      isInvestment: true,
-      expectedReturn: 7,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 856,
-      y: 447,
+      label: "Wants",
+      value: 1800,
+      proportion: 30,
     },
   },
   {
-    id: "3f2bbee4-6950-4215-be67-7a31d079a3df",
-    type: "relativeNode",
-    position: {
-      x: 989,
-      y: 307,
-    },
-    data: {
-      label: "Long Term Investing",
-      value: 809.54,
-    },
-    width: 100,
-    height: 82,
-    selected: false,
-    positionAbsolute: {
-      x: 989,
-      y: 307,
-    },
-    dragging: false,
-  },
-  {
-    id: "717ee3e4-b8ea-467e-8b72-7032ef81f6cf",
-    type: "relativeNode",
-    position: {
-      x: 1184,
-      y: 439,
-    },
-    data: {
-      label: "Play Money",
-      value: 80.95400000000006,
-    },
-    width: 100,
-    height: 68,
-    selected: false,
-    positionAbsolute: {
-      x: 1184,
-      y: 439,
-    },
-    dragging: false,
-  },
-  {
-    id: "43e1ac1a-af48-408c-94ec-57272995f7cd",
+    id: "save-invest",
     type: "proportionalNode",
-    position: {
-      x: 1009,
-      y: 438,
-    },
+    position: { x: 1100, y: 410 },
     data: {
-      label: "Bonds ETF",
-      value: 161.90800000000002,
+      label: "Save & Invest",
+      value: 1200,
       proportion: 20,
+    },
+  },
+
+  // ── Tier 3 — Needs children ────────────────────────────────────
+  {
+    id: "housing",
+    type: "fixedGroupNode",
+    position: { x: -20, y: 620 },
+    data: {
+      label: "Housing",
+      value: 1500,
+      children: [
+        { id: "housing-rent", label: "Rent", value: 1200 },
+        { id: "housing-utilities", label: "Utilities", value: 130 },
+        { id: "housing-insurance", label: "Insurance", value: 170 },
+      ],
+    },
+  },
+  {
+    id: "groceries",
+    type: "fixedNode",
+    position: { x: 220, y: 620 },
+    data: {
+      label: "Groceries",
+      value: 400,
+    },
+  },
+  {
+    id: "transportation",
+    type: "fixedNode",
+    position: { x: 340, y: 620 },
+    data: {
+      label: "Transportation",
+      value: 200,
+    },
+  },
+  {
+    id: "buffer",
+    type: "relativeNode",
+    position: { x: 460, y: 620 },
+    data: {
+      label: "Buffer",
+      value: 900,
+    },
+  },
+
+  // ── Tier 3 — Wants children ────────────────────────────────────
+  {
+    id: "dining",
+    type: "fixedNode",
+    position: { x: 550, y: 620 },
+    data: {
+      label: "Dining & Fun",
+      value: 500,
+    },
+  },
+  {
+    id: "subscriptions",
+    type: "fixedNode",
+    position: { x: 670, y: 620 },
+    data: {
+      label: "Subscriptions",
+      value: 100,
+    },
+  },
+  {
+    id: "discretionary",
+    type: "relativeNode",
+    position: { x: 790, y: 620 },
+    data: {
+      label: "Discretionary",
+      value: 1200,
+    },
+  },
+
+  // ── Tier 3 — Save & Invest children ───────────────────────────
+  {
+    id: "emergency",
+    type: "proportionalNode",
+    position: { x: 960, y: 620 },
+    data: {
+      label: "Emergency Fund",
+      value: 300,
+      proportion: 25,
       isInvestment: true,
       expectedReturn: 4,
     },
-    width: 100,
-    height: 82,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 1009,
-      y: 438,
+  },
+  {
+    id: "retirement",
+    type: "proportionalNode",
+    position: { x: 1100, y: 620 },
+    data: {
+      label: "Retirement",
+      value: 600,
+      proportion: 50,
+      isInvestment: true,
+      expectedReturn: 7,
     },
   },
   {
-    id: "2fb2efae-032a-40ff-9f55-ba76f44e6147",
-    type: "aggregatorNode",
-    position: {
-      x: 995,
-      y: 590,
-    },
+    id: "growth-stocks",
+    type: "relativeNode",
+    position: { x: 1240, y: 620 },
     data: {
-      label: "Transfer to Broker",
-      value: 809.54,
-      proportion: 0,
+      label: "Growth Stocks",
+      value: 300,
+      isInvestment: true,
+      expectedReturn: 10,
     },
-    width: 100,
-    height: 82,
-    selected: false,
-    dragging: false,
-    positionAbsolute: {
-      x: 995,
-      y: 590,
-    },
-  },
-  {
-    id: "70a984e2-db51-4f09-a71f-e1e03c64f6d0",
-    type: "aggregatorNode",
-    position: {
-      x: 755,
-      y: 578,
-    },
-    data: {
-      label: "Transfer to Savings Account",
-      value: 809.54,
-      proportion: 0,
-    },
-    width: 100,
-    height: 96,
-    selected: false,
-    positionAbsolute: {
-      x: 755,
-      y: 578,
-    },
-    dragging: false,
-  },
-  {
-    id: "35f569f3-5cc4-4e44-9ddd-f35f88fd53ef",
-    type: "fixedGroupNode",
-    position: {
-      x: 205,
-      y: 234,
-    },
-    data: {
-      label: "Base Expenses",
-      value: 1359,
-      proportion: 0,
-      children: [
-        {
-          id: "6a1c3dda-45fe-4361-b634-ae1297238cbc",
-          label: "Rent",
-          value: 1213,
-        },
-        {
-          id: "4d8a0775-b281-4040-a960-9436b867ecca",
-          label: "Insurance",
-          value: 114,
-        },
-        {
-          id: "24ab434e-f757-4e91-8808-046b9e97c51e",
-          label: "Phone",
-          value: 32,
-        },
-      ],
-    },
-    selected: false,
-    width: 200,
-    height: 186,
-    positionAbsolute: {
-      x: 205,
-      y: 234,
-    },
-    dragging: false,
   },
 ];
 
-export const exampleEdges = [
+const rawEdges = [
+  // Tier 0 → Tier 1 (both incomes feed the aggregator)
   {
-    source: "0",
-    target: "8b706699-e87c-4dd8-a8b1-e3160d0b3689",
-    id: "reactflow__edge-0-8b706699-e87c-4dd8-a8b1-e3160d0b3689",
-  },
-  {
-    source: "0",
-    sourceHandle: "a",
-    target: "bc0857be-6c86-40e2-a4d6-8eb8e3621a95",
+    source: "salary",
+    sourceHandle: null,
+    target: "total-income",
     targetHandle: null,
-    id: "reactflow__edge-0a-bc0857be-6c86-40e2-a4d6-8eb8e3621a95",
+    id: "reactflow__edge-salary-total-income",
   },
   {
-    source: "0",
-    sourceHandle: "a",
-    target: "0873ae13-2120-4af9-889f-82681e851e4a",
+    source: "side-hustle",
+    sourceHandle: null,
+    target: "total-income",
     targetHandle: null,
-    id: "reactflow__edge-0a-0873ae13-2120-4af9-889f-82681e851e4a",
+    id: "reactflow__edge-side-hustle-total-income",
   },
+
+  // Tier 1 → Tier 2 (50/30/20 split)
   {
-    source: "8b706699-e87c-4dd8-a8b1-e3160d0b3689",
-    sourceHandle: "a",
-    target: "bb25f5d1-5947-4b2c-914d-e01aefb71f8a",
+    source: "total-income",
+    sourceHandle: null,
+    target: "needs",
     targetHandle: null,
-    id:
-      "reactflow__edge-8b706699-e87c-4dd8-a8b1-e3160d0b3689a-bb25f5d1-5947-4b2c-914d-e01aefb71f8a",
+    id: "reactflow__edge-total-income-needs",
   },
   {
-    source: "8b706699-e87c-4dd8-a8b1-e3160d0b3689",
-    target: "3f2bbee4-6950-4215-be67-7a31d079a3df",
-    id:
-      "reactflow__edge-8b706699-e87c-4dd8-a8b1-e3160d0b3689-3f2bbee4-6950-4215-be67-7a31d079a3df",
-  },
-  {
-    source: "3f2bbee4-6950-4215-be67-7a31d079a3df",
-    sourceHandle: "a",
-    target: "8812b0d6-82d9-455c-901d-8a5fb8c974a4",
+    source: "total-income",
+    sourceHandle: null,
+    target: "wants",
     targetHandle: null,
-    id:
-      "reactflow__edge-3f2bbee4-6950-4215-be67-7a31d079a3dfa-8812b0d6-82d9-455c-901d-8a5fb8c974a4",
+    id: "reactflow__edge-total-income-wants",
   },
   {
-    source: "3f2bbee4-6950-4215-be67-7a31d079a3df",
-    target: "717ee3e4-b8ea-467e-8b72-7032ef81f6cf",
-    id:
-      "reactflow__edge-3f2bbee4-6950-4215-be67-7a31d079a3df-717ee3e4-b8ea-467e-8b72-7032ef81f6cf",
-  },
-  {
-    source: "3f2bbee4-6950-4215-be67-7a31d079a3df",
-    sourceHandle: "a",
-    target: "43e1ac1a-af48-408c-94ec-57272995f7cd",
+    source: "total-income",
+    sourceHandle: null,
+    target: "save-invest",
     targetHandle: null,
-    id:
-      "reactflow__edge-3f2bbee4-6950-4215-be67-7a31d079a3dfa-43e1ac1a-af48-408c-94ec-57272995f7cd",
+    id: "reactflow__edge-total-income-save-invest",
+  },
+
+  // Tier 2 → Tier 3: Needs children
+  {
+    source: "needs",
+    sourceHandle: null,
+    target: "housing",
+    targetHandle: null,
+    id: "reactflow__edge-needs-housing",
   },
   {
-    source: "8812b0d6-82d9-455c-901d-8a5fb8c974a4",
-    sourceHandle: "a",
-    target: "2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    source: "needs",
+    sourceHandle: null,
+    target: "groceries",
     targetHandle: null,
-    id:
-      "reactflow__edge-8812b0d6-82d9-455c-901d-8a5fb8c974a4a-2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    id: "reactflow__edge-needs-groceries",
   },
   {
-    source: "43e1ac1a-af48-408c-94ec-57272995f7cd",
-    sourceHandle: "a",
-    target: "2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    source: "needs",
+    sourceHandle: null,
+    target: "transportation",
     targetHandle: null,
-    id:
-      "reactflow__edge-43e1ac1a-af48-408c-94ec-57272995f7cda-2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    id: "reactflow__edge-needs-transportation",
   },
   {
-    source: "717ee3e4-b8ea-467e-8b72-7032ef81f6cf",
-    sourceHandle: "a",
-    target: "2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    source: "needs",
+    sourceHandle: null,
+    target: "buffer",
     targetHandle: null,
-    id:
-      "reactflow__edge-717ee3e4-b8ea-467e-8b72-7032ef81f6cfa-2fb2efae-032a-40ff-9f55-ba76f44e6147",
+    id: "reactflow__edge-needs-buffer",
+  },
+
+  // Tier 2 → Tier 3: Wants children
+  {
+    source: "wants",
+    sourceHandle: null,
+    target: "dining",
+    targetHandle: null,
+    id: "reactflow__edge-wants-dining",
   },
   {
-    source: "bb25f5d1-5947-4b2c-914d-e01aefb71f8a",
-    sourceHandle: "a",
-    target: "70a984e2-db51-4f09-a71f-e1e03c64f6d0",
+    source: "wants",
+    sourceHandle: null,
+    target: "subscriptions",
     targetHandle: null,
-    id:
-      "reactflow__edge-bb25f5d1-5947-4b2c-914d-e01aefb71f8aa-70a984e2-db51-4f09-a71f-e1e03c64f6d0",
+    id: "reactflow__edge-wants-subscriptions",
   },
   {
-    source: "0",
-    sourceHandle: "a",
-    target: "35f569f3-5cc4-4e44-9ddd-f35f88fd53ef",
+    source: "wants",
+    sourceHandle: null,
+    target: "discretionary",
     targetHandle: null,
-    id: "reactflow__edge-0a-35f569f3-5cc4-4e44-9ddd-f35f88fd53ef",
+    id: "reactflow__edge-wants-discretionary",
+  },
+
+  // Tier 2 → Tier 3: Save & Invest children
+  {
+    source: "save-invest",
+    sourceHandle: null,
+    target: "emergency",
+    targetHandle: null,
+    id: "reactflow__edge-save-invest-emergency",
+  },
+  {
+    source: "save-invest",
+    sourceHandle: null,
+    target: "retirement",
+    targetHandle: null,
+    id: "reactflow__edge-save-invest-retirement",
+  },
+  {
+    source: "save-invest",
+    sourceHandle: null,
+    target: "growth-stocks",
+    targetHandle: null,
+    id: "reactflow__edge-save-invest-growth-stocks",
   },
 ];
+
+export const exampleNodes = autoLayout(rawNodes as BokariNode[], rawEdges as BokariEdge[]);
+export const exampleEdges = rawEdges;

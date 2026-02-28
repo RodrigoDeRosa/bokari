@@ -86,20 +86,18 @@ export default function ProjectionChart({ result, currency, viewMode, onViewMode
                 type="monotone"
                 dataKey="contributions"
                 name="Contributions"
-                stackId="portfolio"
                 stroke="#00916e"
                 fill="#00916e"
-                fillOpacity={0.4}
+                fillOpacity={0.15}
                 strokeWidth={2}
               />
               <Area
                 type="monotone"
                 dataKey="growth"
                 name="Growth"
-                stackId="portfolio"
                 stroke="#ff006e"
                 fill="#ff006e"
-                fillOpacity={0.3}
+                fillOpacity={0.15}
                 strokeWidth={2}
               />
               <Line
