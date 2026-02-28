@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { ReactFlow, MiniMap } from '@xyflow/react';
 import type { ReactFlowInstance } from '@xyflow/react';
 import Box from '@mui/material/Box';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
 import '@xyflow/react/dist/style.css';
 import FixedNode from './nodes/FixedNode';
@@ -13,6 +15,7 @@ import NodeCreator from './NodeCreator';
 import createNode from '../utils/createNode';
 import getFullPath from '../utils/getFullPath';
 import FixedGroupNode from './nodes/fixedGroupNode/FixedGroupNode';
+import MobileTreeView from './mobile/MobileTreeView';
 import { useBudgetTree } from '../context/BudgetTreeContext';
 import { NODE_TYPE_COLORS } from '../constants/nodeColors';
 
@@ -26,6 +29,8 @@ const nodeTypes = {
 };
 
 export default function GraphView() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reactFlowInstance, setLocalReactFlowInstance] = useState<ReactFlowInstance<any, any> | null>(null);
@@ -106,6 +111,8 @@ export default function GraphView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reactFlowInstance]);
+
+  if (isMobile) return <MobileTreeView />;
 
   return (
     <Box sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>

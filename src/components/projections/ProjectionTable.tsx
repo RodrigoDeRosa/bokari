@@ -13,13 +13,14 @@ import type { InvestmentProjectionResult } from '../../types';
 interface ProjectionTableProps {
   result: InvestmentProjectionResult;
   currency: string;
+  isMobile?: boolean;
 }
 
 function fmt(value: number, currency: string): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
-export default function ProjectionTable({ result, currency }: ProjectionTableProps) {
+export default function ProjectionTable({ result, currency, isMobile }: ProjectionTableProps) {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
   const toggleYear = useCallback((year: number) => {
@@ -39,14 +40,14 @@ export default function ProjectionTable({ result, currency }: ProjectionTablePro
   const hasMultipleNodes = result.nodes.length > 1;
 
   return (
-    <TableContainer sx={{ maxHeight: 400 }}>
+    <TableContainer sx={{ maxHeight: 400, overflowX: 'auto' }}>
       <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
             {hasMultipleNodes && <TableCell sx={{ fontWeight: 'bold', width: 40 }} />}
             <TableCell sx={{ fontWeight: 'bold' }}>Year</TableCell>
             <TableCell align="right" sx={{ fontWeight: 'bold' }}>Monthly Contribution</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Cumulative Contributions</TableCell>
+            {!isMobile && <TableCell align="right" sx={{ fontWeight: 'bold' }}>Cumulative Contributions</TableCell>}
             <TableCell align="right" sx={{ fontWeight: 'bold' }}>Portfolio Value</TableCell>
             <TableCell align="right" sx={{ fontWeight: 'bold' }}>Growth</TableCell>
           </TableRow>
@@ -65,7 +66,7 @@ export default function ProjectionTable({ result, currency }: ProjectionTablePro
                 )}
                 <TableCell>{row.year === 0 ? 'Now' : `Year ${row.year}`}</TableCell>
                 <TableCell align="right">{fmt(row.monthlyContribution, currency)}</TableCell>
-                <TableCell align="right">{fmt(row.cumulativeContributions, currency)}</TableCell>
+                {!isMobile && <TableCell align="right">{fmt(row.cumulativeContributions, currency)}</TableCell>}
                 <TableCell align="right">{fmt(row.portfolioValue, currency)}</TableCell>
                 <TableCell align="right" sx={{ color: row.growth > 0 ? '#00916e' : undefined }}>
                   {fmt(row.growth, currency)}
@@ -80,7 +81,7 @@ export default function ProjectionTable({ result, currency }: ProjectionTablePro
                         <TableCell />
                         <TableCell sx={{ color: 'text.secondary', pl: 4 }}>{node.label}</TableCell>
                         <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.monthlyContribution, currency)}</TableCell>
-                        <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.cumulativeContributions, currency)}</TableCell>
+                        {!isMobile && <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.cumulativeContributions, currency)}</TableCell>}
                         <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.portfolioValue, currency)}</TableCell>
                         <TableCell align="right" sx={{ color: yd.growth > 0 ? '#00916e' : 'text.secondary' }}>
                           {fmt(yd.growth, currency)}

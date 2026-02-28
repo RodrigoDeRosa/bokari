@@ -4,6 +4,8 @@ import Paper from '@mui/material/Paper';
 import Slider from '@mui/material/Slider'; // still used for horizon
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import { useBudgetTree } from '../../context/BudgetTreeContext';
 import { computeInvestmentProjection } from '../../utils/projections';
 import { INVESTMENT_PALETTE } from '../../constants/nodeColors';
@@ -47,6 +49,8 @@ function filterResult(
 
 export default function ProjectionsTab() {
   const { nodes, edges, currency, handleNodeDataChange } = useBudgetTree();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [horizonYears, setHorizonYears] = useState(20);
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [chartViewMode, setChartViewMode] = useState<'total' | 'perAsset'>('total');
@@ -164,9 +168,9 @@ export default function ProjectionsTab() {
       <Box sx={{ maxWidth: 1100, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
         {result && result.nodes.length > 0 && filteredResult && (
           <>
-            <Paper sx={{ p: 3 }} elevation={2}>
+            <Paper sx={{ p: isMobile ? 2 : 3 }} elevation={2}>
               {/* KPIs — full width */}
-              <Stack direction="row" spacing={3} sx={{ mb: 2 }}>
+              <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ mb: 2, flexWrap: 'wrap', rowGap: 1.5 }}>
                 {(() => {
                   const last = filteredResult.totals[filteredResult.totals.length - 1];
                   const contrib = last?.cumulativeContributions ?? 0;
@@ -175,35 +179,35 @@ export default function ProjectionsTab() {
                   const multiplier = contrib > 0 ? portfolio / contrib : 0;
                   return (
                     <>
-                      <Box sx={{ flex: 1 }}>
+                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           Portfolio in {horizonYears}yr
                         </Typography>
-                        <Typography variant="h5" sx={{ color: '#00916e', fontWeight: 700 }}>
+                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#00916e', fontWeight: 700 }}>
                           {fmt(portfolio, currency)}
                         </Typography>
                       </Box>
-                      <Box sx={{ flex: 1 }}>
+                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           Contributions
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
                           {fmt(contrib, currency)}
                         </Typography>
                       </Box>
-                      <Box sx={{ flex: 1 }}>
+                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           Compound growth
                         </Typography>
-                        <Typography variant="h5" sx={{ color: '#ff006e', fontWeight: 700 }}>
+                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#ff006e', fontWeight: 700 }}>
                           {fmt(growth, currency)}
                         </Typography>
                       </Box>
-                      <Box sx={{ flex: 1 }}>
+                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
                         <Typography variant="caption" color="text.secondary">
                           Money multiplier
                         </Typography>
-                        <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
                           {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
                         </Typography>
                       </Box>
@@ -213,7 +217,7 @@ export default function ProjectionsTab() {
               </Stack>
 
               {/* Two-column area: chart left, investments + sliders right */}
-              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 3 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 340px', gap: isMobile ? 2 : 3 }}>
                 <Box>
                   <ProjectionChart
                     result={filteredResult}
@@ -221,7 +225,7 @@ export default function ProjectionsTab() {
                     viewMode={chartViewMode}
                     onViewModeChange={setChartViewMode}
                     nodeColorMap={nodeColorMap}
-                    height={350}
+                    height={isMobile ? 260 : 350}
                   />
                 </Box>
 
@@ -261,11 +265,11 @@ export default function ProjectionsTab() {
               </Box>
             </Paper>
 
-            <Paper sx={{ p: 3 }} elevation={2}>
+            <Paper sx={{ p: isMobile ? 2 : 3 }} elevation={2}>
               <Typography variant="h6" gutterBottom>
                 Yearly Breakdown
               </Typography>
-              <ProjectionTable result={filteredResult} currency={currency} />
+              <ProjectionTable result={filteredResult} currency={currency} isMobile={isMobile} />
             </Paper>
           </>
         )}

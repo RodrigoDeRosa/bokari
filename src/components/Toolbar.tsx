@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -178,7 +179,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
             <Tab label="Projections" value="projections" />
           </Tabs>
 
-          {isGraph && (
+          {isGraph && !isMobile && (
             <>
               <Tooltip title="Undo (Ctrl+Z)">
                 <span>
@@ -291,6 +292,19 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
                 open={Boolean(menuAnchor)}
                 onClose={() => setMenuAnchor(null)}
               >
+                <MenuItem onClick={() => { setMenuAnchor(null); undoAction(); }} disabled={!canUndo}>
+                  <ListItemIcon><UndoIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Undo</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => { setMenuAnchor(null); redoAction(); }} disabled={!canRedo}>
+                  <ListItemIcon><RedoIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Redo</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => { setMenuAnchor(null); handleSave(); }}>
+                  <ListItemIcon><SaveIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>Save</ListItemText>
+                </MenuItem>
+                <Divider />
                 <MenuItem onClick={handleExport}>
                   <ListItemIcon><FileDownloadIcon fontSize="small" /></ListItemIcon>
                   <ListItemText>Export</ListItemText>
