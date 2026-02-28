@@ -169,3 +169,46 @@
     margin: 0;
   }
 }
+
+// Growth badge on root nodes
+.growth-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
+  padding: 1px 0;
+  line-height: 1;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.growth-label {
+  font-size: 9px;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.9;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.growth-input {
+  width: 32px;
+  font-size: 9px;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  padding: 0 2px;
+  outline: none;
+  text-align: center;
+
+  -moz-appearance: textfield;
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

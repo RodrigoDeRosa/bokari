@@ -14,6 +14,7 @@ interface ProjectionChartProps {
   viewMode: 'total' | 'perAsset';
   onViewModeChange: (mode: 'total' | 'perAsset') => void;
   nodeColorMap: Map<string, string>;
+  height?: number;
 }
 
 function formatCurrency(value: number, currency: string): string {
@@ -23,12 +24,13 @@ function formatCurrency(value: number, currency: string): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
-export default function ProjectionChart({ result, currency, viewMode, onViewModeChange, nodeColorMap }: ProjectionChartProps) {
+export default function ProjectionChart({ result, currency, viewMode, onViewModeChange, nodeColorMap, height = 320 }: ProjectionChartProps) {
   const totalChartData = useMemo(() => {
     return result.totals.map((d) => ({
       label: d.year === 0 ? 'Now' : `Year ${d.year}`,
       contributions: d.cumulativeContributions,
       growth: d.growth,
+      total: d.portfolioValue,
     }));
   }, [result]);
 
@@ -61,7 +63,7 @@ export default function ProjectionChart({ result, currency, viewMode, onViewMode
         </ToggleButtonGroup>
       </Box>
 
-      <Box sx={{ width: '100%', height: 320 }}>
+      <Box sx={{ width: '100%', height }}>
         <ResponsiveContainer>
           {viewMode === 'total' ? (
             <AreaChart data={totalChartData} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
@@ -76,7 +78,7 @@ export default function ProjectionChart({ result, currency, viewMode, onViewMode
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 formatter={(value: any, name: any) => [
                   formatCurrency(Number(value ?? 0), currency),
-                  name === 'contributions' ? 'Contributions' : 'Growth',
+                  name,
                 ]}
               />
               <Legend />
@@ -99,6 +101,15 @@ export default function ProjectionChart({ result, currency, viewMode, onViewMode
                 fill="#ff006e"
                 fillOpacity={0.3}
                 strokeWidth={2}
+              />
+              <Line
+                type="monotone"
+                dataKey="total"
+                name="Total"
+                stroke="#555"
+                strokeWidth={2}
+                strokeDasharray="5 3"
+                dot={false}
               />
             </AreaChart>
           ) : (

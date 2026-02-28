@@ -13,6 +13,7 @@ export interface NodeData extends Record<string, unknown> {
   children?: FixedGroupChild[];
   isInvestment?: boolean;
   expectedReturn?: number;  // annual %, default 7
+  annualGrowth?: number;    // annual %, default 0 (root nodes only)
 }
 
 export interface InvestmentConflict {
@@ -55,7 +56,6 @@ export interface InvestmentNodeProjection {
 
 export interface InvestmentProjectionResult {
   horizonYears: number;
-  incomeGrowthPct: number;
   nodes: InvestmentNodeProjection[];
   totals: InvestmentYearData[];
 }

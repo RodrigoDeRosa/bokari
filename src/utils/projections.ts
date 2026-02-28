@@ -4,31 +4,28 @@ import updateTree from './updateTree';
 export function computeInvestmentProjection(
   nodes: BokariNode[],
   edges: BokariEdge[],
-  incomeGrowthPct: number,
   horizonYears: number,
 ): InvestmentProjectionResult {
-  const g = incomeGrowthPct / 100;
-
   // Find investment nodes
   const investmentNodeIds = nodes
     .filter((n) => n.data.isInvestment)
     .map((n) => n.id);
 
   if (investmentNodeIds.length === 0) {
-    return { horizonYears, incomeGrowthPct, nodes: [], totals: [] };
+    return { horizonYears, nodes: [], totals: [] };
   }
 
-  // For each year, scale roots and recalculate tree to get monthly contributions
+  // For each year, scale roots by their own annualGrowth and recalculate tree
   const yearlyContributions: Map<string, number[]> = new Map();
   for (const id of investmentNodeIds) {
     yearlyContributions.set(id, []);
   }
 
   for (let year = 0; year <= horizonYears; year++) {
-    const scaleFactor = Math.pow(1 + g, year);
-
     const scaledNodes: BokariNode[] = nodes.map((node) => {
       if (node.type === 'rootNode') {
+        const g = (node.data.annualGrowth ?? 0) / 100;
+        const scaleFactor = Math.pow(1 + g, year);
         return { ...node, data: { ...node.data, value: node.data.value * scaleFactor } };
       }
       return { ...node, data: { ...node.data } };
@@ -115,7 +112,6 @@ export function computeInvestmentProjection(
 
   return {
     horizonYears,
-    incomeGrowthPct,
     nodes: nodeProjections,
     totals,
   };
