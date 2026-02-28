@@ -8,52 +8,73 @@ export default function updateTree(
   // Work on a deep copy so we don't mutate the originals
   const updated = nodes.map((node) => ({ ...node, data: { ...node.data } }));
 
-  const rootNodes = updated.filter((node) => node.type === 'rootNode');
+  // Build in-degree map (count of incoming edges per node)
+  const inDegree = new Map<string, number>();
+  for (const node of updated) {
+    inDegree.set(node.id, 0);
+  }
+  for (const edge of edges) {
+    inDegree.set(edge.target, (inDegree.get(edge.target) ?? 0) + 1);
+  }
 
-  rootNodes.forEach((rootNode) => {
-    const neighbors: BokariNode[] = [rootNode];
-
-    while (neighbors.length > 0) {
-      const currentNode = neighbors.pop()!;
-      const children = getOutgoers(currentNode, updated, edges) as BokariNode[];
-
-      if (children.length === 0) continue;
-
-      children
-        .filter((child) => child.type === 'proportionalNode')
-        .forEach((child) => {
-          child.data = {
-            ...child.data,
-            value: ((child.data.proportion ?? 0) / 100) * currentNode.data.value,
-          };
-        });
-
-      const usedTotal = children
-        .filter((child) => child.type !== 'relativeNode')
-        .reduce((acc, child) => acc + child.data.value, 0);
-
-      children
-        .filter((child) => child.type === 'relativeNode')
-        .forEach((child) => {
-          child.data = {
-            ...child.data,
-            value: currentNode.data.value - usedTotal,
-          };
-        });
-
-      neighbors.push(...children);
+  // Seed BFS queue with roots (in-degree 0)
+  const queue: BokariNode[] = [];
+  for (const node of updated) {
+    if (inDegree.get(node.id) === 0) {
+      queue.push(node);
     }
-  });
+  }
 
-  const aggregatorNodes = updated.filter((node) => node.type === 'aggregatorNode');
-  aggregatorNodes.forEach((aggregatorNode) => {
-    const parents = getIncomers(aggregatorNode, updated, edges) as BokariNode[];
-    const totalValue = parents.reduce((acc, parent) => acc + parent.data.value, 0);
-    aggregatorNode.data = {
-      ...aggregatorNode.data,
-      value: totalValue,
-    };
-  });
+  // BFS: process each node only after all its parents are done
+  while (queue.length > 0) {
+    const currentNode = queue.shift()!;
+
+    // Aggregator: value = sum of parent values
+    if (currentNode.type === 'aggregatorNode') {
+      const parents = getIncomers(currentNode, updated, edges) as BokariNode[];
+      currentNode.data = {
+        ...currentNode.data,
+        value: parents.reduce((acc, p) => acc + p.data.value, 0),
+      };
+    }
+
+    const children = getOutgoers(currentNode, updated, edges) as BokariNode[];
+    if (children.length === 0) continue;
+
+    // Update proportional children
+    children
+      .filter((child) => child.type === 'proportionalNode')
+      .forEach((child) => {
+        child.data = {
+          ...child.data,
+          value: ((child.data.proportion ?? 0) / 100) * currentNode.data.value,
+        };
+      });
+
+    // Compute used total from non-relative children (for relative node calculation)
+    const usedTotal = children
+      .filter((child) => child.type !== 'relativeNode')
+      .reduce((acc, child) => acc + child.data.value, 0);
+
+    // Update relative children
+    children
+      .filter((child) => child.type === 'relativeNode')
+      .forEach((child) => {
+        child.data = {
+          ...child.data,
+          value: currentNode.data.value - usedTotal,
+        };
+      });
+
+    // Decrement in-degree for children; enqueue when all parents processed
+    for (const child of children) {
+      const deg = (inDegree.get(child.id) ?? 1) - 1;
+      inDegree.set(child.id, deg);
+      if (deg === 0) {
+        queue.push(child);
+      }
+    }
+  }
 
   return updated;
 }
