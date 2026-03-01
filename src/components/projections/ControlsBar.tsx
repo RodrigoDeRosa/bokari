@@ -49,7 +49,7 @@ export default function ControlsBar({
   const allSelected = investmentNodes.length > 0 && investmentNodes.every((n) => selectedNodeIds.has(n.nodeId));
 
   return (
-    <Box>
+    <Box data-tour="proj-controls">
       {/* Row 1: Horizon slider + view toggle */}
       <Stack
         direction={isMobile ? 'column' : 'row'}

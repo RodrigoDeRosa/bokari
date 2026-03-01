@@ -151,7 +151,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
   if (totalChartData.length === 0) return null;
 
   return (
-    <Box sx={{ width: '100%', height }}>
+    <Box data-tour="proj-chart" sx={{ width: '100%', height }}>
       <ResponsiveContainer>
         {viewMode === 'total' ? (
           <AreaChart data={totalChartData} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>

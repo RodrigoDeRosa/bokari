@@ -53,7 +53,7 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
   const portfolioDiff = showWhatIf ? portfolio - baseLast.portfolioValue : 0;
 
   return (
-    <Box>
+    <Box data-tour="proj-summary">
       <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
         Investing {bold(fmt(monthlyContrib, currency) + '/mo')} at an average{' '}
         {bold(weightedReturn.toFixed(1) + '%')} return over {bold(`${horizonYears} years`)}:

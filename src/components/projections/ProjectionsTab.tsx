@@ -261,7 +261,7 @@ export default function ProjectionsTab() {
               <Divider />
 
               {/* Collapsible Yearly Breakdown */}
-              <Box>
+              <Box data-tour="proj-table">
                 <Stack
                   direction="row"
                   alignItems="center"

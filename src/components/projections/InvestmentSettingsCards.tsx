@@ -65,7 +65,7 @@ export default function InvestmentSettingsCards({
   }, [rows, rootNodes]);
 
   return (
-    <Box>
+    <Box data-tour="proj-settings">
       {/* Section header with hover */}
       <Stack
         direction="row"

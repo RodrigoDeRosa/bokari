@@ -115,7 +115,7 @@ export default function GraphView() {
   if (isMobile) return <MobileTreeView />;
 
   return (
-    <Box sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>
+    <Box data-tour="canvas" sx={{ flex: 1, position: 'relative' }} ref={reactFlowWrapper}>
       <ReactFlow
         nodes={styledNodes}
         edges={styledEdges}

@@ -65,6 +65,7 @@ export default function ScenarioExplorer({
 
   return (
     <Box
+      data-tour="proj-scenarios"
       sx={{
         px: isMobile ? 1.5 : 2,
         py: isMobile ? 1 : 1.5,

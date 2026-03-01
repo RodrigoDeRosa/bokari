@@ -167,6 +167,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
           </Typography>
 
           <Tabs
+            data-tour="toolbar-tabs"
             value={activeTab}
             onChange={handleTabChange}
             sx={{
@@ -180,7 +181,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
           </Tabs>
 
           {isGraph && !isMobile && (
-            <>
+            <Box data-tour="toolbar-actions" sx={{ display: 'flex', alignItems: 'center' }}>
               <Tooltip title="Undo (Ctrl+Z)">
                 <span>
                   <IconButton size="small" onClick={undoAction} disabled={!canUndo} aria-label="Undo">
@@ -207,7 +208,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
                   <AccountTreeIcon fontSize={isMobile ? 'small' : 'medium'} />
                 </IconButton>
               </Tooltip>
-            </>
+            </Box>
           )}
 
           {/* Desktop: show all controls inline */}
@@ -252,7 +253,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
                   </Tooltip>
 
                   <Tooltip title="Help">
-                    <IconButton size="small" onClick={onToggleHelp} aria-label="Toggle help">
+                    <IconButton data-tour="help-button" size="small" onClick={onToggleHelp} aria-label="Toggle help">
                       <HelpOutlineIcon />
                     </IconButton>
                   </Tooltip>
@@ -280,6 +281,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
 
               {isGraph && (
                 <IconButton
+                  data-tour="mobile-menu"
                   size="small"
                   onClick={(e) => setMenuAnchor(e.currentTarget)}
                   aria-label="More actions"

@@ -106,7 +106,7 @@ export default function MobileTreeView() {
     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Breadcrumb path={path} nodes={nodes} onNavigate={handleNavigate} />
 
-      <Box sx={{ flex: 1, overflow: 'auto', p: 1.5 }}>
+      <Box data-tour="mobile-cards" sx={{ flex: 1, overflow: 'auto', p: 1.5 }}>
         {currentNodeIds.length === 0 ? (
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6 }}>
             <Typography variant="body2" color="text.secondary">
@@ -134,6 +134,7 @@ export default function MobileTreeView() {
 
       {/* FAB for creating new nodes */}
       <Fab
+        data-tour="mobile-fab"
         color="primary"
         size="medium"
         onClick={() => setCreateMenuOpen(true)}

@@ -29,6 +29,7 @@ const NodeCreator = () => {
 
   return (
     <Paper
+      data-tour="node-palette"
       elevation={3}
       sx={{
         position: 'absolute',
