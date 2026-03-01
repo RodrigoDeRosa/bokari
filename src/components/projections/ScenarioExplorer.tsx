@@ -4,8 +4,6 @@ import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -13,6 +11,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import Remove from '@mui/icons-material/Remove';
 import Add from '@mui/icons-material/Add';
+import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import type { BokariNode, InvestmentProjectionResult } from '../../types';
 
 interface ScenarioExplorerProps {
@@ -110,22 +109,8 @@ export default function ScenarioExplorer({
       </Stack>
 
       <Collapse in={expanded}>
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, mb: 1.5 }}>
-        See how changing your monthly contributions would affect your portfolio over time.
-      </Typography>
-
-      {/* Per-asset cards grid */}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: isMobile
-            ? '1fr'
-            : rows.length <= 3
-              ? `repeat(${rows.length}, 1fr)`
-              : 'repeat(auto-fill, minmax(220px, 1fr))',
-          gap: 1.5,
-        }}
-      >
+      {/* Compact investment boxes */}
+      <Stack direction="row" flexWrap="wrap" gap={3} sx={{ mt: 1.5 }}>
         {rows.map((row) => {
           const color = nodeColorMap.get(row.id) ?? '#00916e';
           const delta = contributionDeltas.get(row.id) ?? 0;
@@ -133,106 +118,86 @@ export default function ScenarioExplorer({
           const step = row.treeValue >= 500 ? 100 : 50;
 
           return (
-            <Box
+            <Stack
               key={row.id}
+              spacing={0.75}
               sx={{
-                p: 1.5,
-                borderRadius: 1.5,
-                bgcolor: 'action.hover',
+                position: 'relative',
+                px: 1.25,
+                py: 1,
+                borderRadius: 1,
                 border: 1,
-                borderColor: 'divider',
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  borderColor: color,
-                  boxShadow: `0 0 0 1px ${color}33, 0 2px 8px ${color}22`,
-                },
+                borderColor: delta !== 0 ? (delta > 0 ? 'rgba(0,145,110,0.4)' : 'rgba(237,108,2,0.4)') : 'divider',
               }}
             >
-              {/* Header: color dot + label */}
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.75 }}>
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
-                <Typography variant="body2" fontWeight={600}>{row.label}</Typography>
-              </Stack>
-
-              {/* Current value */}
-              <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: 0.75 }}>
-                <Typography variant="caption" color="text.secondary">Current</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {fmt(row.treeValue, currency)}/mo
-                </Typography>
-              </Stack>
-
-              {/* Number input with +/- steppers */}
+              {/* Label */}
               <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
+                <Typography variant="body2" fontWeight={600} sx={{ fontSize: 13 }}>{row.label}</Typography>
+              </Stack>
+
+              {/* Stepper — always centered */}
+              <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5}>
                 <IconButton
                   size="small"
                   onClick={() => onDeltaChange(row.id, delta - step)}
                   disabled={adjusted <= 0}
-                  sx={{ border: 1, borderColor: 'divider', width: 32, height: 32 }}
+                  sx={{ width: 24, height: 24, border: 1, borderColor: 'divider' }}
                 >
-                  <Remove sx={{ fontSize: 16 }} />
+                  <Remove sx={{ fontSize: 14 }} />
                 </IconButton>
-                <TextField
-                  type="number"
-                  size="small"
-                  value={adjusted}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    if (raw === '') {
-                      onDeltaChange(row.id, -row.treeValue);
-                      return;
-                    }
-                    const parsed = Math.max(0, Math.round(Number(raw)));
-                    onDeltaChange(row.id, parsed - row.treeValue);
-                  }}
-                  slotProps={{
-                    input: {
-                      endAdornment: <InputAdornment position="end">/mo</InputAdornment>,
-                      inputProps: { min: 0, style: { MozAppearance: 'textfield' } },
-                    },
-                  }}
-                  sx={{
-                    flex: 1,
-                    '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                      WebkitAppearance: 'none',
-                      margin: 0,
-                    },
-                  }}
-                />
+                <Typography sx={{ minWidth: 72, textAlign: 'center', fontSize: 13, fontWeight: 600 }}>
+                  {fmt(adjusted, currency)}/mo
+                </Typography>
                 <IconButton
                   size="small"
                   onClick={() => onDeltaChange(row.id, delta + step)}
-                  sx={{ border: 1, borderColor: 'divider', width: 32, height: 32 }}
+                  sx={{ width: 24, height: 24, border: 1, borderColor: 'divider' }}
                 >
-                  <Add sx={{ fontSize: 16 }} />
+                  <Add sx={{ fontSize: 14 }} />
                 </IconButton>
               </Stack>
 
-              {/* Delta feedback + reset */}
+              {/* Delta overlay chip */}
               {delta !== 0 && (
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 0.75 }}>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    transform: 'translate(30%, -50%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.25,
+                    bgcolor: delta > 0 ? '#00916e' : '#ed6c02',
+                    border: 1,
+                    borderColor: delta > 0 ? '#00916e' : '#ed6c02',
+                    borderRadius: 2,
+                    px: 0.75,
+                    py: 0.125,
+                  }}
+                >
                   <Typography
                     variant="caption"
                     fontWeight={700}
-                    sx={{ color: delta > 0 ? '#00916e' : '#ed6c02' }}
+                    component="span"
+                    sx={{ color: '#fff', fontSize: 11, whiteSpace: 'nowrap', lineHeight: 1.4 }}
                   >
-                    {delta > 0 ? '+' : ''}{fmt(delta, currency)}/mo
+                    {delta > 0 ? '+' : ''}{fmt(delta, currency)}
                   </Typography>
-                  <Link
-                    component="button"
-                    variant="caption"
-                    underline="hover"
+                  <IconButton
+                    size="small"
                     onClick={() => onDeltaChange(row.id, 0)}
-                    sx={{ color: 'text.secondary' }}
+                    sx={{ width: 16, height: 16, color: 'rgba(255,255,255,0.8)' }}
                   >
-                    Reset
-                  </Link>
-                </Stack>
+                    <DeleteOutline sx={{ fontSize: 12 }} />
+                  </IconButton>
+                </Box>
               )}
-            </Box>
+            </Stack>
           );
         })}
-      </Box>
+      </Stack>
 
       {/* Delta summary banner */}
       {activeDeltas.length > 0 && (
