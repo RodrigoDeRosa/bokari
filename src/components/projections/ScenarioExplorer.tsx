@@ -110,7 +110,7 @@ export default function ScenarioExplorer({
 
       <Collapse in={expanded}>
       {/* Compact investment boxes */}
-      <Stack direction="row" flexWrap="wrap" gap={3} sx={{ mt: 1.5 }}>
+      <Stack direction="row" flexWrap="wrap" justifyContent="center" gap={3} sx={{ mt: 1.5 }}>
         {rows.map((row) => {
           const color = nodeColorMap.get(row.id) ?? '#00916e';
           const delta = contributionDeltas.get(row.id) ?? 0;
