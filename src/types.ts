@@ -59,3 +59,4 @@ export interface InvestmentProjectionResult {
   nodes: InvestmentNodeProjection[];
   totals: InvestmentYearData[];
 }
+

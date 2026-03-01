@@ -5,6 +5,7 @@ export function computeInvestmentProjection(
   nodes: BokariNode[],
   edges: BokariEdge[],
   horizonYears: number,
+  contributionDeltas?: Map<string, number>,
 ): InvestmentProjectionResult {
   // Find investment nodes
   const investmentNodeIds = nodes
@@ -36,6 +37,20 @@ export function computeInvestmentProjection(
     for (const id of investmentNodeIds) {
       const found = computed.find((n) => n.id === id);
       yearlyContributions.get(id)!.push(found ? found.data.value : 0);
+    }
+  }
+
+  // Apply contribution deltas — scale delta proportionally with income growth
+  if (contributionDeltas && contributionDeltas.size > 0) {
+    for (const id of investmentNodeIds) {
+      const delta = contributionDeltas.get(id) ?? 0;
+      if (delta === 0) continue;
+      const contributions = yearlyContributions.get(id)!;
+      const baseValue = contributions[0];
+      for (let i = 0; i < contributions.length; i++) {
+        const scaleFactor = baseValue > 0 ? contributions[i] / baseValue : 1;
+        contributions[i] = Math.max(0, contributions[i] + delta * scaleFactor);
+      }
     }
   }
 

@@ -54,15 +54,26 @@ export default function ProjectionsTab() {
   const [horizonYears, setHorizonYears] = useState(20);
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [chartViewMode, setChartViewMode] = useState<'total' | 'perAsset'>('total');
+  const [contributionDeltas, setContributionDeltas] = useState<Map<string, number>>(new Map());
 
   const hasInvestmentNodes = nodes.some((n) => n.data.isInvestment);
+
+  const hasActiveDeltas = Array.from(contributionDeltas.values()).some((d) => d !== 0);
 
   const result = useMemo(() => {
     if (!hasInvestmentNodes || horizonYears <= 0) {
       return null;
     }
+    return computeInvestmentProjection(nodes, edges, horizonYears, contributionDeltas);
+  }, [nodes, edges, horizonYears, hasInvestmentNodes, contributionDeltas]);
+
+  // Base result (without deltas) — only computed when deltas are active
+  const baseResult = useMemo(() => {
+    if (!hasInvestmentNodes || horizonYears <= 0 || !hasActiveDeltas) {
+      return null;
+    }
     return computeInvestmentProjection(nodes, edges, horizonYears);
-  }, [nodes, edges, horizonYears, hasInvestmentNodes]);
+  }, [nodes, edges, horizonYears, hasInvestmentNodes, hasActiveDeltas]);
 
   // Re-initialize selectedNodeIds when the set of investment nodes changes
   const investmentNodeIds = useMemo(
@@ -130,9 +141,30 @@ export default function ProjectionsTab() {
     [handleNodeDataChange],
   );
 
+  const handleDeltaChange = useCallback((nodeId: string, delta: number) => {
+    setContributionDeltas((prev) => {
+      const next = new Map(prev);
+      if (delta === 0) {
+        next.delete(nodeId);
+      } else {
+        next.set(nodeId, delta);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleClearAllDeltas = useCallback(() => {
+    setContributionDeltas(new Map());
+  }, []);
+
   const filteredResult = useMemo(
     () => (result ? filterResult(result, selectedNodeIds) : null),
     [result, selectedNodeIds],
+  );
+
+  const filteredBaseResult = useMemo(
+    () => (baseResult ? filterResult(baseResult, selectedNodeIds) : null),
+    [baseResult, selectedNodeIds],
   );
 
   const nodeColorMap = useMemo(() => {
@@ -170,51 +202,188 @@ export default function ProjectionsTab() {
           <>
             <Paper sx={{ p: isMobile ? 2 : 3 }} elevation={2}>
               {/* KPIs — full width */}
-              <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ mb: 2, flexWrap: 'wrap', rowGap: 1.5 }}>
-                {(() => {
-                  const last = filteredResult.totals[filteredResult.totals.length - 1];
-                  const contrib = last?.cumulativeContributions ?? 0;
-                  const portfolio = last?.portfolioValue ?? 0;
-                  const growth = last?.growth ?? 0;
-                  const multiplier = contrib > 0 ? portfolio / contrib : 0;
+              {(() => {
+                const last = filteredResult.totals[filteredResult.totals.length - 1];
+                const contrib = last?.cumulativeContributions ?? 0;
+                const portfolio = last?.portfolioValue ?? 0;
+                const growth = last?.growth ?? 0;
+                const multiplier = contrib > 0 ? portfolio / contrib : 0;
+
+                const baseLast = filteredBaseResult?.totals[filteredBaseResult.totals.length - 1];
+                const showBase = hasActiveDeltas && baseLast;
+
+                const portfolioDelta = showBase ? portfolio - baseLast.portfolioValue : 0;
+                const contribDelta = showBase ? contrib - baseLast.cumulativeContributions : 0;
+                const growthDelta = showBase ? growth - baseLast.growth : 0;
+
+                const deltaBadge = (delta: number) => {
+                  const positive = delta >= 0;
                   return (
-                    <>
-                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Portfolio in {horizonYears}yr
-                        </Typography>
-                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#00916e', fontWeight: 700 }}>
-                          {fmt(portfolio, currency)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Contributions
-                        </Typography>
-                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
-                          {fmt(contrib, currency)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Compound growth
-                        </Typography>
-                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#ff006e', fontWeight: 700 }}>
-                          {fmt(growth, currency)}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                        <Typography variant="caption" color="text.secondary">
-                          Money multiplier
-                        </Typography>
-                        <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
-                          {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
-                        </Typography>
-                      </Box>
-                    </>
+                    <Typography component="span" variant="caption" sx={{
+                      ml: 0.75,
+                      px: 0.75,
+                      py: 0.25,
+                      borderRadius: 1,
+                      bgcolor: positive ? 'rgba(0,145,110,0.12)' : 'rgba(237,108,2,0.12)',
+                      color: positive ? '#00916e' : '#ed6c02',
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                    }}>
+                      {positive ? '+' : ''}{fmt(delta, currency)}
+                    </Typography>
                   );
-                })()}
-              </Stack>
+                };
+
+                if (!showBase) {
+                  /* Single row — no deltas active, identical to previous default */
+                  return (
+                    <Box sx={{ mb: 2 }}>
+                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 1.5 }}>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Portfolio in {horizonYears}yr
+                          </Typography>
+                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#00916e', fontWeight: 700 }}>
+                            {fmt(portfolio, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Contributions
+                          </Typography>
+                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
+                            {fmt(contrib, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Compound growth
+                          </Typography>
+                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#ff006e', fontWeight: 700 }}>
+                            {fmt(growth, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Money multiplier
+                          </Typography>
+                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
+                            {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  );
+                }
+
+                /* Two rows — base "Current plan" + tinted "What-if scenario" */
+                return (
+                  <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                    {/* Current plan — full KPI row with muted values */}
+                    <Box>
+                      <Typography variant="overline" color="text.secondary" sx={{ mb: 0.5, display: 'block', lineHeight: 1.2 }}>
+                        Current plan
+                      </Typography>
+                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Portfolio in {horizonYears}yr
+                          </Typography>
+                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
+                            {fmt(baseLast.portfolioValue, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Contributions
+                          </Typography>
+                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
+                            {fmt(baseLast.cumulativeContributions, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Compound growth
+                          </Typography>
+                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
+                            {fmt(baseLast.growth, currency)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Money multiplier
+                          </Typography>
+                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
+                            {baseLast.cumulativeContributions > 0 ? `${(baseLast.portfolioValue / baseLast.cumulativeContributions).toFixed(1)}x` : '–'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+
+                    {/* What-if scenario — self-contained tinted box */}
+                    <Box sx={{
+                      bgcolor: 'rgba(0,145,110,0.05)',
+                      borderLeft: 3,
+                      borderLeftColor: '#00916e',
+                      borderRadius: '0 4px 4px 0',
+                      px: 1.5,
+                      py: 1,
+                    }}>
+                      <Stack direction="row" alignItems="baseline" spacing={1} sx={{ mb: 0.5 }}>
+                        <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#00916e', lineHeight: 1 }}>
+                          What-if scenario
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
+                          Projected outcome with your contribution adjustments
+                        </Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 0.5 }}>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Portfolio in {horizonYears}yr
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                            <Typography variant="body1" sx={{ color: '#00916e', fontWeight: 700 }}>
+                              {fmt(portfolio, currency)}
+                            </Typography>
+                            {deltaBadge(portfolioDelta)}
+                          </Box>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Contributions
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                              {fmt(contrib, currency)}
+                            </Typography>
+                            {deltaBadge(contribDelta)}
+                          </Box>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Compound growth
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                            <Typography variant="body1" sx={{ color: '#ff006e', fontWeight: 700 }}>
+                              {fmt(growth, currency)}
+                            </Typography>
+                            {deltaBadge(growthDelta)}
+                          </Box>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Money multiplier
+                          </Typography>
+                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                            {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Box>
+                  </Box>
+                );
+              })()}
 
               {/* Two-column area: chart left, investments + sliders right */}
               <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 340px', gap: isMobile ? 2 : 3 }}>
@@ -240,6 +409,9 @@ export default function ProjectionsTab() {
                     nodeColorMap={nodeColorMap}
                     nodes={nodes}
                     onGrowthChange={handleGrowthChange}
+                    contributionDeltas={contributionDeltas}
+                    onDeltaChange={handleDeltaChange}
+                    onClearAllDeltas={handleClearAllDeltas}
                   />
 
                   {/* Settings slider */}
