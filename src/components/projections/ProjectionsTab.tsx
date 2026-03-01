@@ -1,25 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import Slider from '@mui/material/Slider'; // still used for horizon
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from '@mui/icons-material/ExpandLess';
 import { useBudgetTree } from '../../context/BudgetTreeContext';
 import { computeInvestmentProjection } from '../../utils/projections';
 import { INVESTMENT_PALETTE } from '../../constants/nodeColors';
 import type { InvestmentProjectionResult, InvestmentYearData } from '../../types';
-import InvestmentSummaryCards from './InvestmentSummaryCards';
+import NarrativeSummary from './NarrativeSummary';
+import ControlsBar from './ControlsBar';
 import ProjectionChart from './ProjectionChart';
+import InvestmentSettingsCards from './InvestmentSettingsCards';
+import ScenarioExplorer from './ScenarioExplorer';
 import ProjectionTable from './ProjectionTable';
-
-function fmt(value: number, currency: string): string {
-  if (value >= 1_000_000) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
-  }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
-}
 
 function filterResult(
   result: InvestmentProjectionResult,
@@ -55,6 +54,7 @@ export default function ProjectionsTab() {
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [chartViewMode, setChartViewMode] = useState<'total' | 'perAsset'>('total');
   const [contributionDeltas, setContributionDeltas] = useState<Map<string, number>>(new Map());
+  const [tableExpanded, setTableExpanded] = useState(false);
 
   const hasInvestmentNodes = nodes.some((n) => n.data.isInvestment);
 
@@ -89,17 +89,14 @@ export default function ProjectionsTab() {
 
     setSelectedNodeIds((prev) => {
       if (prev.size === 0 && currentSet.size > 0) {
-        // Initial load — select all
         prevInvestmentIds.current = currentSet;
         return currentSet;
       }
       const next = new Set<string>();
       for (const id of investmentNodeIds) {
         if (prevSet.has(id)) {
-          // Existing node — keep its selection state
           if (prev.has(id)) next.add(id);
         } else {
-          // New node — auto-select
           next.add(id);
         }
       }
@@ -200,248 +197,100 @@ export default function ProjectionsTab() {
       <Box sx={{ maxWidth: 1100, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
         {result && result.nodes.length > 0 && filteredResult && (
           <>
-            <Paper sx={{ p: isMobile ? 2 : 3 }} elevation={2}>
-              {/* KPIs — full width */}
-              {(() => {
-                const last = filteredResult.totals[filteredResult.totals.length - 1];
-                const contrib = last?.cumulativeContributions ?? 0;
-                const portfolio = last?.portfolioValue ?? 0;
-                const growth = last?.growth ?? 0;
-                const multiplier = contrib > 0 ? portfolio / contrib : 0;
+            <Paper sx={{ p: isMobile ? 2 : 3, display: 'flex', flexDirection: 'column', gap: 2.5 }} elevation={2}>
+              {/* Narrative summary */}
+              <NarrativeSummary
+                result={filteredResult}
+                baseResult={filteredBaseResult}
+                currency={currency}
+                horizonYears={horizonYears}
+                hasActiveDeltas={hasActiveDeltas}
+              />
 
-                const baseLast = filteredBaseResult?.totals[filteredBaseResult.totals.length - 1];
-                const showBase = hasActiveDeltas && baseLast;
+              <Divider />
 
-                const portfolioDelta = showBase ? portfolio - baseLast.portfolioValue : 0;
-                const contribDelta = showBase ? contrib - baseLast.cumulativeContributions : 0;
-                const growthDelta = showBase ? growth - baseLast.growth : 0;
+              {/* Controls bar */}
+              <ControlsBar
+                horizonYears={horizonYears}
+                onHorizonChange={setHorizonYears}
+                viewMode={chartViewMode}
+                onViewModeChange={setChartViewMode}
+                investmentNodes={result.nodes}
+                selectedNodeIds={selectedNodeIds}
+                onToggleNode={handleToggleNode}
+                onToggleAll={handleToggleAll}
+                nodeColorMap={nodeColorMap}
+                contributionDeltas={contributionDeltas}
+              />
 
-                const deltaBadge = (delta: number) => {
-                  const positive = delta >= 0;
-                  return (
-                    <Typography component="span" variant="caption" sx={{
-                      ml: 0.75,
-                      px: 0.75,
-                      py: 0.25,
-                      borderRadius: 1,
-                      bgcolor: positive ? 'rgba(0,145,110,0.12)' : 'rgba(237,108,2,0.12)',
-                      color: positive ? '#00916e' : '#ed6c02',
-                      fontWeight: 600,
-                      fontSize: '0.7rem',
-                    }}>
-                      {positive ? '+' : ''}{fmt(delta, currency)}
-                    </Typography>
-                  );
-                };
+              {/* Full-width chart */}
+              <ProjectionChart
+                result={filteredResult}
+                baseResult={filteredBaseResult}
+                currency={currency}
+                viewMode={chartViewMode}
+                nodeColorMap={nodeColorMap}
+                height={isMobile ? 280 : 380}
+              />
 
-                if (!showBase) {
-                  /* Single row — no deltas active, identical to previous default */
-                  return (
-                    <Box sx={{ mb: 2 }}>
-                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 1.5 }}>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Portfolio in {horizonYears}yr
-                          </Typography>
-                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#00916e', fontWeight: 700 }}>
-                            {fmt(portfolio, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Contributions
-                          </Typography>
-                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
-                            {fmt(contrib, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Compound growth
-                          </Typography>
-                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ color: '#ff006e', fontWeight: 700 }}>
-                            {fmt(growth, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Money multiplier
-                          </Typography>
-                          <Typography variant={isMobile ? 'h6' : 'h5'} sx={{ fontWeight: 700 }}>
-                            {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Box>
-                  );
-                }
+              <Divider />
 
-                /* Two rows — base "Current plan" + tinted "What-if scenario" */
-                return (
-                  <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                    {/* Current plan — full KPI row with muted values */}
-                    <Box>
-                      <Typography variant="overline" color="text.secondary" sx={{ mb: 0.5, display: 'block', lineHeight: 1.2 }}>
-                        Current plan
-                      </Typography>
-                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 1 }}>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Portfolio in {horizonYears}yr
-                          </Typography>
-                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {fmt(baseLast.portfolioValue, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Contributions
-                          </Typography>
-                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {fmt(baseLast.cumulativeContributions, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Compound growth
-                          </Typography>
-                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {fmt(baseLast.growth, currency)}
-                          </Typography>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Money multiplier
-                          </Typography>
-                          <Typography variant={isMobile ? 'body1' : 'h6'} color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {baseLast.cumulativeContributions > 0 ? `${(baseLast.portfolioValue / baseLast.cumulativeContributions).toFixed(1)}x` : '–'}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Box>
+              {/* Explore scenarios (above settings) */}
+              <ScenarioExplorer
+                result={result}
+                currency={currency}
+                nodeColorMap={nodeColorMap}
+                nodes={nodes}
+                contributionDeltas={contributionDeltas}
+                onDeltaChange={handleDeltaChange}
+                onClearAllDeltas={handleClearAllDeltas}
+              />
 
-                    {/* What-if scenario — self-contained tinted box */}
-                    <Box sx={{
-                      bgcolor: 'rgba(0,145,110,0.05)',
-                      borderLeft: 3,
-                      borderLeftColor: '#00916e',
-                      borderRadius: '0 4px 4px 0',
-                      px: 1.5,
-                      py: 1,
-                    }}>
-                      <Stack direction="row" alignItems="baseline" spacing={1} sx={{ mb: 0.5 }}>
-                        <Typography variant="caption" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#00916e', lineHeight: 1 }}>
-                          What-if scenario
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
-                          Projected outcome with your contribution adjustments
-                        </Typography>
-                      </Stack>
-                      <Stack direction="row" spacing={isMobile ? 1.5 : 3} sx={{ flexWrap: 'wrap', rowGap: 0.5 }}>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Portfolio in {horizonYears}yr
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                            <Typography variant="body1" sx={{ color: '#00916e', fontWeight: 700 }}>
-                              {fmt(portfolio, currency)}
-                            </Typography>
-                            {deltaBadge(portfolioDelta)}
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Contributions
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                            <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                              {fmt(contrib, currency)}
-                            </Typography>
-                            {deltaBadge(contribDelta)}
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Compound growth
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                            <Typography variant="body1" sx={{ color: '#ff006e', fontWeight: 700 }}>
-                              {fmt(growth, currency)}
-                            </Typography>
-                            {deltaBadge(growthDelta)}
-                          </Box>
-                        </Box>
-                        <Box sx={{ flex: 1, minWidth: isMobile ? '45%' : 'auto' }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Money multiplier
-                          </Typography>
-                          <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                            {multiplier > 0 ? `${multiplier.toFixed(1)}x` : '–'}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Box>
+              <Divider />
+
+              {/* Investment settings cards */}
+              <InvestmentSettingsCards
+                result={result}
+                currency={currency}
+                onReturnChange={handleReturnChange}
+                nodeColorMap={nodeColorMap}
+                nodes={nodes}
+                onGrowthChange={handleGrowthChange}
+              />
+
+              <Divider />
+
+              {/* Collapsible Yearly Breakdown */}
+              <Box>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  onClick={() => setTableExpanded((prev) => !prev)}
+                  sx={{
+                    cursor: 'pointer',
+                    borderRadius: 1,
+                    px: 1,
+                    mx: -1,
+                    py: 0.5,
+                    '&:hover': { bgcolor: 'action.hover' },
+                  }}
+                >
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Yearly Breakdown
+                  </Typography>
+                  {tableExpanded ? (
+                    <ExpandLess sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  ) : (
+                    <ExpandMore sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  )}
+                </Stack>
+                <Collapse in={tableExpanded}>
+                  <Box sx={{ mt: 1.5 }}>
+                    <ProjectionTable result={filteredResult} currency={currency} isMobile={isMobile} />
                   </Box>
-                );
-              })()}
-
-              {/* Two-column area: chart left, investments + sliders right */}
-              <Box sx={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 340px', gap: isMobile ? 2 : 3 }}>
-                <Box>
-                  <ProjectionChart
-                    result={filteredResult}
-                    currency={currency}
-                    viewMode={chartViewMode}
-                    onViewModeChange={setChartViewMode}
-                    nodeColorMap={nodeColorMap}
-                    height={isMobile ? 260 : 350}
-                  />
-                </Box>
-
-                <Box>
-                  <InvestmentSummaryCards
-                    result={result}
-                    currency={currency}
-                    onReturnChange={handleReturnChange}
-                    selectedNodeIds={selectedNodeIds}
-                    onToggleNode={handleToggleNode}
-                    onToggleAll={handleToggleAll}
-                    nodeColorMap={nodeColorMap}
-                    nodes={nodes}
-                    onGrowthChange={handleGrowthChange}
-                    contributionDeltas={contributionDeltas}
-                    onDeltaChange={handleDeltaChange}
-                    onClearAllDeltas={handleClearAllDeltas}
-                  />
-
-                  {/* Settings slider */}
-                  <Stack spacing={1.5} sx={{ mt: 2 }}>
-                    <Box>
-                      <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                        <Typography variant="body2">Horizon</Typography>
-                        <Typography variant="body2" fontWeight={600}>{horizonYears} years</Typography>
-                      </Stack>
-                      <Slider
-                        size="small"
-                        value={horizonYears}
-                        min={1}
-                        max={40}
-                        step={1}
-                        onChange={(_e, val) => setHorizonYears(val as number)}
-                        valueLabelDisplay="auto"
-                        valueLabelFormat={(v) => `${v}yr`}
-                      />
-                    </Box>
-                  </Stack>
-                </Box>
+                </Collapse>
               </Box>
-            </Paper>
-
-            <Paper sx={{ p: isMobile ? 2 : 3 }} elevation={2}>
-              <Typography variant="h6" gutterBottom>
-                Yearly Breakdown
-              </Typography>
-              <ProjectionTable result={filteredResult} currency={currency} isMobile={isMobile} />
             </Paper>
           </>
         )}

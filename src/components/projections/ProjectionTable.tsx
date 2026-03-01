@@ -56,7 +56,7 @@ export default function ProjectionTable({ result, currency, isMobile }: Projecti
           {result.totals.map((row) => {
             const isExpanded = expandedYears.has(row.year);
             return [
-              <TableRow key={row.year}>
+              <TableRow key={row.year} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
                 {hasMultipleNodes && (
                   <TableCell sx={{ p: 0, pl: 0.5 }}>
                     <IconButton size="small" onClick={() => toggleYear(row.year)}>
