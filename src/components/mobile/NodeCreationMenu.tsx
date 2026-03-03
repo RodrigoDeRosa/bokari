@@ -5,6 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
+import { useTranslation } from 'react-i18next';
 import { NODE_TYPE_COLORS } from '../../constants/nodeColors';
 import type { NodeType } from '../../types';
 
@@ -15,29 +16,26 @@ interface NodeCreationMenuProps {
   hasParent: boolean;
 }
 
-const NODE_OPTIONS: { type: NodeType; label: string; description: string }[] = [
-  { type: 'rootNode', label: 'Income', description: 'Top-level income source' },
-  { type: 'fixedNode', label: 'Fixed', description: 'Fixed amount (e.g. rent)' },
-  { type: 'proportionalNode', label: 'Proportional', description: 'Percentage of parent' },
-  { type: 'relativeNode', label: 'Remainder', description: 'Whatever is left over' },
-  { type: 'aggregatorNode', label: 'Aggregator', description: 'Sum of its children' },
-  { type: 'fixedGroupNode', label: 'Fixed Group', description: 'Group of fixed items' },
+const NODE_OPTION_TYPES: NodeType[] = [
+  'rootNode', 'fixedNode', 'proportionalNode', 'relativeNode', 'aggregatorNode', 'fixedGroupNode',
 ];
 
 export default function NodeCreationMenu({ open, onClose, onCreate, hasParent }: NodeCreationMenuProps) {
+  const { t } = useTranslation();
+
   const options = hasParent
-    ? NODE_OPTIONS.filter((o) => o.type !== 'rootNode')
-    : NODE_OPTIONS;
+    ? NODE_OPTION_TYPES.filter((type) => type !== 'rootNode')
+    : NODE_OPTION_TYPES.filter((type) => type === 'rootNode' || type === 'aggregatorNode');
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>Add Node</DialogTitle>
+      <DialogTitle>{t('mobile.addNodeTitle')}</DialogTitle>
       <List sx={{ pt: 0 }}>
-        {options.map((opt) => (
+        {options.map((type) => (
           <ListItemButton
-            key={opt.type}
+            key={type}
             onClick={() => {
-              onCreate(opt.type);
+              onCreate(type);
               onClose();
             }}
           >
@@ -47,11 +45,11 @@ export default function NodeCreationMenu({ open, onClose, onCreate, hasParent }:
                   width: 16,
                   height: 16,
                   borderRadius: '50%',
-                  bgcolor: NODE_TYPE_COLORS[opt.type],
+                  bgcolor: NODE_TYPE_COLORS[type],
                 }}
               />
             </ListItemIcon>
-            <ListItemText primary={opt.label} secondary={opt.description} />
+            <ListItemText primary={t(`nodeTypeLabels.${type}`)} secondary={t(`nodeDescriptions.${type}`)} />
           </ListItemButton>
         ))}
       </List>

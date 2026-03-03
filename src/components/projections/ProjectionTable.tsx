@@ -8,6 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useTranslation } from 'react-i18next';
+import { getNumberLocale } from '../../utils/currency';
 import type { InvestmentProjectionResult } from '../../types';
 
 interface ProjectionTableProps {
@@ -17,10 +19,12 @@ interface ProjectionTableProps {
 }
 
 function fmt(value: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  const locale = getNumberLocale();
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 export default function ProjectionTable({ result, currency, isMobile }: ProjectionTableProps) {
+  const { t } = useTranslation('projections');
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
 
   const toggleYear = useCallback((year: number) => {
@@ -45,11 +49,11 @@ export default function ProjectionTable({ result, currency, isMobile }: Projecti
         <TableHead>
           <TableRow>
             {hasMultipleNodes && <TableCell sx={{ fontWeight: 'bold', width: 40 }} />}
-            <TableCell sx={{ fontWeight: 'bold' }}>Year</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Monthly Contribution</TableCell>
-            {!isMobile && <TableCell align="right" sx={{ fontWeight: 'bold' }}>Cumulative Contributions</TableCell>}
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Portfolio Value</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 'bold' }}>Growth</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>{t('table.year')}</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('table.monthlyContribution')}</TableCell>
+            {!isMobile && <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('table.cumulativeContributions')}</TableCell>}
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('table.portfolioValue')}</TableCell>
+            <TableCell align="right" sx={{ fontWeight: 'bold' }}>{t('table.growth')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -64,7 +68,7 @@ export default function ProjectionTable({ result, currency, isMobile }: Projecti
                     </IconButton>
                   </TableCell>
                 )}
-                <TableCell>{row.year === 0 ? 'Now' : `Year ${row.year}`}</TableCell>
+                <TableCell>{row.year === 0 ? t('chart.now') : t('chart.yearLabel', { year: row.year })}</TableCell>
                 <TableCell align="right">{fmt(row.monthlyContribution, currency)}</TableCell>
                 {!isMobile && <TableCell align="right">{fmt(row.cumulativeContributions, currency)}</TableCell>}
                 <TableCell align="right">{fmt(row.portfolioValue, currency)}</TableCell>

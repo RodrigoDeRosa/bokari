@@ -7,7 +7,9 @@ import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import EditIcon from '@mui/icons-material/Edit';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { useTranslation } from 'react-i18next';
 import { NODE_TYPE_COLORS } from '../../constants/nodeColors';
+import { getNumberLocale } from '../../utils/currency';
 import type { BokariNode, NodeType } from '../../types';
 
 interface BudgetNodeCardProps {
@@ -19,19 +21,12 @@ interface BudgetNodeCardProps {
 }
 
 function fmtValue(value: number, currency: string): string {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(getNumberLocale(), { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
-const TYPE_LABELS: Record<NodeType, string> = {
-  rootNode: 'Income',
-  fixedNode: 'Fixed',
-  proportionalNode: 'Proportional',
-  relativeNode: 'Remainder',
-  aggregatorNode: 'Sum',
-  fixedGroupNode: 'Fixed Group',
-};
-
 export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, currency }: BudgetNodeCardProps) {
+  const { t } = useTranslation();
+  const { t: tn } = useTranslation('nodes');
   const nodeType = node.type as NodeType;
   const borderColor = NODE_TYPE_COLORS[nodeType] ?? '#ccc';
   const { label, value, proportion, annualGrowth, isInvestment, expectedReturn, children } = node.data;
@@ -46,7 +41,7 @@ export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, 
           onEdit(node.id);
         }}
         sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
-        aria-label={`Edit ${label}`}
+        aria-label={tn('edit', { label })}
       >
         <EditIcon fontSize="small" />
       </IconButton>
@@ -63,7 +58,7 @@ export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, 
 
       {/* Row 2: Type chip + badges */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, alignItems: 'center' }}>
-        <Chip label={TYPE_LABELS[nodeType]} size="small" sx={{ fontSize: 11, height: 22 }} />
+        <Chip label={t(`nodeTypeLabels.${nodeType}`)} size="small" sx={{ fontSize: 11, height: 22 }} />
 
         {nodeType === 'rootNode' && annualGrowth != null && annualGrowth > 0 && (
           <Chip label={`+${annualGrowth}%/yr`} size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
@@ -72,10 +67,10 @@ export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, 
           <Chip label={`${proportion}%`} size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
         )}
         {nodeType === 'relativeNode' && (
-          <Chip label="Remainder" size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
+          <Chip label={t('nodeTypeLabels.relativeNode')} size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
         )}
         {nodeType === 'aggregatorNode' && (
-          <Chip label="Sum" size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
+          <Chip label={t('nodeTypeLabels.aggregatorNode')} size="small" variant="outlined" sx={{ fontSize: 11, height: 22 }} />
         )}
 
         {isInvestment && (
@@ -98,14 +93,14 @@ export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, 
       )}
 
       {/* Drill-down indicator */}
-      {childCount > 0 && (
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 1 }}>
+        {childCount > 0 && (
           <Typography variant="caption" color="text.secondary">
-            {childCount} {childCount === 1 ? 'item' : 'items'}
+            {t('mobile.itemCount', { count: childCount })}
           </Typography>
-          <ChevronRightIcon fontSize="small" color="action" />
-        </Box>
-      )}
+        )}
+        <ChevronRightIcon fontSize="small" color="action" />
+      </Box>
     </Box>
   );
 
@@ -117,13 +112,9 @@ export default function BudgetNodeCard({ node, childCount, onDrillDown, onEdit, 
         '&:not(:last-child)': { mb: 1 },
       }}
     >
-      {childCount > 0 ? (
-        <CardActionArea onClick={() => onDrillDown(node.id)}>
-          {content}
-        </CardActionArea>
-      ) : (
-        content
-      )}
+      <CardActionArea onClick={() => onDrillDown(node.id)}>
+        {content}
+      </CardActionArea>
     </Card>
   );
 }

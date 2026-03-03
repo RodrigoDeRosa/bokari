@@ -1,14 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import Divider from '@mui/material/Divider';
-import Slider from '@mui/material/Slider';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import AddIcon from '@mui/icons-material/Add';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { useTranslation } from 'react-i18next';
+import { getNumberLocale } from '../../utils/currency';
 import type { BokariNode, InvestmentProjectionResult } from '../../types';
 
 interface InvestmentSettingsCardsProps {
@@ -21,10 +24,11 @@ interface InvestmentSettingsCardsProps {
 }
 
 function fmt(value: number, currency: string): string {
+  const locale = getNumberLocale();
   if (value >= 1_000_000) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
+    return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
   }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 export default function InvestmentSettingsCards({
@@ -37,6 +41,7 @@ export default function InvestmentSettingsCards({
 }: InvestmentSettingsCardsProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation('projections');
   const [expanded, setExpanded] = useState(false);
 
   const rows = result.nodes.map((node) => {
@@ -61,8 +66,15 @@ export default function InvestmentSettingsCards({
     const avgGrowth = rootNodes.length > 0
       ? rootNodes.reduce((sum, r) => sum + (r.data.annualGrowth ?? 0), 0) / rootNodes.length
       : 0;
-    return `Avg ${weightedReturn.toFixed(1)}% return · Income +${avgGrowth.toFixed(1)}%/yr`;
+    return `${t('settings.avgReturn', { return: weightedReturn.toFixed(1) })} · ${t('settings.incomeGrowth', { growth: avgGrowth.toFixed(1) })}`;
   }, [rows, rootNodes]);
+
+  const step = useCallback((value: number, delta: number) => {
+    const next = Math.round((value + delta) * 10) / 10;
+    return Math.max(0, Math.min(100, next));
+  }, []);
+
+  const stepperSx = { width: 24, height: 24, border: 1, borderColor: 'divider' } as const;
 
   return (
     <Box data-tour="proj-settings">
@@ -74,7 +86,7 @@ export default function InvestmentSettingsCards({
         onClick={() => setExpanded((prev) => !prev)}
         sx={{
           cursor: 'pointer',
-          mb: expanded ? 1.5 : 0,
+          mb: expanded ? 1 : 0,
           borderRadius: 1,
           px: 1,
           mx: -1,
@@ -84,7 +96,7 @@ export default function InvestmentSettingsCards({
       >
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Investment Settings
+            {t('settings.title')}
           </Typography>
           {!expanded && (
             <Typography variant="caption" sx={{ color: 'text.disabled' }}>
@@ -107,10 +119,10 @@ export default function InvestmentSettingsCards({
           display: 'grid',
           gridTemplateColumns: isMobile
             ? '1fr'
-            : rows.length <= 3
+            : rows.length <= 4
               ? `repeat(${rows.length}, 1fr)`
-              : 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 2,
+              : 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: 1,
         }}
       >
         {rows.map((row) => {
@@ -120,89 +132,77 @@ export default function InvestmentSettingsCards({
             <Box
               key={row.id}
               sx={{
-                p: 2,
-                borderRadius: 1.5,
+                px: 1.5,
+                py: 1,
+                borderRadius: 1,
                 bgcolor: 'action.hover',
                 border: 1,
                 borderColor: 'divider',
                 transition: 'all 0.15s ease',
                 '&:hover': {
                   borderColor: color,
-                  boxShadow: `0 0 0 1px ${color}33, 0 2px 8px ${color}22`,
+                  boxShadow: `0 0 0 1px ${color}33`,
                 },
               }}
             >
-              {/* Header: color dot + label */}
-              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
-                <Typography variant="body2" fontWeight={600}>{row.label}</Typography>
-              </Stack>
-
-              {/* Monthly contribution (read-only) */}
-              <Stack direction="row" justifyContent="space-between" alignItems="baseline" sx={{ mb: 1 }}>
-                <Typography variant="caption" color="text.secondary">Monthly</Typography>
-                <Typography variant="body2" color="text.secondary">
+              {/* Header: color dot + label + monthly */}
+              <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mb: 0.75 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
+                <Typography variant="body2" fontWeight={600} sx={{ flex: 1, fontSize: 13 }}>{row.label}</Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
                   {fmt(row.treeValue, currency)}/mo
                 </Typography>
               </Stack>
 
-              <Divider sx={{ my: 1 }} />
-
-              {/* Expected return slider */}
-              <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                <Typography variant="caption" color="text.secondary">Expected return</Typography>
-                <Typography variant="body2" fontWeight={600}>
-                  {row.expectedReturn.toFixed(1)}%
-                </Typography>
+              {/* Expected return with +/- */}
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="caption" color="text.secondary">{t('settings.return')}</Typography>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <IconButton size="small" onClick={() => onReturnChange(row.id, step(row.expectedReturn, -0.5))} sx={stepperSx}>
+                    <RemoveIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                  <Typography variant="body2" fontWeight={600} sx={{ minWidth: 40, textAlign: 'center', fontSize: 13 }}>
+                    {row.expectedReturn.toFixed(1)}%
+                  </Typography>
+                  <IconButton size="small" onClick={() => onReturnChange(row.id, step(row.expectedReturn, 0.5))} sx={stepperSx}>
+                    <AddIcon sx={{ fontSize: 14 }} />
+                  </IconButton>
+                </Stack>
               </Stack>
-              <Slider
-                size="small"
-                value={row.expectedReturn}
-                min={0}
-                max={20}
-                step={0.5}
-                onChange={(_e, val) => onReturnChange(row.id, val as number)}
-                valueLabelDisplay="auto"
-                valueLabelFormat={(v) => `${v.toFixed(1)}%`}
-                sx={{ '& .MuiSlider-thumb': { width: 14, height: 14 } }}
-              />
             </Box>
           );
         })}
       </Box>
 
-      {/* Income growth sliders */}
+      {/* Income growth */}
       {rootNodes.length > 0 && (
-        <Box sx={{ mt: 2.5 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Income Growth
+        <Box sx={{ mt: 1.5 }}>
+          <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            {t('settings.incomeGrowthLabel')}
           </Typography>
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr' : `repeat(${Math.min(rootNodes.length, 3)}, 1fr)`,
-              gap: 2,
+              gap: 1,
             }}
           >
             {rootNodes.map((root) => {
               const growth = root.data.annualGrowth ?? 0;
               return (
-                <Stack key={root.id} spacing={0.5}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="baseline">
-                    <Typography variant="body2" color="text.secondary">{root.data.label}</Typography>
-                    <Typography variant="body2" fontWeight={600}>+{growth.toFixed(1)}%/yr</Typography>
+                <Stack key={root.id} direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>{root.data.label}</Typography>
+                  <Stack direction="row" alignItems="center" spacing={0.5}>
+                    <IconButton size="small" onClick={() => onGrowthChange(root.id, step(growth, -0.5))} sx={stepperSx}>
+                      <RemoveIcon sx={{ fontSize: 14 }} />
+                    </IconButton>
+                    <Typography variant="body2" fontWeight={600} sx={{ minWidth: 48, textAlign: 'center', fontSize: 13 }}>
+                      +{growth.toFixed(1)}%
+                    </Typography>
+                    <IconButton size="small" onClick={() => onGrowthChange(root.id, step(growth, 0.5))} sx={stepperSx}>
+                      <AddIcon sx={{ fontSize: 14 }} />
+                    </IconButton>
                   </Stack>
-                  <Slider
-                    size="small"
-                    value={growth}
-                    min={0}
-                    max={20}
-                    step={0.5}
-                    onChange={(_e, val) => onGrowthChange(root.id, val as number)}
-                    valueLabelDisplay="auto"
-                    valueLabelFormat={(v) => `${v.toFixed(1)}%`}
-                    sx={{ '& .MuiSlider-thumb': { width: 14, height: 14 } }}
-                  />
                 </Stack>
               );
             })}

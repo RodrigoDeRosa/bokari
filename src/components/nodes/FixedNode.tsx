@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../utils/currency';
 import EditableLabel from '../attributes/EditableLabel';
 import EditableValue from '../attributes/EditableValue';
@@ -15,13 +16,14 @@ const FixedNode = ({ id, data }: NodeProps<RuntimeNode>) => {
     id,
     data.handleNodeDataChange,
   );
+  const { t } = useTranslation('nodes');
 
   const handleInvestmentToggle = useCallback(() => {
     if (!data.isInvestment) {
       const conflicts = data.getInvestmentConflicts(id);
       if (conflicts.length > 0) {
         const descriptions = conflicts.map((c) => `${c.label} (${c.direction})`).join(', ');
-        data.setInvestmentError(`Cannot mark as investment — conflicts with: ${descriptions}`);
+        data.setInvestmentError(t('investmentConflict', { descriptions }));
         return;
       }
     }

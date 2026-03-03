@@ -4,6 +4,8 @@ import {
   AreaChart, Area, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
+import { getNumberLocale } from '../../utils/currency';
 import type { InvestmentProjectionResult } from '../../types';
 
 interface ProjectionChartProps {
@@ -16,19 +18,14 @@ interface ProjectionChartProps {
 }
 
 function formatCurrency(value: number, currency: string): string {
+  const locale = getNumberLocale();
   if (value >= 1_000_000) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
+    return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
   }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 /* ---------- Custom tooltip ---------- */
-
-const LABEL_MAP: Record<string, string> = {
-  contributions: 'Contributions',
-  growth: 'Growth',
-  baseTotal: 'Current plan',
-};
 
 interface TooltipEntry {
   dataKey: string;
@@ -44,9 +41,10 @@ interface CustomTooltipProps {
   payload?: any[];
   currency: string;
   nodeMap?: Map<string, string>;
+  labelMap?: Record<string, string>;
 }
 
-function CustomTooltip({ active, label, payload, currency, nodeMap }: CustomTooltipProps) {
+function CustomTooltip({ active, label, payload, currency, nodeMap, labelMap }: CustomTooltipProps) {
   if (!active || !payload || payload.length === 0) return null;
 
   return (
@@ -65,7 +63,7 @@ function CustomTooltip({ active, label, payload, currency, nodeMap }: CustomTool
       </div>
       {(payload as TooltipEntry[]).map((entry) => {
         const displayName =
-          LABEL_MAP[entry.dataKey] ??
+          (labelMap && labelMap[entry.dataKey]) ??
           (nodeMap ? (nodeMap.get(entry.dataKey) ?? entry.name) : entry.name);
         return (
           <div
@@ -110,10 +108,18 @@ const crosshairStyle = { stroke: 'rgba(150,150,150,0.5)', strokeDasharray: '4 3'
 /* ---------- Main component ---------- */
 
 export default function ProjectionChart({ result, baseResult, currency, viewMode, nodeColorMap, height = 320 }: ProjectionChartProps) {
+  const { t } = useTranslation('projections');
+
+  const labelMap = useMemo((): Record<string, string> => ({
+    contributions: t('chart.contributions'),
+    growth: t('chart.growth'),
+    baseTotal: t('chart.currentPlan'),
+  }), [t]);
+
   const totalChartData = useMemo(() => {
     return result.totals.map((d, i) => {
       const point: Record<string, string | number> = {
-        label: d.year === 0 ? 'Now' : `Year ${d.year}`,
+        label: d.year === 0 ? t('chart.now') : t('chart.yearLabel', { year: d.year }),
         contributions: d.cumulativeContributions,
         growth: d.growth,
       };
@@ -122,20 +128,20 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
       }
       return point;
     });
-  }, [result, baseResult]);
+  }, [result, baseResult, t]);
 
   const perAssetChartData = useMemo(() => {
     if (result.totals.length === 0 || result.nodes.length === 0) return [];
     return result.totals.map((d, i) => {
       const point: Record<string, string | number> = {
-        label: d.year === 0 ? 'Now' : `Year ${d.year}`,
+        label: d.year === 0 ? t('chart.now') : t('chart.yearLabel', { year: d.year }),
       };
       for (const node of result.nodes) {
         point[node.nodeId] = node.yearlyData[i]?.portfolioValue ?? 0;
       }
       return point;
     });
-  }, [result]);
+  }, [result, t]);
 
   // Build a nodeId → label map for per-asset tooltip
   const nodeLabelMap = useMemo(() => {
@@ -174,17 +180,17 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
               width={80}
             />
             <Tooltip
-              content={<CustomTooltip currency={currency} />}
+              content={<CustomTooltip currency={currency} labelMap={labelMap} />}
               cursor={crosshairStyle}
             />
             <Legend
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              formatter={(value: any) => value === 'baseTotal' ? 'Current plan' : value}
+              formatter={(value: any) => labelMap[value as string] ?? value}
             />
             <Area
               type="monotone"
               dataKey="contributions"
-              name="Contributions"
+              name={labelMap.contributions}
               stackId="portfolio"
               stroke="#00916e"
               fill="url(#contribGradient)"
@@ -193,7 +199,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
             <Area
               type="monotone"
               dataKey="growth"
-              name="Growth"
+              name={labelMap.growth}
               stackId="portfolio"
               stroke="#ff006e"
               fill="url(#growthGradient)"

@@ -33,7 +33,9 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import type { SelectChangeEvent } from '@mui/material/Select';
+import { useTranslation } from 'react-i18next';
 import { useBudgetTree } from '../context/BudgetTreeContext';
+import { supportedLanguages } from '../i18n';
 
 const CURRENCIES = [
   'EUR', 'USD', 'GBP', 'JPY', 'CHF', 'AUD', 'CAD', 'BRL', 'ARS',
@@ -52,6 +54,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isGraph = activeTab === 'graph';
+  const { t, i18n } = useTranslation();
 
   const {
     save,
@@ -65,6 +68,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
     currency,
     setCurrency,
     autoLayout,
+    switchTemplate,
   } = useBudgetTree();
 
   useEffect(() => {
@@ -102,6 +106,12 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
     setCurrency(e.target.value);
   };
 
+  const handleLanguageChange = (e: SelectChangeEvent) => {
+    const newLang = e.target.value;
+    i18n.changeLanguage(newLang);
+    switchTemplate(newLang);
+  };
+
   const handleImportClick = () => {
     setMenuAnchor(null);
     fileInputRef.current?.click();
@@ -116,9 +126,9 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
       const json = event.target?.result as string;
       const error = importGraph(json);
       if (error) {
-        setSnackbar({ open: true, message: `Import failed: ${error}`, severity: 'error' });
+        setSnackbar({ open: true, message: t('snackbar.importFailed', { error }), severity: 'error' });
       } else {
-        setSnackbar({ open: true, message: 'Budget imported successfully', severity: 'success' });
+        setSnackbar({ open: true, message: t('snackbar.importSuccess'), severity: 'success' });
       }
     };
     reader.readAsText(file);
@@ -127,7 +137,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
 
   const handleSave = () => {
     save();
-    setSnackbar({ open: true, message: 'Budget saved', severity: 'success' });
+    setSnackbar({ open: true, message: t('snackbar.budgetSaved'), severity: 'success' });
   };
 
   const handleExport = () => {
@@ -143,7 +153,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
   const handleResetConfirm = () => {
     reset();
     setResetDialogOpen(false);
-    setSnackbar({ open: true, message: 'Budget reset to example', severity: 'success' });
+    setSnackbar({ open: true, message: t('snackbar.budgetReset'), severity: 'success' });
   };
 
   const handleHelpClick = () => {
@@ -163,7 +173,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
             variant="h6"
             sx={{ fontWeight: 'bold', mr: isMobile ? 0.5 : 1, color: 'primary.main', fontSize: isMobile ? 16 : 20 }}
           >
-            Bokari
+            {t('appName')}
           </Typography>
 
           <Tabs
@@ -176,35 +186,35 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
               '& .MuiTab-root': { minHeight: 36, py: 0, px: isMobile ? 1 : 2, fontSize: isMobile ? 12 : 13 },
             }}
           >
-            <Tab label="Budget" value="graph" />
-            <Tab label="Projections" value="projections" />
+            <Tab label={t('tabs.budget')} value="graph" />
+            <Tab label={t('tabs.projections')} value="projections" />
           </Tabs>
 
           {isGraph && !isMobile && (
             <Box data-tour="toolbar-actions" sx={{ display: 'flex', alignItems: 'center' }}>
-              <Tooltip title="Undo (Ctrl+Z)">
+              <Tooltip title={t('toolbar.undoTooltip')}>
                 <span>
-                  <IconButton size="small" onClick={undoAction} disabled={!canUndo} aria-label="Undo">
+                  <IconButton size="small" onClick={undoAction} disabled={!canUndo} aria-label={t('toolbar.undo')}>
                     <UndoIcon fontSize={isMobile ? 'small' : 'medium'} />
                   </IconButton>
                 </span>
               </Tooltip>
-              <Tooltip title="Redo (Ctrl+Shift+Z)">
+              <Tooltip title={t('toolbar.redoTooltip')}>
                 <span>
-                  <IconButton size="small" onClick={redoAction} disabled={!canRedo} aria-label="Redo">
+                  <IconButton size="small" onClick={redoAction} disabled={!canRedo} aria-label={t('toolbar.redo')}>
                     <RedoIcon fontSize={isMobile ? 'small' : 'medium'} />
                   </IconButton>
                 </span>
               </Tooltip>
 
-              <Tooltip title="Save (Ctrl+S)">
-                <IconButton size="small" onClick={handleSave} aria-label="Save">
+              <Tooltip title={t('toolbar.saveTooltip')}>
+                <IconButton size="small" onClick={handleSave} aria-label={t('toolbar.save')}>
                   <SaveIcon fontSize={isMobile ? 'small' : 'medium'} />
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Auto-layout (tidy up)">
-                <IconButton size="small" onClick={autoLayout} aria-label="Auto-layout">
+              <Tooltip title={t('toolbar.autoLayoutTooltip')}>
+                <IconButton size="small" onClick={autoLayout} aria-label={t('toolbar.autoLayout')}>
                   <AccountTreeIcon fontSize={isMobile ? 'small' : 'medium'} />
                 </IconButton>
               </Tooltip>
@@ -216,44 +226,58 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
             <>
               {isGraph && (
                 <>
-                  <Tooltip title="Export as JSON">
-                    <IconButton size="small" onClick={exportGraph} aria-label="Export budget">
+                  <Tooltip title={t('toolbar.exportTooltip')}>
+                    <IconButton size="small" onClick={exportGraph} aria-label={t('toolbar.exportBudget')}>
                       <FileDownloadIcon />
                     </IconButton>
                   </Tooltip>
 
-                  <Tooltip title="Import JSON">
-                    <IconButton size="small" onClick={handleImportClick} aria-label="Import budget">
+                  <Tooltip title={t('toolbar.importTooltip')}>
+                    <IconButton size="small" onClick={handleImportClick} aria-label={t('toolbar.importBudget')}>
                       <FileUploadIcon />
                     </IconButton>
                   </Tooltip>
                 </>
               )}
 
+              <Box data-tour="toolbar-locale" sx={{ display: 'flex', alignItems: 'center' }}>
               <Select
                 size="small"
                 value={currency}
                 onChange={handleCurrencyChange}
                 sx={{ ml: 1, minWidth: 80, height: 32 }}
-                aria-label="Currency"
+                aria-label={t('toolbar.currency')}
               >
                 {CURRENCIES.map((c) => (
                   <MenuItem key={c} value={c}>{c}</MenuItem>
                 ))}
               </Select>
 
+              <Select
+                size="small"
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                sx={{ ml: 0.5, minWidth: 80, height: 32 }}
+                aria-label={t('toolbar.language')}
+              >
+                {supportedLanguages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>{lang.label}</MenuItem>
+                ))}
+              </Select>
+              </Box>
+
               <Box sx={{ flex: 1 }} />
 
               {isGraph && (
                 <>
-                  <Tooltip title="Reset to example">
-                    <IconButton size="small" onClick={() => setResetDialogOpen(true)} aria-label="Reset budget">
+                  <Tooltip title={t('toolbar.resetTooltip')}>
+                    <IconButton size="small" onClick={() => setResetDialogOpen(true)} aria-label={t('toolbar.resetBudget')}>
                       <RestartAltIcon />
                     </IconButton>
                   </Tooltip>
 
-                  <Tooltip title="Help">
-                    <IconButton data-tour="help-button" size="small" onClick={onToggleHelp} aria-label="Toggle help">
+                  <Tooltip title={t('toolbar.help')}>
+                    <IconButton data-tour="help-button" size="small" onClick={onToggleHelp} aria-label={t('toolbar.toggleHelp')}>
                       <HelpOutlineIcon />
                     </IconButton>
                   </Tooltip>
@@ -262,20 +286,34 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
             </>
           )}
 
-          {/* Mobile: currency selector + overflow menu */}
+          {/* Mobile: currency selector + language + overflow menu */}
           {isMobile && (
             <>
+              <Box data-tour="toolbar-locale" sx={{ display: 'flex', alignItems: 'center' }}>
               <Select
                 size="small"
                 value={currency}
                 onChange={handleCurrencyChange}
                 sx={{ ml: 0.5, minWidth: 70, height: 28, fontSize: 13 }}
-                aria-label="Currency"
+                aria-label={t('toolbar.currency')}
               >
                 {CURRENCIES.map((c) => (
                   <MenuItem key={c} value={c}>{c}</MenuItem>
                 ))}
               </Select>
+
+              <Select
+                size="small"
+                value={i18n.language}
+                onChange={handleLanguageChange}
+                sx={{ ml: 0.5, minWidth: 70, height: 28, fontSize: 13 }}
+                aria-label={t('toolbar.language')}
+              >
+                {supportedLanguages.map((lang) => (
+                  <MenuItem key={lang.code} value={lang.code}>{lang.label}</MenuItem>
+                ))}
+              </Select>
+              </Box>
 
               <Box sx={{ flex: 1 }} />
 
@@ -284,7 +322,7 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
                   data-tour="mobile-menu"
                   size="small"
                   onClick={(e) => setMenuAnchor(e.currentTarget)}
-                  aria-label="More actions"
+                  aria-label={t('toolbar.moreActions')}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -296,32 +334,32 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
               >
                 <MenuItem onClick={() => { setMenuAnchor(null); undoAction(); }} disabled={!canUndo}>
                   <ListItemIcon><UndoIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Undo</ListItemText>
+                  <ListItemText>{t('toolbar.undo')}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={() => { setMenuAnchor(null); redoAction(); }} disabled={!canRedo}>
                   <ListItemIcon><RedoIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Redo</ListItemText>
+                  <ListItemText>{t('toolbar.redo')}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={() => { setMenuAnchor(null); handleSave(); }}>
                   <ListItemIcon><SaveIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Save</ListItemText>
+                  <ListItemText>{t('toolbar.save')}</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleExport}>
                   <ListItemIcon><FileDownloadIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Export</ListItemText>
+                  <ListItemText>{t('toolbar.export')}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleImportClick}>
                   <ListItemIcon><FileUploadIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Import</ListItemText>
+                  <ListItemText>{t('toolbar.import')}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleResetClick}>
                   <ListItemIcon><RestartAltIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Reset</ListItemText>
+                  <ListItemText>{t('toolbar.reset')}</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleHelpClick}>
                   <ListItemIcon><HelpOutlineIcon fontSize="small" /></ListItemIcon>
-                  <ListItemText>Help</ListItemText>
+                  <ListItemText>{t('toolbar.help')}</ListItemText>
                 </MenuItem>
               </Menu>
             </>
@@ -338,16 +376,16 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
       </AppBar>
 
       <Dialog open={resetDialogOpen} onClose={() => setResetDialogOpen(false)}>
-        <DialogTitle>Reset Budget?</DialogTitle>
+        <DialogTitle>{t('dialogs.resetTitle')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This will replace your current budget with the example data. This action can be undone.
+            {t('dialogs.resetMessage')}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setResetDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => setResetDialogOpen(false)}>{t('dialogs.cancel')}</Button>
           <Button onClick={handleResetConfirm} color="error" variant="contained">
-            Reset
+            {t('dialogs.reset')}
           </Button>
         </DialogActions>
       </Dialog>

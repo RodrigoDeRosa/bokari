@@ -4,7 +4,8 @@ import type { Connection, NodeChange, EdgeChange, OnNodesChange, OnEdgesChange, 
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import type { BokariNode, BokariEdge, InvestmentConflict } from '../types';
-import { exampleNodes, exampleEdges } from '../data/exampleData';
+import { getTemplateForLocale, isOnTemplate } from '../data/exampleData';
+import i18n from '../i18n';
 import { loadState, saveState, clearState } from '../utils/migration';
 import {
   createUndoRedoState,
@@ -44,6 +45,7 @@ interface BudgetTreeContextValue {
   importGraph: (json: string) => string | null;
   takeSnapshot: () => void;
   autoLayout: () => void;
+  switchTemplate: (locale: string) => void;
   setReactFlowInstance: (instance: ReactFlowInstance) => void;
 }
 
@@ -56,7 +58,8 @@ export function useBudgetTree(): BudgetTreeContextValue {
 }
 
 export function BudgetTreeProvider({ children }: { children: React.ReactNode }) {
-  const persisted = loadState(exampleNodes as BokariNode[], exampleEdges as BokariEdge[]);
+  const initTemplate = getTemplateForLocale(i18n.language);
+  const persisted = loadState(initTemplate.nodes, initTemplate.edges as BokariEdge[], initTemplate.currency);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(persisted.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(persisted.edges);
@@ -170,10 +173,20 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
   const reset = useCallback(() => {
     takeSnapshot();
     clearState();
-    setNodes(exampleNodes as BokariNode[]);
-    setEdges(exampleEdges as BokariEdge[]);
-    setCurrencyState('EUR');
+    const template = getTemplateForLocale(i18n.language);
+    setNodes(template.nodes);
+    setEdges(template.edges as BokariEdge[]);
+    setCurrencyState(template.currency);
   }, [setNodes, setEdges, takeSnapshot]);
+
+  const switchTemplate = useCallback((locale: string) => {
+    if (!isOnTemplate(nodes as BokariNode[], edges)) return;
+    takeSnapshot();
+    const template = getTemplateForLocale(locale);
+    setNodes(template.nodes);
+    setEdges(template.edges as BokariEdge[]);
+    setCurrencyState(template.currency);
+  }, [nodes, edges, setNodes, setEdges, takeSnapshot]);
 
   const exportGraph = useCallback(() => {
     const json = exportToJSON(nodes as BokariNode[], edges, currency);
@@ -227,6 +240,7 @@ export function BudgetTreeProvider({ children }: { children: React.ReactNode }) 
     importGraph,
     takeSnapshot,
     autoLayout,
+    switchTemplate,
     setReactFlowInstance,
   };
 

@@ -9,6 +9,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
+import { useTranslation } from 'react-i18next';
 import { useBudgetTree } from '../../context/BudgetTreeContext';
 import { computeInvestmentProjection } from '../../utils/projections';
 import { INVESTMENT_PALETTE } from '../../constants/nodeColors';
@@ -50,6 +51,7 @@ export default function ProjectionsTab() {
   const { nodes, edges, currency, handleNodeDataChange } = useBudgetTree();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation('projections');
   const [horizonYears, setHorizonYears] = useState(20);
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [chartViewMode, setChartViewMode] = useState<'total' | 'perAsset'>('total');
@@ -176,7 +178,7 @@ export default function ProjectionsTab() {
     return (
       <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          Create nodes in the Budget tab first.
+          {t('emptyState.noNodes')}
         </Typography>
       </Box>
     );
@@ -186,7 +188,7 @@ export default function ProjectionsTab() {
     return (
       <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
         <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 500, textAlign: 'center' }}>
-          Tag nodes as investments in the Budget tab by clicking the trending-up icon on any fixed, proportional, or relative node.
+          {t('emptyState.noInvestments')}
         </Typography>
       </Box>
     );
@@ -277,7 +279,7 @@ export default function ProjectionsTab() {
                   }}
                 >
                   <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Yearly Breakdown
+                    {t('table.yearlyBreakdown')}
                   </Typography>
                   {tableExpanded ? (
                     <ExpandLess sx={{ fontSize: 18, color: 'text.secondary' }} />

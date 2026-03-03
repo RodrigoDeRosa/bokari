@@ -1,0 +1,94 @@
+{
+  "budget": {
+    "welcome": {
+      "title": "Bienvenido a Bokari",
+      "description": "Bokari te ayuda a construir un árbol visual de presupuesto y proyectar tus inversiones a lo largo del tiempo. ¡Hagamos un tour rápido!"
+    },
+    "palette": {
+      "title": "Paleta de Nodos",
+      "description": "Arrastrá nodos desde acá al lienzo para armar tu árbol de presupuesto. Cada color representa un tipo de nodo diferente."
+    },
+    "canvas": {
+      "title": "Lienzo de Presupuesto",
+      "description": "Este es tu espacio de trabajo. Soltá nodos acá, conectalos con aristas y editá valores directamente para diseñar tu presupuesto."
+    },
+    "tabs": {
+      "title": "Pestañas",
+      "description": "Cambiá entre la vista de Presupuesto (armá tu árbol) y Proyecciones (mirá cómo crecen las inversiones con el tiempo)."
+    },
+    "toolbar": {
+      "title": "Acciones de la Barra",
+      "description": "Deshacé, rehacé, guardá, ordená, exportá e importá tu presupuesto desde acá."
+    },
+    "help": {
+      "title": "Ayuda",
+      "description": "Abrí el panel de ayuda en cualquier momento para guías detalladas. También podés reiniciar este tour desde ahí."
+    },
+    "locale": {
+      "title": "Moneda e Idioma",
+      "description": "Elegí tu moneda e idioma acá. Si no modificaste el presupuesto de ejemplo, al cambiar el idioma también se actualizan las etiquetas y valores."
+    }
+  },
+  "mobileBudget": {
+    "welcome": {
+      "title": "Bienvenido a Bokari",
+      "description": "Bokari te ayuda a construir un árbol visual de presupuesto y proyectar tus inversiones a lo largo del tiempo. ¡Hagamos un tour rápido!"
+    },
+    "list": {
+      "title": "Tu Presupuesto",
+      "description": "Tus ítems de presupuesto están listados acá como tarjetas. Tocá una tarjeta para ver sus hijos, o tocá el ícono de edición para cambiar sus valores."
+    },
+    "addNode": {
+      "title": "Agregar Nodos",
+      "description": "Tocá este botón para crear nodos nuevos. Elegí un tipo y empezá a armar tu árbol de presupuesto."
+    },
+    "tabs": {
+      "title": "Pestañas",
+      "description": "Cambiá entre Presupuesto (armá tu árbol) y Proyecciones (mirá cómo crecen las inversiones con el tiempo)."
+    },
+    "moreActions": {
+      "title": "Más Acciones",
+      "description": "Accedé a deshacer, rehacer, guardar, exportar, importar y ayuda desde este menú."
+    },
+    "locale": {
+      "title": "Moneda e Idioma",
+      "description": "Elegí tu moneda e idioma acá. Al cambiar el idioma con el ejemplo sin modificar, también se actualizan las etiquetas y valores."
+    }
+  },
+  "projections": {
+    "intro": {
+      "title": "Proyecciones",
+      "description": "Esta pestaña muestra cómo podrían crecer tus inversiones a lo largo del tiempo según tu presupuesto. ¡Vamos a recorrerla!"
+    },
+    "summary": {
+      "title": "Resumen del Portafolio",
+      "description": "Una vista rápida del valor proyectado de tu portafolio basado en los aportes actuales, retornos y horizonte temporal."
+    },
+    "controls": {
+      "title": "Controles",
+      "description": "Elegí un horizonte temporal (5–40 años), cambiá entre vista total y desglose por activo, y filtrá qué inversiones mostrar."
+    },
+    "chart": {
+      "title": "Gráfico de Crecimiento",
+      "description": "Visualizá aportes vs. crecimiento compuesto a lo largo del tiempo. Las áreas apiladas muestran cuánto viene de lo que pusiste vs. lo que el mercado te genera."
+    },
+    "scenarios": {
+      "title": "Explorar Escenarios",
+      "description": "Ajustá los aportes mensuales para ver escenarios hipotéticos. Aumentá o disminuí montos por activo y mirá cómo se actualizan el gráfico y el resumen al instante."
+    },
+    "settings": {
+      "title": "Configuración de Inversiones",
+      "description": "Configurá el retorno anual esperado para cada inversión y modelá el crecimiento del ingreso a lo largo del tiempo. Estos valores impulsan los cálculos de crecimiento compuesto."
+    },
+    "table": {
+      "title": "Desglose Anual",
+      "description": "Expandí esta sección para ver una tabla año por año con aportes exactos, crecimiento y valores del portafolio."
+    }
+  },
+  "nav": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "finish": "Finalizar"
+  }
+}

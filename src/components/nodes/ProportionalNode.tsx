@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../utils/currency';
 import EditableLabel from '../attributes/EditableLabel';
 import EditableValue from '../attributes/EditableValue';
@@ -15,6 +16,7 @@ const ProportionalNode = ({ id, data }: NodeProps<RuntimeNode>) => {
     id,
     data.handleNodeDataChange,
   );
+  const { t } = useTranslation('nodes');
 
   const proportion = data.proportion ?? 0;
   const exceedsProportion = proportion > 100;
@@ -24,7 +26,7 @@ const ProportionalNode = ({ id, data }: NodeProps<RuntimeNode>) => {
       const conflicts = data.getInvestmentConflicts(id);
       if (conflicts.length > 0) {
         const descriptions = conflicts.map((c) => `${c.label} (${c.direction})`).join(', ');
-        data.setInvestmentError(`Cannot mark as investment — conflicts with: ${descriptions}`);
+        data.setInvestmentError(t('investmentConflict', { descriptions }));
         return;
       }
     }
@@ -56,7 +58,7 @@ const ProportionalNode = ({ id, data }: NodeProps<RuntimeNode>) => {
       <p
         className="non-editable-field"
         aria-live="polite"
-        aria-label={`Calculated value: ${formatCurrency(data.value, data.currency)}`}
+        aria-label={t('calculatedValue', { value: formatCurrency(data.value, data.currency) })}
         style={data.value < 0 ? { color: '#ffccd5' } : undefined}
       >
         {formatCurrency(data.value, data.currency)}

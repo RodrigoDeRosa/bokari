@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../../utils/currency';
 import EditableLabel from '../../attributes/EditableLabel';
 import EditableValue from '../../attributes/EditableValue';
@@ -13,6 +14,7 @@ interface FixedGroupChildProps {
 }
 
 const FixedGroupChild = ({ id, label, value, onEdit, onDelete, currency }: FixedGroupChildProps) => {
+  const { t } = useTranslation('nodes');
   const onValueUpdate = (newValue: number) => {
     if (!isNaN(newValue) && newValue !== value)
       onEdit(id, { label, value: newValue });
@@ -31,7 +33,7 @@ const FixedGroupChild = ({ id, label, value, onEdit, onDelete, currency }: Fixed
         valueFormatter={(v) => formatCurrency(v, currency)}
         onUpdate={onValueUpdate}
       />
-      <button className="icon-button" onClick={() => onDelete(id)} aria-label={`Delete ${label}`}>
+      <button className="icon-button" onClick={() => onDelete(id)} aria-label={t('deleteItem', { label })}>
         <DeleteIcon fontSize="small" />
       </button>
     </li>

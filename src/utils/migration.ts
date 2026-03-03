@@ -52,7 +52,7 @@ function migrateFromLegacy(): PersistedState | null {
   }
 }
 
-export function loadState(fallbackNodes: BokariNode[], fallbackEdges: BokariEdge[]): PersistedState {
+export function loadState(fallbackNodes: BokariNode[], fallbackEdges: BokariEdge[], fallbackCurrency: string = 'EUR'): PersistedState {
   // Try new format first
   const raw = localStorage.getItem(STORAGE_KEY);
   if (raw) {
@@ -77,7 +77,7 @@ export function loadState(fallbackNodes: BokariNode[], fallbackEdges: BokariEdge
   // Fresh start
   return {
     version: CURRENT_VERSION,
-    currency: 'EUR',
+    currency: fallbackCurrency,
     nodes: fallbackNodes,
     edges: fallbackEdges,
   };

@@ -1,0 +1,54 @@
+{
+  "controls": {
+    "horizon": "Horizon",
+    "yearPreset": "{{y}}yr",
+    "total": "Total",
+    "perAsset": "Per Asset",
+    "all": "All"
+  },
+  "chart": {
+    "contributions": "Contributions",
+    "growth": "Growth",
+    "currentPlan": "Current plan",
+    "now": "Now",
+    "yearLabel": "Year {{year}}"
+  },
+  "table": {
+    "year": "Year",
+    "monthlyContribution": "Monthly Contribution",
+    "cumulativeContributions": "Cumulative Contributions",
+    "portfolioValue": "Portfolio Value",
+    "growth": "Growth",
+    "yearlyBreakdown": "Yearly Breakdown"
+  },
+  "narrative": {
+    "summary": "Investing <bold>{{amount}}</bold>/mo at an average <bold>{{rate}}%</bold> return over <bold>{{years}}</bold> years:",
+    "contributions": "<bold>{{amount}}</bold> in contributions",
+    "compoundGrowth": "+ <bold>{{growth}}</bold> compound growth",
+    "multiplier": "({{value}}x multiplier)",
+    "whatIf": "With your adjustments (<bold>{{diff}}</bold>/mo), the portfolio reaches <bold>{{value}}</bold> — <bold>{{diffAmount}}</bold> {{comparison}} than the current plan.",
+    "more": "more",
+    "less": "less"
+  },
+  "scenarios": {
+    "title": "Explore Scenarios",
+    "adjustmentCount_one": "{{count}} adjustment",
+    "adjustmentCount_other": "{{count}} adjustments",
+    "netSummary": "· net {{amount}}/mo",
+    "defaultSubtitle": "Adjust monthly contributions to compare outcomes",
+    "investingMore": "Investing {{amount}} more per month",
+    "keepingMore": "Keeping {{amount}} more by not investing",
+    "clearAll": "Clear all"
+  },
+  "settings": {
+    "title": "Investment Settings",
+    "avgReturn": "Avg {{return}}% return",
+    "incomeGrowth": "Income +{{growth}}%/yr",
+    "return": "Return",
+    "incomeGrowthLabel": "Income Growth"
+  },
+  "emptyState": {
+    "noNodes": "Create nodes in the Budget tab first.",
+    "noInvestments": "Tag nodes as investments in the Budget tab by clicking the trending-up icon on any fixed, proportional, or relative node."
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../utils/currency';
 import EditableLabel from '../attributes/EditableLabel';
 import EditableValue from '../attributes/EditableValue';
@@ -14,6 +15,7 @@ const RootNode = ({ id, data }: NodeProps<RuntimeNode>) => {
     id,
     data.handleNodeDataChange,
   );
+  const { t } = useTranslation('nodes');
 
   const annualGrowth = data.annualGrowth ?? 0;
   const [editing, setEditing] = useState(false);
@@ -65,7 +67,7 @@ const RootNode = ({ id, data }: NodeProps<RuntimeNode>) => {
               setEditing(true);
             }}
           >
-            +{annualGrowth.toFixed(1)}%/yr
+            {t('growthBadge', { rate: annualGrowth.toFixed(1) })}
           </span>
         )}
       </div>

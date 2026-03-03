@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../utils/currency';
 import EditableLabel from '../attributes/EditableLabel';
 import useNodeHandlers from '../../utils/useNodeHandlers';
@@ -11,13 +12,14 @@ type RuntimeNode = Node<RuntimeNodeData>;
 
 const RelativeNode = ({ id, data }: NodeProps<RuntimeNode>) => {
   const { handleLabelChange } = useNodeHandlers(id, data.handleNodeDataChange);
+  const { t } = useTranslation('nodes');
 
   const handleInvestmentToggle = useCallback(() => {
     if (!data.isInvestment) {
       const conflicts = data.getInvestmentConflicts(id);
       if (conflicts.length > 0) {
         const descriptions = conflicts.map((c) => `${c.label} (${c.direction})`).join(', ');
-        data.setInvestmentError(`Cannot mark as investment — conflicts with: ${descriptions}`);
+        data.setInvestmentError(t('investmentConflict', { descriptions }));
         return;
       }
     }
@@ -42,7 +44,7 @@ const RelativeNode = ({ id, data }: NodeProps<RuntimeNode>) => {
       <p
         className="non-editable-field"
         aria-live="polite"
-        aria-label={`Remaining: ${formatCurrency(data.value, data.currency)}`}
+        aria-label={t('remainingValue', { value: formatCurrency(data.value, data.currency) })}
         style={data.value < 0 ? { color: '#ffccd5' } : undefined}
       >
         {formatCurrency(data.value, data.currency)}

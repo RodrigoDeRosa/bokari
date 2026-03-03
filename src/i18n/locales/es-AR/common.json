@@ -1,0 +1,106 @@
+{
+  "appName": "Bokari",
+  "tabs": {
+    "budget": "Presupuesto",
+    "projections": "Proyecciones"
+  },
+  "toolbar": {
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "save": "Guardar",
+    "export": "Exportar",
+    "import": "Importar",
+    "reset": "Reiniciar",
+    "help": "Ayuda",
+    "undoTooltip": "Deshacer (Ctrl+Z)",
+    "redoTooltip": "Rehacer (Ctrl+Shift+Z)",
+    "saveTooltip": "Guardar (Ctrl+S)",
+    "autoLayoutTooltip": "Ordenar automáticamente",
+    "exportTooltip": "Exportar como JSON",
+    "importTooltip": "Importar JSON",
+    "resetTooltip": "Reiniciar con ejemplo",
+    "autoLayout": "Ordenar",
+    "exportBudget": "Exportar presupuesto",
+    "importBudget": "Importar presupuesto",
+    "resetBudget": "Reiniciar presupuesto",
+    "toggleHelp": "Abrir/cerrar ayuda",
+    "moreActions": "Más acciones",
+    "currency": "Moneda",
+    "language": "Idioma"
+  },
+  "dialogs": {
+    "resetTitle": "¿Reiniciar presupuesto?",
+    "resetMessage": "Esto va a reemplazar tu presupuesto actual con los datos de ejemplo. Podés deshacer esta acción.",
+    "cancel": "Cancelar",
+    "reset": "Reiniciar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "add": "Agregar"
+  },
+  "snackbar": {
+    "importFailed": "Error al importar: {{error}}",
+    "importSuccess": "Presupuesto importado correctamente",
+    "budgetSaved": "Presupuesto guardado",
+    "budgetReset": "Presupuesto reiniciado con ejemplo"
+  },
+  "nodeTypes": {
+    "rootNode": "Raíz",
+    "fixedNode": "Fijo",
+    "proportionalNode": "Proporcional",
+    "relativeNode": "Relativo",
+    "aggregatorNode": "Agregador",
+    "fixedGroupNode": "Grupo Fijo"
+  },
+  "nodeTypeLabels": {
+    "rootNode": "Ingreso",
+    "fixedNode": "Fijo",
+    "proportionalNode": "Proporcional",
+    "relativeNode": "Restante",
+    "aggregatorNode": "Suma",
+    "fixedGroupNode": "Grupo Fijo"
+  },
+  "nodeDescriptions": {
+    "rootNode": "Fuente de ingreso principal",
+    "fixedNode": "Monto fijo (ej. alquiler)",
+    "proportionalNode": "Porcentaje del nodo padre",
+    "relativeNode": "Lo que queda disponible",
+    "aggregatorNode": "Suma de sus hijos",
+    "fixedGroupNode": "Grupo de ítems fijos"
+  },
+  "palette": {
+    "title": "Paleta de Nodos",
+    "collapse": "Colapsar paleta",
+    "expand": "Expandir paleta",
+    "dragToCreate": "Arrastrá para crear un nodo {{label}}"
+  },
+  "graph": {
+    "selectedCount_one": "{{count}} seleccionado",
+    "selectedCount_other": "{{count}} seleccionados"
+  },
+  "mobile": {
+    "desktopTip": "Para una mejor experiencia, te recomendamos armar tu presupuesto en una computadora.",
+    "noSubItems": "Sin sub-ítems",
+    "addNode": "Agregar nodo",
+    "addNodeTitle": "Agregar Nodo",
+    "budgetRoot": "Presupuesto",
+    "newNode": "Nuevo Nodo",
+    "remainder": "Restante",
+    "itemCount_one": "{{count}} ítem",
+    "itemCount_other": "{{count}} ítems"
+  },
+  "editDialog": {
+    "title": "Editar Nodo",
+    "parent": "Padre",
+    "noParent": "(Sin padre)",
+    "label": "Nombre",
+    "value": "Valor",
+    "proportion": "Proporción (%)",
+    "annualGrowth": "Crecimiento Anual (%)",
+    "growthHelper": "Crecimiento del ingreso por año",
+    "tagInvestment": "Marcar como inversión",
+    "expectedReturn": "Retorno Anual Esperado (%)",
+    "subItems": "Sub-ítems",
+    "item": "Ítem",
+    "newItem": "Nuevo Ítem"
+  }
+}

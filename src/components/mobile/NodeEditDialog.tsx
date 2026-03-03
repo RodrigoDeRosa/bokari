@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Stack from '@mui/material/Stack';
@@ -15,7 +19,30 @@ import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import type { BokariNode, NodeType, FixedGroupChild } from '../../types';
+import { useTranslation } from 'react-i18next';
+import type { BokariNode, BokariEdge, NodeType, FixedGroupChild } from '../../types';
+
+/** Returns IDs of all descendants of `nodeId` (to prevent circular parent assignment). */
+function getDescendantIds(nodeId: string, edges: BokariEdge[]): Set<string> {
+  const descendants = new Set<string>();
+  const stack = [nodeId];
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    for (const edge of edges) {
+      if (edge.source === current && !descendants.has(edge.target)) {
+        descendants.add(edge.target);
+        stack.push(edge.target);
+      }
+    }
+  }
+  return descendants;
+}
+
+/** Returns nodes that are valid parents for `nodeId` (not itself, not its descendants). */
+function getValidParents(nodeId: string, nodes: BokariNode[], edges: BokariEdge[]): BokariNode[] {
+  const descendants = getDescendantIds(nodeId, edges);
+  return nodes.filter((n) => n.id !== nodeId && !descendants.has(n.id));
+}
 
 interface NodeEditDialogProps {
   node: BokariNode | null;
@@ -23,10 +50,14 @@ interface NodeEditDialogProps {
   onClose: () => void;
   onSave: (nodeId: string, updates: Record<string, unknown>) => void;
   onDelete: (nodeId: string) => void;
+  onParentChange?: (nodeId: string, newParentId: string | null) => void;
   currency: string;
+  nodes?: BokariNode[];
+  edges?: BokariEdge[];
 }
 
-export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, currency }: NodeEditDialogProps) {
+export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, onParentChange, currency, nodes, edges }: NodeEditDialogProps) {
+  const { t } = useTranslation();
   const [label, setLabel] = useState('');
   const [value, setValue] = useState('');
   const [proportion, setProportion] = useState('');
@@ -34,6 +65,22 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
   const [isInvestment, setIsInvestment] = useState(false);
   const [expectedReturn, setExpectedReturn] = useState('7');
   const [children, setChildren] = useState<FixedGroupChild[]>([]);
+  const [parentId, setParentId] = useState<string | null>(null);
+
+  // Find current parent from edges
+  const currentParentId = useMemo(() => {
+    if (!node || !edges) return null;
+    const incoming = edges.find((e) => e.target === node.id);
+    return incoming?.source ?? null;
+  }, [node, edges]);
+
+  // Valid parents for the dropdown
+  const validParents = useMemo(() => {
+    if (!node || !nodes || !edges) return [];
+    return getValidParents(node.id, nodes, edges);
+  }, [node, nodes, edges]);
+
+  const showParentSelector = !!nodes && !!edges && !!onParentChange;
 
   useEffect(() => {
     if (node) {
@@ -44,8 +91,9 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
       setIsInvestment(node.data.isInvestment || false);
       setExpectedReturn(String(node.data.expectedReturn ?? 7));
       setChildren(node.data.children ? [...node.data.children] : []);
+      setParentId(currentParentId);
     }
-  }, [node]);
+  }, [node, currentParentId]);
 
   if (!node) return null;
 
@@ -80,6 +128,12 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
     }
 
     onSave(node.id, updates);
+
+    // Handle parent change if the selector is active and value differs
+    if (showParentSelector && parentId !== currentParentId) {
+      onParentChange!(node.id, parentId);
+    }
+
     onClose();
   };
 
@@ -89,7 +143,7 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
   };
 
   const addChild = () => {
-    setChildren([...children, { id: `child-${Date.now()}`, label: 'New Item', value: 0 }]);
+    setChildren([...children, { id: `child-${Date.now()}`, label: t('editDialog.newItem'), value: 0 }]);
   };
 
   const removeChild = (index: number) => {
@@ -107,11 +161,31 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Edit Node</DialogTitle>
+      <DialogTitle>{t('editDialog.title')}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
+          {/* Parent selector — only on mobile, skip for root nodes */}
+          {showParentSelector && nodeType !== 'rootNode' && (
+            <FormControl fullWidth>
+              <InputLabel id="parent-select-label">{t('editDialog.parent')}</InputLabel>
+              <Select
+                labelId="parent-select-label"
+                value={parentId ?? ''}
+                label={t('editDialog.parent')}
+                onChange={(e) => setParentId(e.target.value || null)}
+              >
+                <MenuItem value="">{t('editDialog.noParent')}</MenuItem>
+                {validParents.map((p) => (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.data.label || p.id}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
           <TextField
-            label="Label"
+            label={t('editDialog.label')}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             fullWidth
@@ -120,7 +194,7 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
 
           {(nodeType === 'rootNode' || nodeType === 'fixedNode') && (
             <TextField
-              label="Value"
+              label={t('editDialog.value')}
               type="number"
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -130,7 +204,7 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
 
           {nodeType === 'proportionalNode' && (
             <TextField
-              label="Proportion (%)"
+              label={t('editDialog.proportion')}
               type="number"
               value={proportion}
               onChange={(e) => setProportion(e.target.value)}
@@ -140,12 +214,12 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
 
           {nodeType === 'rootNode' && (
             <TextField
-              label="Annual Growth (%)"
+              label={t('editDialog.annualGrowth')}
               type="number"
               value={annualGrowth}
               onChange={(e) => setAnnualGrowth(e.target.value)}
               fullWidth
-              helperText="Income growth per year"
+              helperText={t('editDialog.growthHelper')}
             />
           )}
 
@@ -159,11 +233,11 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
                     onChange={(e) => setIsInvestment(e.target.checked)}
                   />
                 }
-                label="Tag as investment"
+                label={t('editDialog.tagInvestment')}
               />
               {isInvestment && (
                 <TextField
-                  label="Expected Annual Return (%)"
+                  label={t('editDialog.expectedReturn')}
                   type="number"
                   value={expectedReturn}
                   onChange={(e) => setExpectedReturn(e.target.value)}
@@ -177,22 +251,22 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
             <>
               <Divider />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="subtitle2">Sub-items</Typography>
+                <Typography variant="subtitle2">{t('editDialog.subItems')}</Typography>
                 <Button size="small" startIcon={<AddIcon />} onClick={addChild}>
-                  Add
+                  {t('dialogs.add')}
                 </Button>
               </Box>
               {children.map((child, i) => (
                 <Stack key={child.id} direction="row" spacing={1} alignItems="center">
                   <TextField
-                    label="Item"
+                    label={t('editDialog.item')}
                     value={child.label}
                     onChange={(e) => updateChild(i, 'label', e.target.value)}
                     size="small"
                     sx={{ flex: 1 }}
                   />
                   <TextField
-                    label="Value"
+                    label={t('editDialog.value')}
                     type="number"
                     value={child.value}
                     onChange={(e) => updateChild(i, 'value', e.target.value)}
@@ -210,11 +284,11 @@ export default function NodeEditDialog({ node, open, onClose, onSave, onDelete, 
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
         <Button onClick={handleDelete} color="error" startIcon={<DeleteIcon />}>
-          Delete
+          {t('dialogs.delete')}
         </Button>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained">Save</Button>
+          <Button onClick={onClose}>{t('dialogs.cancel')}</Button>
+          <Button onClick={handleSave} variant="contained">{t('dialogs.save')}</Button>
         </Box>
       </DialogActions>
     </Dialog>

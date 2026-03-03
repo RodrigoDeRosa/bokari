@@ -1,0 +1,63 @@
+{
+  "drawerTitle": "Help",
+  "closeHelp": "Close help",
+  "restartTour": "Restart {{tab}} Tour",
+  "budget": {
+    "gettingStarted": {
+      "title": "Getting Started",
+      "body": "Bokari uses a tree model inspired by Zero-Based Budgeting. Your total income sits at the root, and every dollar flows down through branches into spending categories. The canvas lets you visually build and adjust this tree."
+    },
+    "creatingNodes": {
+      "title": "Creating Nodes",
+      "body": "Drag a node type from the palette on the left side of the canvas and drop it onto the workspace. Each type has a colored dot so you can identify it at a glance."
+    },
+    "connectingNodes": {
+      "title": "Connecting Nodes",
+      "body": "Drag from a node's output handle (bottom, black) to another node's input handle (top, white) to create a parent-child relationship. Values flow from parent to children automatically."
+    },
+    "editingValues": {
+      "title": "Editing Values",
+      "body": "Click any field on a node to edit it inline. For proportional and relative nodes, the dollar value is computed automatically from the parent — just set the percentage or leave it as the remainder."
+    },
+    "nodeTypes": {
+      "title": "Node Types",
+      "rootNode": { "label": "Root Node:", "description": "The starting point — enter your total income here." },
+      "fixedNode": { "label": "Fixed Node:", "description": "A constant amount (e.g. rent, subscriptions). Does not scale when income changes." },
+      "proportionalNode": { "label": "Proportional Node:", "description": "Takes a percentage of its parent. Great for savings targets or percentage-based budgets." },
+      "relativeNode": { "label": "Relative Node:", "description": "Gets whatever is left after siblings are allocated. Useful for discretionary spending." },
+      "aggregatorNode": { "label": "Aggregator Node:", "description": "Sums values from multiple parents into one total. Use it to see combined spending across categories." },
+      "fixedGroupNode": { "label": "Fixed Group Node:", "description": "Groups several fixed line items under one node. Handy for listing individual bills." }
+    },
+    "tips": {
+      "title": "Tips",
+      "undoRedo": { "label": "Undo / Redo:", "tip": "Ctrl+Z and Ctrl+Shift+Z (Cmd on Mac)." },
+      "autoLayout": { "label": "Auto-layout:", "tip": "Use the toolbar button to tidy up node positions." },
+      "saveLoad": { "label": "Save / Load:", "tip": "Your budget is saved to the browser. Use Ctrl+S to save manually." },
+      "importExport": { "label": "Import / Export:", "tip": "Share your budget as a JSON file via the toolbar menu." },
+      "delete": { "label": "Delete:", "tip": "Select a node or edge and press Backspace/Delete." }
+    }
+  },
+  "projections": {
+    "overview": {
+      "title": "Overview",
+      "body": "The Projections tab takes your current budget and simulates how your investments could grow over time. It uses the contribution amounts from your budget tree and applies compound growth to project future values."
+    },
+    "chart": {
+      "title": "The Chart",
+      "body": "The stacked area chart shows two layers: your cumulative contributions (what you put in) and the growth on top (what compounding earns you). Use the horizon presets (5y, 10y, 20y, 30y) to change the time window. You can also switch between a total portfolio view and a per-asset breakdown."
+    },
+    "settings": {
+      "title": "Investment Settings",
+      "expectedReturn": { "label": "Expected Return:", "tip": "Set the annual return rate for each investment with the slider. This drives the compound growth calculation." },
+      "incomeGrowth": { "label": "Income Growth:", "tip": "If your income grows year-over-year, proportional contributions will increase accordingly." }
+    },
+    "scenarios": {
+      "title": "Explore Scenarios",
+      "body": "Adjust contribution amounts using the +/- buttons or by typing a value directly to see how changes affect your long-term projections. A delta indicator shows the difference from your original budget. Use the reset button to return a single item to its original value, or clear all overrides at once."
+    },
+    "table": {
+      "title": "The Table",
+      "body": "Below the chart you'll find a year-by-year breakdown showing contributions, growth, and total portfolio value for each period. This gives you the exact numbers behind the chart."
+    }
+  }
+}

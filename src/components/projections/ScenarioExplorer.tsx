@@ -12,6 +12,8 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import Remove from '@mui/icons-material/Remove';
 import Add from '@mui/icons-material/Add';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
+import { useTranslation } from 'react-i18next';
+import { getNumberLocale } from '../../utils/currency';
 import type { BokariNode, InvestmentProjectionResult } from '../../types';
 
 interface ScenarioExplorerProps {
@@ -25,10 +27,11 @@ interface ScenarioExplorerProps {
 }
 
 function fmt(value: number, currency: string): string {
+  const locale = getNumberLocale();
   if (value >= 1_000_000) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
+    return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
   }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 export default function ScenarioExplorer({
@@ -42,6 +45,7 @@ export default function ScenarioExplorer({
 }: ScenarioExplorerProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation('projections');
   const [expanded, setExpanded] = useState(false);
 
   const rows = result.nodes.map((node) => {
@@ -91,13 +95,13 @@ export default function ScenarioExplorer({
       >
         <Stack spacing={0.25}>
           <Typography variant="subtitle1" fontWeight={700}>
-            Explore Scenarios
+            {t('scenarios.title')}
           </Typography>
           {!expanded && (
             <Typography variant="caption" color="text.secondary">
               {activeDeltas.length > 0
-                ? `${activeDeltas.length} adjustment${activeDeltas.length > 1 ? 's' : ''} · net ${netDelta > 0 ? '+' : ''}${fmt(netDelta, currency)}/mo`
-                : 'Adjust monthly contributions to compare outcomes'}
+                ? `${t('scenarios.adjustmentCount', { count: activeDeltas.length })} ${t('scenarios.netSummary', { amount: `${netDelta > 0 ? '+' : ''}${fmt(netDelta, currency)}` })}`
+                : t('scenarios.defaultSubtitle')}
             </Typography>
           )}
         </Stack>
@@ -219,8 +223,8 @@ export default function ScenarioExplorer({
               sx={{ color: netDelta > 0 ? '#00916e' : '#ed6c02' }}
             >
               {netDelta > 0
-                ? `Investing ${fmt(netDelta, currency)} more per month`
-                : `Keeping ${fmt(Math.abs(netDelta), currency)} more by not investing`}
+                ? t('scenarios.investingMore', { amount: fmt(netDelta, currency) })
+                : t('scenarios.keepingMore', { amount: fmt(Math.abs(netDelta), currency) })}
             </Typography>
             <Link
               component="button"
@@ -229,7 +233,7 @@ export default function ScenarioExplorer({
               onClick={onClearAllDeltas}
               sx={{ color: 'text.secondary', whiteSpace: 'nowrap', ml: 1 }}
             >
-              Clear all
+              {t('scenarios.clearAll')}
             </Link>
           </Stack>
         </Box>

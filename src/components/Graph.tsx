@@ -2,10 +2,15 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { ReactFlow, MiniMap } from '@xyflow/react';
 import type { ReactFlowInstance } from '@xyflow/react';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 
 import '@xyflow/react/dist/style.css';
+import { useTranslation } from 'react-i18next';
 import FixedNode from './nodes/FixedNode';
 import ProportionalNode from './nodes/ProportionalNode';
 import RelativeNode from './nodes/RelativeNode';
@@ -29,6 +34,7 @@ const nodeTypes = {
 };
 
 export default function GraphView() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
@@ -46,6 +52,7 @@ export default function GraphView() {
     getInvestmentConflicts,
     setInvestmentError,
     setNodes,
+    setEdges,
     takeSnapshot,
     setReactFlowInstance,
   } = useBudgetTree();
@@ -105,6 +112,34 @@ export default function GraphView() {
     [reactFlowInstance, reactFlowWrapper, setNodes, takeSnapshot],
   );
 
+  // Multi-selection: track selected nodes
+  const selectedNodes = useMemo(
+    () => nodes.filter((n) => n.selected),
+    [nodes],
+  );
+
+  const deleteSelected = useCallback(() => {
+    if (selectedNodes.length === 0) return;
+    takeSnapshot();
+    const selectedIds = new Set(selectedNodes.map((n) => n.id));
+    setNodes((nds) => nds.filter((n) => !selectedIds.has(n.id)));
+    setEdges((eds) => eds.filter((e) => !selectedIds.has(e.source) && !selectedIds.has(e.target)));
+  }, [selectedNodes, takeSnapshot, setNodes, setEdges]);
+
+  // Delete/Backspace to remove selected nodes
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Delete' && e.key !== 'Backspace') return;
+      // Don't intercept when typing in an input
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+      e.preventDefault();
+      deleteSelected();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [deleteSelected]);
+
   useEffect(() => {
     if (reactFlowInstance && nodes.length > 0) {
       reactFlowInstance.fitView();
@@ -129,6 +164,7 @@ export default function GraphView() {
         onDragOver={onDragOver}
         onNodeMouseEnter={onNodeMouseEnter}
         onNodeMouseLeave={onNodeMouseLeave}
+        deleteKeyCode={null}
         panOnScroll
       >
         <MiniMap
@@ -141,6 +177,39 @@ export default function GraphView() {
         />
       </ReactFlow>
       <NodeCreator />
+
+      {/* Floating selection toolbar */}
+      {selectedNodes.length > 0 && (
+        <Paper
+          elevation={4}
+          sx={{
+            position: 'absolute',
+            bottom: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            px: 2,
+            py: 0.75,
+            borderRadius: 2,
+            zIndex: 10,
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {t('graph.selectedCount', { count: selectedNodes.length })}
+          </Typography>
+          <Button
+            size="small"
+            color="error"
+            variant="outlined"
+            startIcon={<DeleteIcon fontSize="small" />}
+            onClick={deleteSelected}
+          >
+            {t('dialogs.delete')}
+          </Button>
+        </Paper>
+      )}
     </Box>
   );
 }

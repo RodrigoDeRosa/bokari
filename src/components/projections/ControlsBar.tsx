@@ -6,6 +6,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import type { InvestmentNodeProjection } from '../../types';
 
 const HORIZON_PRESETS = [5, 10, 15, 20, 30, 40];
@@ -45,6 +46,7 @@ export default function ControlsBar({
 }: ControlsBarProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { t } = useTranslation('projections');
 
   const allSelected = investmentNodes.length > 0 && investmentNodes.every((n) => selectedNodeIds.has(n.nodeId));
 
@@ -59,7 +61,7 @@ export default function ControlsBar({
         {/* Horizon presets */}
         <Stack direction="row" alignItems="center" spacing={1} sx={{ flex: 1 }}>
           <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
-            Horizon
+            {t('controls.horizon')}
           </Typography>
           <ToggleButtonGroup
             size="small"
@@ -69,7 +71,7 @@ export default function ControlsBar({
           >
             {HORIZON_PRESETS.map((y) => (
               <ToggleButton key={y} value={y} sx={{ textTransform: 'none', px: 1.25, py: 0.25, minWidth: 0 }}>
-                {y}yr
+                {t('controls.yearPreset', { y })}
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
@@ -83,8 +85,8 @@ export default function ControlsBar({
           onChange={(_e, val) => { if (val) onViewModeChange(val); }}
           sx={{ flexShrink: 0 }}
         >
-          <ToggleButton value="total" sx={{ textTransform: 'none', px: 1.5 }}>Total</ToggleButton>
-          <ToggleButton value="perAsset" sx={{ textTransform: 'none', px: 1.5 }}>Per Asset</ToggleButton>
+          <ToggleButton value="total" sx={{ textTransform: 'none', px: 1.5 }}>{t('controls.total')}</ToggleButton>
+          <ToggleButton value="perAsset" sx={{ textTransform: 'none', px: 1.5 }}>{t('controls.perAsset')}</ToggleButton>
         </ToggleButtonGroup>
       </Stack>
 
@@ -92,7 +94,7 @@ export default function ControlsBar({
       {investmentNodes.length > 1 && (
         <Stack direction="row" flexWrap="wrap" gap={0.75} sx={{ mt: 1.5 }}>
           <Chip
-            label={allSelected ? 'All' : `${Array.from(selectedNodeIds).filter((id) => investmentNodes.some((n) => n.nodeId === id)).length}/${investmentNodes.length}`}
+            label={allSelected ? t('controls.all') : `${Array.from(selectedNodeIds).filter((id) => investmentNodes.some((n) => n.nodeId === id)).length}/${investmentNodes.length}`}
             size="small"
             variant={allSelected ? 'filled' : 'outlined'}
             onClick={onToggleAll}

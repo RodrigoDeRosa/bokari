@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { useTranslation } from 'react-i18next';
 
 export interface TourStep {
   target: string | null;
@@ -11,140 +12,42 @@ export interface TourStep {
   placement: 'center' | 'top' | 'bottom' | 'left' | 'right';
 }
 
-export const BUDGET_TOUR_STEPS: TourStep[] = [
-  {
-    target: null,
-    title: 'Welcome to Bokari',
-    description:
-      'Bokari helps you build a visual budget tree and project your investments over time. Let\u2019s take a quick tour!',
-    placement: 'center',
-  },
-  {
-    target: '[data-tour="node-palette"]',
-    title: 'Node Palette',
-    description:
-      'Drag nodes from here onto the canvas to build your budget tree. Each color represents a different node type.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="canvas"]',
-    title: 'Budget Canvas',
-    description:
-      'This is your workspace. Drop nodes here, connect them with edges, and edit values inline to design your budget.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="toolbar-tabs"]',
-    title: 'Tabs',
-    description:
-      'Switch between the Budget view (build your tree) and Projections (see how investments grow over time).',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="toolbar-actions"]',
-    title: 'Toolbar Actions',
-    description:
-      'Undo, redo, save, auto-layout, export, and import your budget from here.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="help-button"]',
-    title: 'Help',
-    description:
-      'Open the help drawer anytime for detailed guides. You can also restart this tour from there.',
-    placement: 'bottom',
-  },
-];
+export function useTourSteps() {
+  const { t } = useTranslation('tour');
 
-export const MOBILE_BUDGET_TOUR_STEPS: TourStep[] = [
-  {
-    target: null,
-    title: 'Welcome to Bokari',
-    description:
-      'Bokari helps you build a visual budget tree and project your investments over time. Let\u2019s take a quick tour!',
-    placement: 'center',
-  },
-  {
-    target: '[data-tour="mobile-cards"]',
-    title: 'Your Budget',
-    description:
-      'Your budget items are listed here as cards. Tap a card to drill into its children, or tap the edit icon to change its values.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="mobile-fab"]',
-    title: 'Add Nodes',
-    description:
-      'Tap this button to create new nodes. Choose a type and start building your budget tree.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="toolbar-tabs"]',
-    title: 'Tabs',
-    description:
-      'Switch between Budget (build your tree) and Projections (see how investments grow over time).',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="mobile-menu"]',
-    title: 'More Actions',
-    description:
-      'Access undo, redo, save, export, import, and help from this menu.',
-    placement: 'bottom',
-  },
-];
+  return useMemo(() => {
+    const budget: TourStep[] = [
+      { target: null, title: t('budget.welcome.title'), description: t('budget.welcome.description'), placement: 'center' },
+      { target: '[data-tour="node-palette"]', title: t('budget.palette.title'), description: t('budget.palette.description'), placement: 'top' },
+      { target: '[data-tour="canvas"]', title: t('budget.canvas.title'), description: t('budget.canvas.description'), placement: 'bottom' },
+      { target: '[data-tour="toolbar-tabs"]', title: t('budget.tabs.title'), description: t('budget.tabs.description'), placement: 'bottom' },
+      { target: '[data-tour="toolbar-actions"]', title: t('budget.toolbar.title'), description: t('budget.toolbar.description'), placement: 'bottom' },
+      { target: '[data-tour="toolbar-locale"]', title: t('budget.locale.title'), description: t('budget.locale.description'), placement: 'bottom' },
+      { target: '[data-tour="help-button"]', title: t('budget.help.title'), description: t('budget.help.description'), placement: 'bottom' },
+    ];
 
-export const PROJECTIONS_TOUR_STEPS: TourStep[] = [
-  {
-    target: null,
-    title: 'Projections',
-    description:
-      'This tab shows how your investments could grow over time based on your budget. Let\u2019s walk through it!',
-    placement: 'center',
-  },
-  {
-    target: '[data-tour="proj-summary"]',
-    title: 'Portfolio Summary',
-    description:
-      'A quick overview of your projected portfolio value based on current contributions, returns, and time horizon.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="proj-controls"]',
-    title: 'Controls',
-    description:
-      'Choose a time horizon (5\u201340 years), switch between a total view and per-asset breakdown, and filter which investments to show.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="proj-chart"]',
-    title: 'Growth Chart',
-    description:
-      'Visualize contributions vs. compound growth over time. The stacked areas show how much comes from what you put in vs. what the market earns you.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="proj-scenarios"]',
-    title: 'Explore Scenarios',
-    description:
-      'Adjust monthly contributions to see what-if scenarios. Increase or decrease amounts per asset and watch the chart and summary update instantly.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="proj-settings"]',
-    title: 'Investment Settings',
-    description:
-      'Set the expected annual return for each investment and model income growth over time. These drive the compound growth calculations.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="proj-table"]',
-    title: 'Yearly Breakdown',
-    description:
-      'Expand this section for a year-by-year table with exact contribution, growth, and portfolio values.',
-    placement: 'top',
-  },
-];
+    const mobileBudget: TourStep[] = [
+      { target: null, title: t('mobileBudget.welcome.title'), description: t('mobileBudget.welcome.description'), placement: 'center' },
+      { target: '[data-tour="mobile-cards"]', title: t('mobileBudget.list.title'), description: t('mobileBudget.list.description'), placement: 'bottom' },
+      { target: '[data-tour="mobile-fab"]', title: t('mobileBudget.addNode.title'), description: t('mobileBudget.addNode.description'), placement: 'top' },
+      { target: '[data-tour="toolbar-tabs"]', title: t('mobileBudget.tabs.title'), description: t('mobileBudget.tabs.description'), placement: 'bottom' },
+      { target: '[data-tour="toolbar-locale"]', title: t('mobileBudget.locale.title'), description: t('mobileBudget.locale.description'), placement: 'bottom' },
+      { target: '[data-tour="mobile-menu"]', title: t('mobileBudget.moreActions.title'), description: t('mobileBudget.moreActions.description'), placement: 'bottom' },
+    ];
+
+    const projections: TourStep[] = [
+      { target: null, title: t('projections.intro.title'), description: t('projections.intro.description'), placement: 'center' },
+      { target: '[data-tour="proj-summary"]', title: t('projections.summary.title'), description: t('projections.summary.description'), placement: 'bottom' },
+      { target: '[data-tour="proj-controls"]', title: t('projections.controls.title'), description: t('projections.controls.description'), placement: 'bottom' },
+      { target: '[data-tour="proj-chart"]', title: t('projections.chart.title'), description: t('projections.chart.description'), placement: 'top' },
+      { target: '[data-tour="proj-scenarios"]', title: t('projections.scenarios.title'), description: t('projections.scenarios.description'), placement: 'top' },
+      { target: '[data-tour="proj-settings"]', title: t('projections.settings.title'), description: t('projections.settings.description'), placement: 'top' },
+      { target: '[data-tour="proj-table"]', title: t('projections.table.title'), description: t('projections.table.description'), placement: 'top' },
+    ];
+
+    return { budget, mobileBudget, projections };
+  }, [t]);
+}
 
 interface TourProps {
   open: boolean;
@@ -157,6 +60,7 @@ const TOOLTIP_Z = 1301;
 const PADDING = 8;
 
 const Tour = ({ open, onClose, steps }: TourProps) => {
+  const { t } = useTranslation('tour');
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -355,7 +259,7 @@ const Tour = ({ open, onClose, steps }: TourProps) => {
           <Box sx={{ display: 'flex', gap: 1 }}>
             {!isLast && (
               <Button size="small" onClick={onClose} sx={{ textTransform: 'none' }}>
-                Skip
+                {t('nav.skip')}
               </Button>
             )}
             {!isFirst && (
@@ -365,7 +269,7 @@ const Tour = ({ open, onClose, steps }: TourProps) => {
                 onClick={() => setStep((s) => s - 1)}
                 sx={{ textTransform: 'none' }}
               >
-                Back
+                {t('nav.back')}
               </Button>
             )}
             <Button
@@ -380,7 +284,7 @@ const Tour = ({ open, onClose, steps }: TourProps) => {
               }}
               sx={{ textTransform: 'none' }}
             >
-              {isLast ? 'Finish' : 'Next'}
+              {isLast ? t('nav.finish') : t('nav.next')}
             </Button>
           </Box>
         </Box>

@@ -9,11 +9,7 @@ import GraphView from './components/Graph';
 import ProjectionsTab from './components/projections/ProjectionsTab';
 import Toolbar from './components/Toolbar';
 import Instructions from './components/Instructions';
-import Tour, {
-  BUDGET_TOUR_STEPS,
-  MOBILE_BUDGET_TOUR_STEPS,
-  PROJECTIONS_TOUR_STEPS,
-} from './components/Tour';
+import Tour, { useTourSteps } from './components/Tour';
 import { BudgetTreeProvider, useBudgetTree } from './context/BudgetTreeContext';
 import type { TabValue } from './components/Toolbar';
 
@@ -28,6 +24,8 @@ const AppContent: React.FC = () => {
 
   const { nodes } = useBudgetTree();
   const hasInvestmentNodes = nodes.some((n) => n.data.isInvestment);
+
+  const tourSteps = useTourSteps();
 
   // Track whether we've already shown the projections tour this session
   const projTourTriggered = useRef(false);
@@ -86,7 +84,7 @@ const AppContent: React.FC = () => {
   // Determine which tour is active
   const isBudgetTour = budgetTourOpen && activeTab === 'graph';
   const isProjTour = projTourOpen && activeTab === 'projections';
-  const budgetSteps = isMobile ? MOBILE_BUDGET_TOUR_STEPS : BUDGET_TOUR_STEPS;
+  const budgetSteps = isMobile ? tourSteps.mobileBudget : tourSteps.budget;
 
   return (
     <>
@@ -108,7 +106,7 @@ const AppContent: React.FC = () => {
         <Tour open steps={budgetSteps} onClose={handleCloseBudgetTour} />
       )}
       {isProjTour && (
-        <Tour open steps={PROJECTIONS_TOUR_STEPS} onClose={handleCloseProjTour} />
+        <Tour open steps={tourSteps.projections} onClose={handleCloseProjTour} />
       )}
     </>
   );

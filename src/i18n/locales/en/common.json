@@ -1,0 +1,106 @@
+{
+  "appName": "Bokari",
+  "tabs": {
+    "budget": "Budget",
+    "projections": "Projections"
+  },
+  "toolbar": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "save": "Save",
+    "export": "Export",
+    "import": "Import",
+    "reset": "Reset",
+    "help": "Help",
+    "undoTooltip": "Undo (Ctrl+Z)",
+    "redoTooltip": "Redo (Ctrl+Shift+Z)",
+    "saveTooltip": "Save (Ctrl+S)",
+    "autoLayoutTooltip": "Auto-layout (tidy up)",
+    "exportTooltip": "Export as JSON",
+    "importTooltip": "Import JSON",
+    "resetTooltip": "Reset to example",
+    "autoLayout": "Auto-layout",
+    "exportBudget": "Export budget",
+    "importBudget": "Import budget",
+    "resetBudget": "Reset budget",
+    "toggleHelp": "Toggle help",
+    "moreActions": "More actions",
+    "currency": "Currency",
+    "language": "Language"
+  },
+  "dialogs": {
+    "resetTitle": "Reset Budget?",
+    "resetMessage": "This will replace your current budget with the example data. This action can be undone.",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "delete": "Delete",
+    "save": "Save",
+    "add": "Add"
+  },
+  "snackbar": {
+    "importFailed": "Import failed: {{error}}",
+    "importSuccess": "Budget imported successfully",
+    "budgetSaved": "Budget saved",
+    "budgetReset": "Budget reset to example"
+  },
+  "nodeTypes": {
+    "rootNode": "Root",
+    "fixedNode": "Fixed",
+    "proportionalNode": "Proportional",
+    "relativeNode": "Relative",
+    "aggregatorNode": "Aggregator",
+    "fixedGroupNode": "Fixed Group"
+  },
+  "nodeTypeLabels": {
+    "rootNode": "Income",
+    "fixedNode": "Fixed",
+    "proportionalNode": "Proportional",
+    "relativeNode": "Remainder",
+    "aggregatorNode": "Sum",
+    "fixedGroupNode": "Fixed Group"
+  },
+  "nodeDescriptions": {
+    "rootNode": "Top-level income source",
+    "fixedNode": "Fixed amount (e.g. rent)",
+    "proportionalNode": "Percentage of parent",
+    "relativeNode": "Whatever is left over",
+    "aggregatorNode": "Sum of its children",
+    "fixedGroupNode": "Group of fixed items"
+  },
+  "palette": {
+    "title": "Node Palette",
+    "collapse": "Collapse palette",
+    "expand": "Expand palette",
+    "dragToCreate": "Drag to create a {{label}} Node"
+  },
+  "graph": {
+    "selectedCount_one": "{{count}} selected",
+    "selectedCount_other": "{{count}} selected"
+  },
+  "mobile": {
+    "desktopTip": "For the best experience, we recommend building your budget on desktop.",
+    "noSubItems": "No sub-items",
+    "addNode": "Add node",
+    "addNodeTitle": "Add Node",
+    "budgetRoot": "Budget",
+    "newNode": "New Node",
+    "remainder": "Remainder",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items"
+  },
+  "editDialog": {
+    "title": "Edit Node",
+    "parent": "Parent",
+    "noParent": "(No parent)",
+    "label": "Label",
+    "value": "Value",
+    "proportion": "Proportion (%)",
+    "annualGrowth": "Annual Growth (%)",
+    "growthHelper": "Income growth per year",
+    "tagInvestment": "Tag as investment",
+    "expectedReturn": "Expected Annual Return (%)",
+    "subItems": "Sub-items",
+    "item": "Item",
+    "newItem": "New Item"
+  }
+}

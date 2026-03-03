@@ -12,7 +12,9 @@ export default function autoLayout(nodes: BokariNode[], edges: BokariEdge[]): Bo
 
   for (const node of nodes) {
     const width = node.type === 'fixedGroupNode' ? FIXED_GROUP_WIDTH : DEFAULT_WIDTH;
-    const height = node.measured?.height ?? DEFAULT_HEIGHT;
+    const childCount = node.data.children?.length ?? 0;
+    const fallbackHeight = node.type === 'fixedGroupNode' ? 80 + childCount * 40 : DEFAULT_HEIGHT;
+    const height = node.measured?.height ?? fallbackHeight;
     g.setNode(node.id, { width, height });
   }
 
@@ -25,7 +27,9 @@ export default function autoLayout(nodes: BokariNode[], edges: BokariEdge[]): Bo
   return nodes.map((node) => {
     const pos = g.node(node.id);
     const width = node.type === 'fixedGroupNode' ? FIXED_GROUP_WIDTH : DEFAULT_WIDTH;
-    const height = node.measured?.height ?? DEFAULT_HEIGHT;
+    const childCount = node.data.children?.length ?? 0;
+    const fallbackHeight = node.type === 'fixedGroupNode' ? 80 + childCount * 40 : DEFAULT_HEIGHT;
+    const height = node.measured?.height ?? fallbackHeight;
     return {
       ...node,
       position: {

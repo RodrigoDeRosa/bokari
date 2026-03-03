@@ -3,6 +3,7 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import HomeIcon from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
+import { useTranslation } from 'react-i18next';
 import type { BokariNode } from '../../types';
 
 interface BreadcrumbProps {
@@ -12,6 +13,7 @@ interface BreadcrumbProps {
 }
 
 export default function Breadcrumb({ path, nodes, onNavigate }: BreadcrumbProps) {
+  const { t } = useTranslation();
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
   return (
@@ -25,7 +27,7 @@ export default function Breadcrumb({ path, nodes, onNavigate }: BreadcrumbProps)
           sx={{ display: 'flex', alignItems: 'center', fontSize: 14 }}
         >
           <HomeIcon sx={{ fontSize: 18, mr: 0.5 }} />
-          Budget
+          {t('mobile.budgetRoot')}
         </Link>
         {path.map((id, i) => {
           const node = nodeMap.get(id);

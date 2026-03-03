@@ -1,0 +1,19 @@
+{
+  "growthBadge": "+{{rate}}%/yr",
+  "investmentConflict": "Cannot mark as investment — conflicts with: {{descriptions}}",
+  "calculatedValue": "Calculated value: {{value}}",
+  "remainingValue": "Remaining: {{value}}",
+  "totalValue": "Total: {{value}}",
+  "expandGroup": "Expand group",
+  "collapseGroup": "Collapse group",
+  "deleteItem": "Delete {{label}}",
+  "addFixedCost": "Add Fixed Cost:",
+  "costName": "Name",
+  "costNameAria": "Cost name",
+  "costValue": "Value",
+  "costValueAria": "Cost value",
+  "addCost": "Add cost",
+  "edit": "Edit {{label}}",
+  "remainder": "Remainder",
+  "sum": "Sum"
+}

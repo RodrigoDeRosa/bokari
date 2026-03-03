@@ -7,19 +7,21 @@ import Tooltip from '@mui/material/Tooltip';
 import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { useTranslation } from 'react-i18next';
 import type { NodeType } from '../types';
 import { NODE_TYPE_COLORS } from '../constants/nodeColors';
 
-const NODE_TYPES: { type: NodeType; label: string; color: string }[] = [
-  { type: 'rootNode', label: 'Root', color: NODE_TYPE_COLORS.rootNode },
-  { type: 'fixedNode', label: 'Fixed', color: NODE_TYPE_COLORS.fixedNode },
-  { type: 'proportionalNode', label: 'Proportional', color: NODE_TYPE_COLORS.proportionalNode },
-  { type: 'relativeNode', label: 'Relative', color: NODE_TYPE_COLORS.relativeNode },
-  { type: 'aggregatorNode', label: 'Aggregator', color: NODE_TYPE_COLORS.aggregatorNode },
-  { type: 'fixedGroupNode', label: 'Fixed Group', color: NODE_TYPE_COLORS.fixedGroupNode },
+const NODE_TYPE_ENTRIES: { type: NodeType; color: string }[] = [
+  { type: 'rootNode', color: NODE_TYPE_COLORS.rootNode },
+  { type: 'fixedNode', color: NODE_TYPE_COLORS.fixedNode },
+  { type: 'proportionalNode', color: NODE_TYPE_COLORS.proportionalNode },
+  { type: 'relativeNode', color: NODE_TYPE_COLORS.relativeNode },
+  { type: 'aggregatorNode', color: NODE_TYPE_COLORS.aggregatorNode },
+  { type: 'fixedGroupNode', color: NODE_TYPE_COLORS.fixedGroupNode },
 ];
 
 const NodeCreator = () => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
 
   const onDragStart = (event: React.DragEvent, nodeType: NodeType) => {
@@ -55,38 +57,41 @@ const NodeCreator = () => {
         onClick={() => setExpanded((prev) => !prev)}
       >
         <Typography variant="body2" fontWeight="bold">
-          Node Palette
+          {t('palette.title')}
         </Typography>
-        <IconButton size="small" aria-label={expanded ? 'Collapse palette' : 'Expand palette'}>
+        <IconButton size="small" aria-label={expanded ? t('palette.collapse') : t('palette.expand')}>
           {expanded ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
         </IconButton>
       </Box>
 
       <Collapse in={expanded}>
         <Box sx={{ display: 'flex', gap: 1, p: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {NODE_TYPES.map(({ type, label, color }) => (
-            <Tooltip key={type} title={`Drag to create a ${label} Node`}>
-              <Box
-                draggable
-                onDragStart={(e) => onDragStart(e, type)}
-                sx={{
-                  px: 1.5,
-                  py: 0.75,
-                  bgcolor: color,
-                  color: 'white',
-                  borderRadius: 1,
-                  fontSize: 13,
-                  fontWeight: 'bold',
-                  cursor: 'grab',
-                  whiteSpace: 'nowrap',
-                  '&:hover': { opacity: 0.85 },
-                  '&:active': { cursor: 'grabbing' },
-                }}
-              >
-                {label}
-              </Box>
-            </Tooltip>
-          ))}
+          {NODE_TYPE_ENTRIES.map(({ type, color }) => {
+            const label = t(`nodeTypes.${type}`);
+            return (
+              <Tooltip key={type} title={t('palette.dragToCreate', { label })}>
+                <Box
+                  draggable
+                  onDragStart={(e) => onDragStart(e, type)}
+                  sx={{
+                    px: 1.5,
+                    py: 0.75,
+                    bgcolor: color,
+                    color: 'white',
+                    borderRadius: 1,
+                    fontSize: 13,
+                    fontWeight: 'bold',
+                    cursor: 'grab',
+                    whiteSpace: 'nowrap',
+                    '&:hover': { opacity: 0.85 },
+                    '&:active': { cursor: 'grabbing' },
+                  }}
+                >
+                  {label}
+                </Box>
+              </Tooltip>
+            );
+          })}
         </Box>
       </Collapse>
     </Paper>

@@ -1,0 +1,94 @@
+{
+  "budget": {
+    "welcome": {
+      "title": "Welcome to Bokari",
+      "description": "Bokari helps you build a visual budget tree and project your investments over time. Let's take a quick tour!"
+    },
+    "palette": {
+      "title": "Node Palette",
+      "description": "Drag nodes from here onto the canvas to build your budget tree. Each color represents a different node type."
+    },
+    "canvas": {
+      "title": "Budget Canvas",
+      "description": "This is your workspace. Drop nodes here, connect them with edges, and edit values inline to design your budget."
+    },
+    "tabs": {
+      "title": "Tabs",
+      "description": "Switch between the Budget view (build your tree) and Projections (see how investments grow over time)."
+    },
+    "toolbar": {
+      "title": "Toolbar Actions",
+      "description": "Undo, redo, save, auto-layout, export, and import your budget from here."
+    },
+    "help": {
+      "title": "Help",
+      "description": "Open the help drawer anytime for detailed guides. You can also restart this tour from there."
+    },
+    "locale": {
+      "title": "Currency & Language",
+      "description": "Pick your currency and language here. If you haven't customized the example budget, switching language will also swap the template to match."
+    }
+  },
+  "mobileBudget": {
+    "welcome": {
+      "title": "Welcome to Bokari",
+      "description": "Bokari helps you build a visual budget tree and project your investments over time. Let's take a quick tour!"
+    },
+    "list": {
+      "title": "Your Budget",
+      "description": "Your budget items are listed here as cards. Tap a card to drill into its children, or tap the edit icon to change its values."
+    },
+    "addNode": {
+      "title": "Add Nodes",
+      "description": "Tap this button to create new nodes. Choose a type and start building your budget tree."
+    },
+    "tabs": {
+      "title": "Tabs",
+      "description": "Switch between Budget (build your tree) and Projections (see how investments grow over time)."
+    },
+    "moreActions": {
+      "title": "More Actions",
+      "description": "Access undo, redo, save, export, import, and help from this menu."
+    },
+    "locale": {
+      "title": "Currency & Language",
+      "description": "Pick your currency and language here. Switching language on an unmodified template will also swap labels and values to match."
+    }
+  },
+  "projections": {
+    "intro": {
+      "title": "Projections",
+      "description": "This tab shows how your investments could grow over time based on your budget. Let's walk through it!"
+    },
+    "summary": {
+      "title": "Portfolio Summary",
+      "description": "A quick overview of your projected portfolio value based on current contributions, returns, and time horizon."
+    },
+    "controls": {
+      "title": "Controls",
+      "description": "Choose a time horizon (5–40 years), switch between a total view and per-asset breakdown, and filter which investments to show."
+    },
+    "chart": {
+      "title": "Growth Chart",
+      "description": "Visualize contributions vs. compound growth over time. The stacked areas show how much comes from what you put in vs. what the market earns you."
+    },
+    "scenarios": {
+      "title": "Explore Scenarios",
+      "description": "Adjust monthly contributions to see what-if scenarios. Increase or decrease amounts per asset and watch the chart and summary update instantly."
+    },
+    "settings": {
+      "title": "Investment Settings",
+      "description": "Set the expected annual return for each investment and model income growth over time. These drive the compound growth calculations."
+    },
+    "table": {
+      "title": "Yearly Breakdown",
+      "description": "Expand this section for a year-by-year table with exact contribution, growth, and portfolio values."
+    }
+  },
+  "nav": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish"
+  }
+}

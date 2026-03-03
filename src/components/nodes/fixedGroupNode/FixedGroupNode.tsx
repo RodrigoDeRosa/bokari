@@ -1,5 +1,6 @@
 import { Handle, Position } from '@xyflow/react';
 import type { Node, NodeProps } from '@xyflow/react';
+import { useTranslation } from 'react-i18next';
 import formatCurrency from '../../../utils/currency';
 import '../../../css/fixedGroupNode.scss';
 import EditableLabel from '../../attributes/EditableLabel';
@@ -16,6 +17,7 @@ type RuntimeNode = Node<RuntimeNodeData>;
 
 const FixedGroupNode = ({ id, data }: NodeProps<RuntimeNode>) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { t } = useTranslation('nodes');
   const [inputs, setInputs] = useState({
     labelInput: '',
     valueInput: '',
@@ -86,7 +88,7 @@ const FixedGroupNode = ({ id, data }: NodeProps<RuntimeNode>) => {
         <button
           className="icon-button collapse-toggle"
           onClick={() => setCollapsed((c) => !c)}
-          aria-label={collapsed ? 'Expand group' : 'Collapse group'}
+          aria-label={collapsed ? t('expandGroup') : t('collapseGroup')}
         >
           {collapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
         </button>
@@ -109,7 +111,7 @@ const FixedGroupNode = ({ id, data }: NodeProps<RuntimeNode>) => {
       )}
       <p className="non-editable-field">
         {collapsed && childCount > 0 ? `(${childCount}) ` : ''}
-        Total: {formatCurrency(data.value, data.currency)}
+        {t('totalValue', { value: formatCurrency(data.value, data.currency) })}
       </p>
       <Handle
         type="source"

@@ -1,0 +1,54 @@
+{
+  "controls": {
+    "horizon": "Horizonte",
+    "yearPreset": "{{y}}a",
+    "total": "Total",
+    "perAsset": "Por Activo",
+    "all": "Todos"
+  },
+  "chart": {
+    "contributions": "Aportes",
+    "growth": "Crecimiento",
+    "currentPlan": "Plan actual",
+    "now": "Hoy",
+    "yearLabel": "Año {{year}}"
+  },
+  "table": {
+    "year": "Año",
+    "monthlyContribution": "Aporte Mensual",
+    "cumulativeContributions": "Aportes Acumulados",
+    "portfolioValue": "Valor del Portafolio",
+    "growth": "Crecimiento",
+    "yearlyBreakdown": "Desglose Anual"
+  },
+  "narrative": {
+    "summary": "Invirtiendo <bold>{{amount}}</bold>/mes con un retorno promedio de <bold>{{rate}}%</bold> a lo largo de <bold>{{years}}</bold> años:",
+    "contributions": "<bold>{{amount}}</bold> en aportes",
+    "compoundGrowth": "+ <bold>{{growth}}</bold> de crecimiento compuesto",
+    "multiplier": "(multiplicador {{value}}x)",
+    "whatIf": "Con tus ajustes (<bold>{{diff}}</bold>/mes), el portafolio alcanza <bold>{{value}}</bold> — <bold>{{diffAmount}}</bold> {{comparison}} que el plan actual.",
+    "more": "más",
+    "less": "menos"
+  },
+  "scenarios": {
+    "title": "Explorar Escenarios",
+    "adjustmentCount_one": "{{count}} ajuste",
+    "adjustmentCount_other": "{{count}} ajustes",
+    "netSummary": "· neto {{amount}}/mes",
+    "defaultSubtitle": "Ajustá los aportes mensuales para comparar resultados",
+    "investingMore": "Invirtiendo {{amount}} más por mes",
+    "keepingMore": "Ahorrando {{amount}} al no invertir",
+    "clearAll": "Limpiar todo"
+  },
+  "settings": {
+    "title": "Configuración de Inversiones",
+    "avgReturn": "Retorno prom. {{return}}%",
+    "incomeGrowth": "Ingreso +{{growth}}%/año",
+    "return": "Retorno",
+    "incomeGrowthLabel": "Crecimiento del Ingreso"
+  },
+  "emptyState": {
+    "noNodes": "Creá nodos en la pestaña Presupuesto primero.",
+    "noInvestments": "Marcá nodos como inversión en la pestaña Presupuesto haciendo clic en el ícono de tendencia en cualquier nodo fijo, proporcional o relativo."
+  }
+}

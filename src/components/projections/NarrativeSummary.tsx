@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { Trans, useTranslation } from 'react-i18next';
+import { getNumberLocale } from '../../utils/currency';
 import type { InvestmentProjectionResult } from '../../types';
 
 interface NarrativeSummaryProps {
@@ -11,21 +13,15 @@ interface NarrativeSummaryProps {
 }
 
 function fmt(value: number, currency: string): string {
+  const locale = getNumberLocale();
   if (value >= 1_000_000) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
+    return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 1, notation: 'compact' }).format(value);
   }
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
-}
-
-function bold(text: string) {
-  return (
-    <Typography component="span" sx={{ fontWeight: 700 }}>
-      {text}
-    </Typography>
-  );
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 0 }).format(value);
 }
 
 export default function NarrativeSummary({ result, baseResult, currency, horizonYears, hasActiveDeltas }: NarrativeSummaryProps) {
+  const { t } = useTranslation('projections');
   const last = result.totals[result.totals.length - 1];
   if (!last) return null;
 
@@ -55,8 +51,12 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
   return (
     <Box data-tour="proj-summary">
       <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
-        Investing {bold(fmt(monthlyContrib, currency) + '/mo')} at an average{' '}
-        {bold(weightedReturn.toFixed(1) + '%')} return over {bold(`${horizonYears} years`)}:
+        <Trans
+          t={t}
+          i18nKey="narrative.summary"
+          values={{ amount: fmt(monthlyContrib, currency), rate: weightedReturn.toFixed(1), years: horizonYears }}
+          components={{ bold: <Typography component="span" sx={{ fontWeight: 700 }} /> }}
+        />
       </Typography>
 
       {/* Prominent portfolio value */}
@@ -68,12 +68,19 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
       </Typography>
 
       <Typography variant="body2" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
-        {fmt(contrib, currency)} in contributions +{' '}
-        <Typography component="span" sx={{ fontWeight: 700, color: '#ff006e' }}>
-          {fmt(growth, currency)}
-        </Typography>
-        {' '}compound growth
-        {multiplier > 0 && <> ({bold(multiplier.toFixed(1) + 'x')} multiplier)</>}
+        <Trans
+          t={t}
+          i18nKey="narrative.contributions"
+          values={{ amount: fmt(contrib, currency) }}
+          components={{ bold: <Typography component="span" sx={{ fontWeight: 700 }} /> }}
+        />{' '}
+        <Trans
+          t={t}
+          i18nKey="narrative.compoundGrowth"
+          values={{ growth: fmt(growth, currency) }}
+          components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: '#ff006e' }} /> }}
+        />
+        {multiplier > 0 && <> ({t('narrative.multiplier', { value: multiplier.toFixed(1) })})</>}
       </Typography>
 
       {showWhatIf && (
@@ -89,16 +96,17 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
           }}
         >
           <Typography variant="body2" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
-            With your adjustments ({monthlyDiff >= 0 ? '+' : ''}{fmt(monthlyDiff, currency)}/mo),
-            the portfolio reaches{' '}
-            <Typography component="span" sx={{ fontWeight: 700, color: portfolioDiff >= 0 ? '#00916e' : '#ed6c02' }}>
-              {fmt(portfolio, currency)}
-            </Typography>
-            {' '}&mdash;{' '}
-            <Typography component="span" sx={{ fontWeight: 700 }}>
-              {fmt(Math.abs(portfolioDiff), currency)} {portfolioDiff >= 0 ? 'more' : 'less'}
-            </Typography>
-            {' '}than the current plan.
+            <Trans
+              t={t}
+              i18nKey="narrative.whatIf"
+              values={{
+                diff: `${monthlyDiff >= 0 ? '+' : ''}${fmt(monthlyDiff, currency)}`,
+                value: fmt(portfolio, currency),
+                diffAmount: fmt(Math.abs(portfolioDiff), currency),
+                comparison: portfolioDiff >= 0 ? t('narrative.more') : t('narrative.less'),
+              }}
+              components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: portfolioDiff >= 0 ? '#00916e' : '#ed6c02' }} /> }}
+            />
           </Typography>
         </Box>
       )}

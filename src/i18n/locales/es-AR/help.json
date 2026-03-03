@@ -1,0 +1,63 @@
+{
+  "drawerTitle": "Ayuda",
+  "closeHelp": "Cerrar ayuda",
+  "restartTour": "Reiniciar Tour de {{tab}}",
+  "budget": {
+    "gettingStarted": {
+      "title": "Primeros Pasos",
+      "body": "Bokari usa un modelo de árbol inspirado en el Presupuesto Base Cero. Tu ingreso total está en la raíz, y cada peso fluye hacia abajo a través de ramas hacia categorías de gasto. El lienzo te permite construir y ajustar este árbol visualmente."
+    },
+    "creatingNodes": {
+      "title": "Crear Nodos",
+      "body": "Arrastrá un tipo de nodo desde la paleta a la izquierda del lienzo y soltalo en el espacio de trabajo. Cada tipo tiene un punto de color para que lo identifiques de un vistazo."
+    },
+    "connectingNodes": {
+      "title": "Conectar Nodos",
+      "body": "Arrastrá desde el conector de salida de un nodo (abajo, negro) al conector de entrada de otro nodo (arriba, blanco) para crear una relación padre-hijo. Los valores fluyen del padre a los hijos automáticamente."
+    },
+    "editingValues": {
+      "title": "Editar Valores",
+      "body": "Hacé clic en cualquier campo de un nodo para editarlo directamente. Para nodos proporcionales y relativos, el valor en pesos se calcula automáticamente desde el padre — solo configurá el porcentaje o dejalo como el restante."
+    },
+    "nodeTypes": {
+      "title": "Tipos de Nodo",
+      "rootNode": { "label": "Nodo Raíz:", "description": "El punto de partida — ingresá tu ingreso total acá." },
+      "fixedNode": { "label": "Nodo Fijo:", "description": "Un monto constante (ej. alquiler, suscripciones). No escala cuando cambia el ingreso." },
+      "proportionalNode": { "label": "Nodo Proporcional:", "description": "Toma un porcentaje de su padre. Ideal para metas de ahorro o presupuestos porcentuales." },
+      "relativeNode": { "label": "Nodo Relativo:", "description": "Recibe lo que queda después de que se asignen los hermanos. Útil para gastos discrecionales." },
+      "aggregatorNode": { "label": "Nodo Agregador:", "description": "Suma valores de múltiples padres en un total. Usalo para ver el gasto combinado entre categorías." },
+      "fixedGroupNode": { "label": "Nodo Grupo Fijo:", "description": "Agrupa varios ítems fijos bajo un solo nodo. Práctico para listar facturas individuales." }
+    },
+    "tips": {
+      "title": "Consejos",
+      "undoRedo": { "label": "Deshacer / Rehacer:", "tip": "Ctrl+Z y Ctrl+Shift+Z (Cmd en Mac)." },
+      "autoLayout": { "label": "Ordenar:", "tip": "Usá el botón de la barra de herramientas para acomodar los nodos." },
+      "saveLoad": { "label": "Guardar / Cargar:", "tip": "Tu presupuesto se guarda en el navegador. Usá Ctrl+S para guardar manualmente." },
+      "importExport": { "label": "Importar / Exportar:", "tip": "Compartí tu presupuesto como archivo JSON desde el menú de la barra." },
+      "delete": { "label": "Eliminar:", "tip": "Seleccioná un nodo o arista y presioná Backspace/Suprimir." }
+    }
+  },
+  "projections": {
+    "overview": {
+      "title": "Descripción General",
+      "body": "La pestaña Proyecciones toma tu presupuesto actual y simula cómo podrían crecer tus inversiones a lo largo del tiempo. Usa los montos de aporte de tu árbol de presupuesto y aplica crecimiento compuesto para proyectar valores futuros."
+    },
+    "chart": {
+      "title": "El Gráfico",
+      "body": "El gráfico de áreas apiladas muestra dos capas: tus aportes acumulados (lo que pusiste) y el crecimiento encima (lo que el interés compuesto te genera). Usá los presets de horizonte (5a, 10a, 20a, 30a) para cambiar la ventana temporal. También podés alternar entre vista total del portafolio y desglose por activo."
+    },
+    "settings": {
+      "title": "Configuración de Inversiones",
+      "expectedReturn": { "label": "Retorno Esperado:", "tip": "Configurá la tasa de retorno anual para cada inversión con el control deslizante. Esto impulsa el cálculo de crecimiento compuesto." },
+      "incomeGrowth": { "label": "Crecimiento del Ingreso:", "tip": "Si tu ingreso crece año a año, los aportes proporcionales van a aumentar de la misma manera." }
+    },
+    "scenarios": {
+      "title": "Explorar Escenarios",
+      "body": "Ajustá los montos de aporte usando los botones +/- o escribiendo un valor directamente para ver cómo los cambios afectan tus proyecciones a largo plazo. Un indicador delta muestra la diferencia con tu presupuesto original. Usá el botón de reinicio para volver un ítem a su valor original, o limpiá todos los ajustes de una vez."
+    },
+    "table": {
+      "title": "La Tabla",
+      "body": "Debajo del gráfico vas a encontrar un desglose año por año mostrando aportes, crecimiento y valor total del portafolio para cada período. Esto te da los números exactos detrás del gráfico."
+    }
+  }
+}
