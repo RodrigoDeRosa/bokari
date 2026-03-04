@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import { Trans, useTranslation } from 'react-i18next';
 import { getNumberLocale } from '../../utils/currency';
 import type { InvestmentProjectionResult } from '../../types';
+import { useBudgetTree } from '../../context/BudgetTreeContext';
 
 interface NarrativeSummaryProps {
   result: InvestmentProjectionResult;
@@ -22,6 +23,7 @@ function fmt(value: number, currency: string): string {
 
 export default function NarrativeSummary({ result, baseResult, currency, horizonYears, hasActiveDeltas }: NarrativeSummaryProps) {
   const { t } = useTranslation('projections');
+  const { nodes } = useBudgetTree();
   const last = result.totals[result.totals.length - 1];
   if (!last) return null;
 
@@ -30,6 +32,12 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
   const growth = last.growth;
   const multiplier = contrib > 0 ? portfolio / contrib : 0;
   const monthlyContrib = result.totals[1]?.monthlyContribution ?? result.totals[0]?.monthlyContribution ?? 0;
+
+  // Compute total initial holdings from asset nodes in the result
+  const totalInitialValue = result.nodes.reduce((sum, n) => {
+    const node = nodes.find((nd) => nd.id === n.nodeId);
+    return sum + (node?.type === 'assetNode' ? (node.data.initialValue ?? 0) : 0);
+  }, 0);
 
   // Weighted average return: weight each node's expectedReturn by its monthly contribution
   const totalMonthly = result.nodes.reduce((sum, n) => sum + (n.yearlyData[0]?.monthlyContribution ?? 0), 0);
@@ -51,12 +59,21 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
   return (
     <Box data-tour="proj-summary">
       <Typography variant="body1" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
-        <Trans
-          t={t}
-          i18nKey="narrative.summary"
-          values={{ amount: fmt(monthlyContrib, currency), rate: weightedReturn.toFixed(1), years: horizonYears }}
-          components={{ bold: <Typography component="span" sx={{ fontWeight: 700 }} /> }}
-        />
+        {totalInitialValue > 0 ? (
+          <Trans
+            t={t}
+            i18nKey="narrative.summaryWithHoldings"
+            values={{ initial: fmt(totalInitialValue, currency), amount: fmt(monthlyContrib, currency), rate: weightedReturn.toFixed(1), years: horizonYears }}
+            components={{ bold: <Typography component="span" sx={{ fontWeight: 700 }} /> }}
+          />
+        ) : (
+          <Trans
+            t={t}
+            i18nKey="narrative.summary"
+            values={{ amount: fmt(monthlyContrib, currency), rate: weightedReturn.toFixed(1), years: horizonYears }}
+            components={{ bold: <Typography component="span" sx={{ fontWeight: 700 }} /> }}
+          />
+        )}
       </Typography>
 
       {/* Prominent portfolio value */}

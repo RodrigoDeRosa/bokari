@@ -15,5 +15,7 @@
   "addCost": "Add cost",
   "edit": "Edit {{label}}",
   "remainder": "Remainder",
-  "sum": "Sum"
+  "sum": "Sum",
+  "injectionContributed": "{{amount}}/mo contributed",
+  "noContributions": "No contributions linked"
 }

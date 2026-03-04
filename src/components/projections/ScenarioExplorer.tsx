@@ -14,13 +14,14 @@ import Add from '@mui/icons-material/Add';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import { useTranslation } from 'react-i18next';
 import { getNumberLocale } from '../../utils/currency';
-import type { BokariNode, InvestmentProjectionResult } from '../../types';
+import type { BokariNode, BokariEdge, InvestmentProjectionResult } from '../../types';
 
 interface ScenarioExplorerProps {
   result: InvestmentProjectionResult;
   currency: string;
   nodeColorMap: Map<string, string>;
   nodes: BokariNode[];
+  edges: BokariEdge[];
   contributionDeltas: Map<string, number>;
   onDeltaChange: (nodeId: string, delta: number) => void;
   onClearAllDeltas: () => void;
@@ -39,6 +40,7 @@ export default function ScenarioExplorer({
   currency,
   nodeColorMap,
   nodes,
+  edges,
   contributionDeltas,
   onDeltaChange,
   onClearAllDeltas,
@@ -50,7 +52,19 @@ export default function ScenarioExplorer({
 
   const rows = result.nodes.map((node) => {
     const treeNode = nodes.find((n) => n.id === node.nodeId);
-    const treeValue = treeNode?.data.value ?? 0;
+    let treeValue: number;
+    if (treeNode?.type === 'assetNode') {
+      // For asset nodes, base value is the sum of injection sources
+      const sourceIds = edges
+        .filter((e) => e.target === node.nodeId && e.data?.isInjection)
+        .map((e) => e.source);
+      treeValue = sourceIds.reduce((sum, srcId) => {
+        const src = nodes.find((n) => n.id === srcId);
+        return sum + (src?.data.value ?? 0);
+      }, 0);
+    } else {
+      treeValue = treeNode?.data.value ?? 0;
+    }
     return {
       id: node.nodeId,
       label: node.label,

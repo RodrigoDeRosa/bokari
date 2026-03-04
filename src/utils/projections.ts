@@ -7,18 +7,33 @@ export function computeInvestmentProjection(
   horizonYears: number,
   contributionDeltas?: Map<string, number>,
 ): InvestmentProjectionResult {
-  // Find investment nodes
-  const investmentNodeIds = nodes
+  // Find budget-based investment nodes
+  const budgetInvestmentIds = nodes
     .filter((n) => n.data.isInvestment)
     .map((n) => n.id);
 
-  if (investmentNodeIds.length === 0) {
+  // Find asset nodes
+  const assetNodes = nodes.filter((n) => n.type === 'assetNode');
+  const assetNodeIds = assetNodes.map((n) => n.id);
+
+  const allInvestmentIds = [...budgetInvestmentIds, ...assetNodeIds];
+
+  if (allInvestmentIds.length === 0) {
     return { horizonYears, nodes: [], totals: [] };
+  }
+
+  // Build injection source map for asset nodes: assetNodeId → [sourceNodeIds]
+  const injectionSources = new Map<string, string[]>();
+  for (const assetId of assetNodeIds) {
+    const sourceIds = edges
+      .filter((e) => e.target === assetId && e.data?.isInjection)
+      .map((e) => e.source);
+    injectionSources.set(assetId, sourceIds);
   }
 
   // For each year, scale roots by their own annualGrowth and recalculate tree
   const yearlyContributions: Map<string, number[]> = new Map();
-  for (const id of investmentNodeIds) {
+  for (const id of allInvestmentIds) {
     yearlyContributions.set(id, []);
   }
 
@@ -34,15 +49,26 @@ export function computeInvestmentProjection(
 
     const computed = updateTree(scaledNodes, edges);
 
-    for (const id of investmentNodeIds) {
+    // Budget investment nodes: contribution = their own value
+    for (const id of budgetInvestmentIds) {
       const found = computed.find((n) => n.id === id);
       yearlyContributions.get(id)!.push(found ? found.data.value : 0);
+    }
+
+    // Asset nodes: contribution = sum of injection source values
+    for (const assetId of assetNodeIds) {
+      const sourceIds = injectionSources.get(assetId) ?? [];
+      const total = sourceIds.reduce((sum, srcId) => {
+        const srcNode = computed.find((n) => n.id === srcId);
+        return sum + (srcNode?.data.value ?? 0);
+      }, 0);
+      yearlyContributions.get(assetId)!.push(total);
     }
   }
 
   // Apply contribution deltas — scale delta proportionally with income growth
   if (contributionDeltas && contributionDeltas.size > 0) {
-    for (const id of investmentNodeIds) {
+    for (const id of allInvestmentIds) {
       const delta = contributionDeltas.get(id) ?? 0;
       if (delta === 0) continue;
       const contributions = yearlyContributions.get(id)!;
@@ -55,26 +81,28 @@ export function computeInvestmentProjection(
   }
 
   // For each investment node, compute month-by-month compounding
-  const nodeProjections: InvestmentNodeProjection[] = investmentNodeIds.map((id) => {
+  const nodeProjections: InvestmentNodeProjection[] = allInvestmentIds.map((id) => {
     const sourceNode = nodes.find((n) => n.id === id)!;
+    const isAsset = sourceNode.type === 'assetNode';
     const expectedReturn = sourceNode.data.expectedReturn ?? 7;
     const monthlyRate = expectedReturn / 100 / 12;
     const contributions = yearlyContributions.get(id)!;
+    const initialValue = isAsset ? (sourceNode.data.initialValue ?? 0) : 0;
 
     const yearlyData: InvestmentYearData[] = [];
-    let portfolio = 0;
+    let portfolio = initialValue;
     let totalContributed = 0;
 
     for (let year = 0; year <= horizonYears; year++) {
       const monthlyContribution = contributions[year];
 
       if (year === 0) {
-        // Year 0 = "Now", just record the starting point
+        // Year 0 = "Now", record the starting point
         yearlyData.push({
           year,
           monthlyContribution,
           cumulativeContributions: 0,
-          portfolioValue: 0,
+          portfolioValue: initialValue,
           growth: 0,
         });
         continue;
@@ -91,7 +119,7 @@ export function computeInvestmentProjection(
         monthlyContribution,
         cumulativeContributions: totalContributed,
         portfolioValue: portfolio,
-        growth: portfolio - totalContributed,
+        growth: portfolio - totalContributed - initialValue,
       });
     }
 

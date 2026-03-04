@@ -26,7 +26,13 @@ export default function createNode(
     id: uuid4(),
     type,
     position,
-    data: { label: 'Node Name', value: 0, proportion: 0, children: [] },
+    data: {
+      label: 'Node Name',
+      value: 0,
+      proportion: 0,
+      children: [],
+      ...(type === 'assetNode' && { initialValue: 0, expectedReturn: 7 }),
+    },
     selected: true,
   };
 

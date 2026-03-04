@@ -21,6 +21,7 @@ interface ExportNode {
     children?: { id: string; label: string; value: number }[];
     isInvestment?: boolean;
     expectedReturn?: number;
+    initialValue?: number;
   };
 }
 
@@ -30,6 +31,9 @@ interface ExportEdge {
   target: string;
   sourceHandle?: string | null;
   targetHandle?: string | null;
+  data?: {
+    isInjection?: boolean;
+  };
 }
 
 export function exportToJSON(nodes: BokariNode[], edges: BokariEdge[], currency: string): string {
@@ -48,6 +52,7 @@ export function exportToJSON(nodes: BokariNode[], edges: BokariEdge[], currency:
         ...(node.data.children && { children: node.data.children }),
         ...(node.data.isInvestment && { isInvestment: node.data.isInvestment }),
         ...(node.data.expectedReturn !== undefined && { expectedReturn: node.data.expectedReturn }),
+        ...(node.data.initialValue !== undefined && { initialValue: node.data.initialValue }),
       },
     })),
     edges: edges.map((edge) => ({
@@ -56,6 +61,7 @@ export function exportToJSON(nodes: BokariNode[], edges: BokariEdge[], currency:
       target: edge.target,
       ...(edge.sourceHandle && { sourceHandle: edge.sourceHandle }),
       ...(edge.targetHandle && { targetHandle: edge.targetHandle }),
+      ...(edge.data?.isInjection && { data: { isInjection: true } }),
     })),
   };
 
@@ -121,6 +127,7 @@ export function importFromJSON(json: string): { nodes: BokariNode[]; edges: Boka
         children: node.data.children,
         isInvestment: node.data.isInvestment,
         expectedReturn: node.data.expectedReturn,
+        initialValue: node.data.initialValue,
       },
     })),
     edges: data.edges.map((edge) => ({
@@ -129,6 +136,7 @@ export function importFromJSON(json: string): { nodes: BokariNode[]; edges: Boka
       target: edge.target,
       sourceHandle: edge.sourceHandle,
       targetHandle: edge.targetHandle,
+      ...(edge.data?.isInjection && { data: { isInjection: true } }),
     })),
   };
 }

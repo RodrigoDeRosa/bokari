@@ -23,6 +23,7 @@
   },
   "narrative": {
     "summary": "Invirtiendo <bold>{{amount}}</bold>/mes con un retorno promedio de <bold>{{rate}}%</bold> a lo largo de <bold>{{years}}</bold> años:",
+    "summaryWithHoldings": "Empezando con <bold>{{initial}}</bold> e invirtiendo <bold>{{amount}}</bold>/mes con un retorno promedio de <bold>{{rate}}%</bold> a lo largo de <bold>{{years}}</bold> años:",
     "contributions": "<bold>{{amount}}</bold> en aportes",
     "compoundGrowth": "+ <bold>{{growth}}</bold> de crecimiento compuesto",
     "multiplier": "(multiplicador {{value}}x)",
@@ -45,7 +46,8 @@
     "avgReturn": "Retorno prom. {{return}}%",
     "incomeGrowth": "Ingreso +{{growth}}%/año",
     "return": "Retorno",
-    "incomeGrowthLabel": "Crecimiento del Ingreso"
+    "incomeGrowthLabel": "Crecimiento del Ingreso",
+    "initial": "inicial"
   },
   "emptyState": {
     "noNodes": "Creá nodos en la pestaña Presupuesto primero.",

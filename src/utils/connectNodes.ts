@@ -51,12 +51,21 @@ export default function connectNodes(
   setNodes: React.Dispatch<React.SetStateAction<BokariNode[]>>,
   setEdges: React.Dispatch<React.SetStateAction<BokariEdge[]>>,
 ) {
+  const source = nodes.find((node) => node.id === edgeParams.source);
+  const target = nodes.find((node) => node.id === edgeParams.target);
+
+  // Block outgoing connections from asset nodes
+  if (source?.type === 'assetNode') return;
+
+  // Injection edge: budget node → asset node
+  if (target?.type === 'assetNode') {
+    setEdges((eds) => addEdge({ ...edgeParams, data: { isInjection: true } }, eds));
+    return;
+  }
+
   setEdges((eds) => addEdge(edgeParams, eds));
 
-  const target = nodes.find((node) => node.id === edgeParams.target);
   if (!target || target.type === 'aggregatorNode') return;
-
-  const source = nodes.find((node) => node.id === edgeParams.source);
   if (!source) return;
   createOrUpdateRelativeNode(source, target, nodes, edges, setNodes, setEdges);
 

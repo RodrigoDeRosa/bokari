@@ -18,6 +18,7 @@ const NODE_TYPE_ENTRIES: { type: NodeType; color: string }[] = [
   { type: 'relativeNode', color: NODE_TYPE_COLORS.relativeNode },
   { type: 'aggregatorNode', color: NODE_TYPE_COLORS.aggregatorNode },
   { type: 'fixedGroupNode', color: NODE_TYPE_COLORS.fixedGroupNode },
+  { type: 'assetNode', color: NODE_TYPE_COLORS.assetNode },
 ];
 
 const NodeCreator = () => {

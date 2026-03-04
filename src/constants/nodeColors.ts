@@ -7,6 +7,7 @@ export const NODE_TYPE_COLORS: Record<NodeType, string> = {
   relativeNode: '#8338ec',
   aggregatorNode: '#3a86ff',
   fixedGroupNode: '#00916e',
+  assetNode: '#0077b6',
 };
 
 export const INVESTMENT_PALETTE: string[] = [

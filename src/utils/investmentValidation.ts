@@ -63,6 +63,20 @@ export function findInvestmentConflicts(
 ): InvestmentConflict[] {
   const conflicts: InvestmentConflict[] = [];
 
+  // A node with an outgoing injection edge to an asset node should conflict with isInvestment
+  const hasInjectionEdge = edges.some(
+    (e) => e.source === nodeId && e.data?.isInjection,
+  );
+  if (hasInjectionEdge) {
+    const targetAsset = edges
+      .filter((e) => e.source === nodeId && e.data?.isInjection)
+      .map((e) => nodes.find((n) => n.id === e.target))
+      .find((n) => n?.type === 'assetNode');
+    if (targetAsset) {
+      conflicts.push({ label: targetAsset.data.label, direction: 'downstream' });
+    }
+  }
+
   const ancestors = getAncestors(nodeId, nodes, edges);
   for (const ancestor of ancestors) {
     if (ancestor.data.isInvestment) {

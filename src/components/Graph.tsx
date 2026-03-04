@@ -20,9 +20,11 @@ import NodeCreator from './NodeCreator';
 import createNode from '../utils/createNode';
 import getFullPath from '../utils/getFullPath';
 import FixedGroupNode from './nodes/fixedGroupNode/FixedGroupNode';
+import AssetNode from './nodes/AssetNode';
 import MobileTreeView from './mobile/MobileTreeView';
 import { useBudgetTree } from '../context/BudgetTreeContext';
 import { NODE_TYPE_COLORS } from '../constants/nodeColors';
+import type { BokariEdgeData } from '../types';
 
 const nodeTypes = {
   fixedNode: FixedNode,
@@ -31,6 +33,7 @@ const nodeTypes = {
   rootNode: RootNode,
   aggregatorNode: AggregatorNode,
   fixedGroupNode: FixedGroupNode,
+  assetNode: AssetNode,
 };
 
 export default function GraphView() {
@@ -70,23 +73,47 @@ export default function GraphView() {
   }, [hoveredNodeId, edges]);
 
   const styledNodes = useMemo(() => {
+    // Pre-compute injection totals for asset nodes
+    const injectionTotals = new Map<string, number>();
+    for (const node of nodes) {
+      if (node.type === 'assetNode') {
+        const incomingEdges = edges.filter((e) => e.target === node.id);
+        const total = incomingEdges.reduce((sum, edge) => {
+          const sourceNode = nodes.find((n) => n.id === edge.source);
+          return sum + (sourceNode?.data.value ?? 0);
+        }, 0);
+        injectionTotals.set(node.id, total);
+      }
+    }
+
     return nodes.map((node) => {
       const dimmed = highlightPath && !highlightPath.nodeIds.has(node.id);
       return {
         ...node,
-        data: { ...node.data, handleNodeDataChange, getInvestmentConflicts, setInvestmentError, currency },
+        data: {
+          ...node.data,
+          handleNodeDataChange,
+          getInvestmentConflicts,
+          setInvestmentError,
+          currency,
+          ...(node.type === 'assetNode' && { injectionTotal: injectionTotals.get(node.id) ?? 0 }),
+        },
         className: dimmed ? 'dimmed' : undefined,
       };
     });
-  }, [nodes, highlightPath, handleNodeDataChange, getInvestmentConflicts, setInvestmentError, currency]);
+  }, [nodes, edges, highlightPath, handleNodeDataChange, getInvestmentConflicts, setInvestmentError, currency]);
 
   const styledEdges = useMemo(() => {
     return edges.map((edge) => {
       const onPath = highlightPath?.edgeIds.has(edge.id);
       const dimmed = highlightPath && !onPath;
+      const isInjection = (edge.data as BokariEdgeData | undefined)?.isInjection;
       return {
         ...edge,
         className: dimmed ? 'dimmed' : onPath ? 'highlighted' : undefined,
+        ...(isInjection && {
+          style: { strokeDasharray: '6 3', stroke: NODE_TYPE_COLORS.assetNode },
+        }),
       };
     });
   }, [edges, highlightPath]);

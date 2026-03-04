@@ -58,7 +58,7 @@ export default function ProjectionsTab() {
   const [contributionDeltas, setContributionDeltas] = useState<Map<string, number>>(new Map());
   const [tableExpanded, setTableExpanded] = useState(false);
 
-  const hasInvestmentNodes = nodes.some((n) => n.data.isInvestment);
+  const hasInvestmentNodes = nodes.some((n) => n.data.isInvestment || n.type === 'assetNode');
 
   const hasActiveDeltas = Array.from(contributionDeltas.values()).some((d) => d !== 0);
 
@@ -79,7 +79,7 @@ export default function ProjectionsTab() {
 
   // Re-initialize selectedNodeIds when the set of investment nodes changes
   const investmentNodeIds = useMemo(
-    () => nodes.filter((n) => n.data.isInvestment).map((n) => n.id),
+    () => nodes.filter((n) => n.data.isInvestment || n.type === 'assetNode').map((n) => n.id),
     [nodes],
   );
 
@@ -243,6 +243,7 @@ export default function ProjectionsTab() {
                 currency={currency}
                 nodeColorMap={nodeColorMap}
                 nodes={nodes}
+                edges={edges}
                 contributionDeltas={contributionDeltas}
                 onDeltaChange={handleDeltaChange}
                 onClearAllDeltas={handleClearAllDeltas}

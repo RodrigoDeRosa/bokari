@@ -15,5 +15,7 @@
   "addCost": "Agregar costo",
   "edit": "Editar {{label}}",
   "remainder": "Restante",
-  "sum": "Suma"
+  "sum": "Suma",
+  "injectionContributed": "{{amount}}/mes aportado",
+  "noContributions": "Sin aportes vinculados"
 }

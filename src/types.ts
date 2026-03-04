@@ -14,6 +14,7 @@ export interface NodeData extends Record<string, unknown> {
   isInvestment?: boolean;
   expectedReturn?: number;  // annual %, default 7
   annualGrowth?: number;    // annual %, default 0 (root nodes only)
+  initialValue?: number;    // asset nodes only — starting portfolio value
 }
 
 export interface InvestmentConflict {
@@ -26,10 +27,15 @@ export interface RuntimeNodeData extends NodeData {
   getInvestmentConflicts: (nodeId: string) => InvestmentConflict[];
   setInvestmentError: (message: string | null) => void;
   currency: string;
+  injectionTotal?: number;  // asset nodes only — sum of connected budget node values
+}
+
+export interface BokariEdgeData extends Record<string, unknown> {
+  isInjection?: boolean;
 }
 
 export type BokariNode = Node<NodeData>;
-export type BokariEdge = Edge;
+export type BokariEdge = Edge<BokariEdgeData>;
 
 export type NodeType =
   | 'rootNode'
@@ -37,7 +43,8 @@ export type NodeType =
   | 'proportionalNode'
   | 'relativeNode'
   | 'aggregatorNode'
-  | 'fixedGroupNode';
+  | 'fixedGroupNode'
+  | 'assetNode';
 
 export interface InvestmentYearData {
   year: number;

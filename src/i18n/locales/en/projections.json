@@ -23,6 +23,7 @@
   },
   "narrative": {
     "summary": "Investing <bold>{{amount}}</bold>/mo at an average <bold>{{rate}}%</bold> return over <bold>{{years}}</bold> years:",
+    "summaryWithHoldings": "Starting with <bold>{{initial}}</bold> and investing <bold>{{amount}}</bold>/mo at an average <bold>{{rate}}%</bold> return over <bold>{{years}}</bold> years:",
     "contributions": "<bold>{{amount}}</bold> in contributions",
     "compoundGrowth": "+ <bold>{{growth}}</bold> compound growth",
     "multiplier": "({{value}}x multiplier)",
@@ -45,7 +46,8 @@
     "avgReturn": "Avg {{return}}% return",
     "incomeGrowth": "Income +{{growth}}%/yr",
     "return": "Return",
-    "incomeGrowthLabel": "Income Growth"
+    "incomeGrowthLabel": "Income Growth",
+    "initial": "initial"
   },
   "emptyState": {
     "noNodes": "Create nodes in the Budget tab first.",

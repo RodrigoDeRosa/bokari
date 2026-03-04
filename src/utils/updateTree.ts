@@ -38,7 +38,8 @@ export default function updateTree(
       };
     }
 
-    const children = getOutgoers(currentNode, updated, edges) as BokariNode[];
+    const children = (getOutgoers(currentNode, updated, edges) as BokariNode[])
+      .filter((child) => child.type !== 'assetNode');
     if (children.length === 0) continue;
 
     // Update proportional children

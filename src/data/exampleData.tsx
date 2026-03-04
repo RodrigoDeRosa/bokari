@@ -162,8 +162,6 @@ const rawNodesEN = [
       label: "Retirement",
       value: 600,
       proportion: 50,
-      isInvestment: true,
-      expectedReturn: 7,
     },
   },
   {
@@ -173,7 +171,29 @@ const rawNodesEN = [
     data: {
       label: "Growth Stocks",
       value: 300,
-      isInvestment: true,
+    },
+  },
+
+  // ── Tier 4 — Asset nodes (injection targets) ─────────────────
+  {
+    id: "retirement-portfolio",
+    type: "assetNode",
+    position: { x: 0, y: 0 },
+    data: {
+      label: "Retirement Portfolio",
+      value: 0,
+      initialValue: 30000,
+      expectedReturn: 7,
+    },
+  },
+  {
+    id: "growth-portfolio",
+    type: "assetNode",
+    position: { x: 0, y: 0 },
+    data: {
+      label: "Growth Portfolio",
+      value: 0,
+      initialValue: 20000,
       expectedReturn: 10,
     },
   },
@@ -340,8 +360,6 @@ const rawNodesES = [
       label: "Jubilación",
       value: 200000,
       proportion: 50,
-      isInvestment: true,
-      expectedReturn: 7,
     },
   },
   {
@@ -351,7 +369,29 @@ const rawNodesES = [
     data: {
       label: "Acciones",
       value: 100000,
-      isInvestment: true,
+    },
+  },
+
+  // ── Tier 4 — Asset nodes (injection targets) ─────────────────
+  {
+    id: "retirement-portfolio",
+    type: "assetNode",
+    position: { x: 0, y: 0 },
+    data: {
+      label: "Portafolio Jubilación",
+      value: 0,
+      initialValue: 10000000,
+      expectedReturn: 7,
+    },
+  },
+  {
+    id: "growth-portfolio",
+    type: "assetNode",
+    position: { x: 0, y: 0 },
+    data: {
+      label: "Portafolio Crecimiento",
+      value: 0,
+      initialValue: 6500000,
       expectedReturn: 10,
     },
   },
@@ -474,6 +514,24 @@ const rawEdges = [
     targetHandle: null,
     id: "reactflow__edge-save-invest-growth-stocks",
   },
+
+  // Tier 3 → Tier 4: Injection edges (budget → asset)
+  {
+    source: "retirement",
+    target: "retirement-portfolio",
+    sourceHandle: null,
+    targetHandle: null,
+    id: "reactflow__edge-retirement-retirement-portfolio",
+    data: { isInjection: true },
+  },
+  {
+    source: "growth-stocks",
+    target: "growth-portfolio",
+    sourceHandle: null,
+    targetHandle: null,
+    id: "reactflow__edge-growth-stocks-growth-portfolio",
+    data: { isInjection: true },
+  },
 ];
 
 // ── Fingerprinting (position-independent template comparison) ──────────
@@ -488,6 +546,7 @@ interface NodeFingerprint {
   isInvestment?: boolean;
   expectedReturn?: number;
   annualGrowth?: number;
+  initialValue?: number;
 }
 
 function buildNodeFingerprint(node: BokariNode): NodeFingerprint {
@@ -506,6 +565,7 @@ function buildNodeFingerprint(node: BokariNode): NodeFingerprint {
   if (node.data.isInvestment) fp.isInvestment = true;
   if (node.data.expectedReturn != null) fp.expectedReturn = node.data.expectedReturn;
   if (node.data.annualGrowth != null) fp.annualGrowth = node.data.annualGrowth;
+  if (node.data.initialValue != null) fp.initialValue = node.data.initialValue;
   return fp;
 }
 

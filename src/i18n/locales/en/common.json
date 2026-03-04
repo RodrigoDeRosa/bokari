@@ -49,7 +49,8 @@
     "proportionalNode": "Proportional",
     "relativeNode": "Relative",
     "aggregatorNode": "Aggregator",
-    "fixedGroupNode": "Fixed Group"
+    "fixedGroupNode": "Fixed Group",
+    "assetNode": "Asset"
   },
   "nodeTypeLabels": {
     "rootNode": "Income",
@@ -57,7 +58,8 @@
     "proportionalNode": "Proportional",
     "relativeNode": "Remainder",
     "aggregatorNode": "Sum",
-    "fixedGroupNode": "Fixed Group"
+    "fixedGroupNode": "Fixed Group",
+    "assetNode": "Asset"
   },
   "nodeDescriptions": {
     "rootNode": "Top-level income source",
@@ -65,7 +67,8 @@
     "proportionalNode": "Percentage of parent",
     "relativeNode": "Whatever is left over",
     "aggregatorNode": "Sum of its children",
-    "fixedGroupNode": "Group of fixed items"
+    "fixedGroupNode": "Group of fixed items",
+    "assetNode": "Existing holdings with initial value"
   },
   "palette": {
     "title": "Node Palette",

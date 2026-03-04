@@ -49,7 +49,8 @@
     "proportionalNode": "Proporcional",
     "relativeNode": "Relativo",
     "aggregatorNode": "Agregador",
-    "fixedGroupNode": "Grupo Fijo"
+    "fixedGroupNode": "Grupo Fijo",
+    "assetNode": "Activo"
   },
   "nodeTypeLabels": {
     "rootNode": "Ingreso",
@@ -57,7 +58,8 @@
     "proportionalNode": "Proporcional",
     "relativeNode": "Restante",
     "aggregatorNode": "Suma",
-    "fixedGroupNode": "Grupo Fijo"
+    "fixedGroupNode": "Grupo Fijo",
+    "assetNode": "Activo"
   },
   "nodeDescriptions": {
     "rootNode": "Fuente de ingreso principal",
@@ -65,7 +67,8 @@
     "proportionalNode": "Porcentaje del nodo padre",
     "relativeNode": "Lo que queda disponible",
     "aggregatorNode": "Suma de sus hijos",
-    "fixedGroupNode": "Grupo de ítems fijos"
+    "fixedGroupNode": "Grupo de ítems fijos",
+    "assetNode": "Tenencias existentes con valor inicial"
   },
   "palette": {
     "title": "Paleta de Nodos",

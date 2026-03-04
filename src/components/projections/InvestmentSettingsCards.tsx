@@ -47,11 +47,15 @@ export default function InvestmentSettingsCards({
   const rows = result.nodes.map((node) => {
     const treeNode = nodes.find((n) => n.id === node.nodeId);
     const treeValue = treeNode?.data.value ?? 0;
+    const isAsset = treeNode?.type === 'assetNode';
+    const initialValue = isAsset ? (treeNode?.data.initialValue ?? 0) : 0;
     return {
       id: node.nodeId,
       label: node.label,
       expectedReturn: node.expectedReturn,
       treeValue,
+      isAsset,
+      initialValue,
     };
   });
 
@@ -150,7 +154,9 @@ export default function InvestmentSettingsCards({
                 <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
                 <Typography variant="body2" fontWeight={600} sx={{ flex: 1, fontSize: 13 }}>{row.label}</Typography>
                 <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
-                  {fmt(row.treeValue, currency)}/mo
+                  {row.isAsset
+                    ? `${fmt(row.initialValue, currency)} ${t('settings.initial')}`
+                    : `${fmt(row.treeValue, currency)}/mo`}
                 </Typography>
               </Stack>
 
