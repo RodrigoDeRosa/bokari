@@ -33,7 +33,7 @@ const NodeCreator = () => {
   return (
     <Paper
       data-tour="node-palette"
-      elevation={3}
+      elevation={0}
       sx={{
         position: 'absolute',
         bottom: 16,
@@ -42,6 +42,9 @@ const NodeCreator = () => {
         zIndex: 5,
         borderRadius: 2,
         overflow: 'hidden',
+        bgcolor: 'rgba(17,24,39,0.8)',
+        backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       <Box
@@ -51,7 +54,7 @@ const NodeCreator = () => {
           justifyContent: 'space-between',
           px: 1.5,
           py: 0.5,
-          bgcolor: 'grey.100',
+          bgcolor: 'rgba(255,255,255,0.04)',
           cursor: 'pointer',
           userSelect: 'none',
         }}
@@ -77,14 +80,16 @@ const NodeCreator = () => {
                   sx={{
                     px: 1.5,
                     py: 0.75,
-                    bgcolor: color,
-                    color: 'white',
+                    bgcolor: `${color}22`,
+                    color: color,
+                    border: `1px solid ${color}`,
                     borderRadius: 1,
                     fontSize: 13,
                     fontWeight: 'bold',
                     cursor: 'grab',
                     whiteSpace: 'nowrap',
-                    '&:hover': { opacity: 0.85 },
+                    transition: 'all 0.15s',
+                    '&:hover': { bgcolor: `${color}33`, boxShadow: `0 0 12px ${color}40` },
                     '&:active': { cursor: 'grabbing' },
                   }}
                 >

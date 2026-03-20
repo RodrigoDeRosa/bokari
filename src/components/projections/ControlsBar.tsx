@@ -125,7 +125,7 @@ export default function ControlsBar({
                           width: 6,
                           height: 6,
                           borderRadius: '50%',
-                          bgcolor: delta > 0 ? '#00916e' : '#ed6c02',
+                          bgcolor: delta > 0 ? '#10b981' : '#f97316',
                           flexShrink: 0,
                         }}
                       />

@@ -10,4 +10,45 @@ html, body, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  background-color: #0a0e1a;
+}
+
+// ReactFlow CSS variable overrides for dark theme
+.react-flow {
+  --xy-background-color: #0a0e1a;
+  --xy-edge-stroke-default: rgba(255, 255, 255, 0.25);
+  --xy-background-pattern-color: rgba(255, 255, 255, 0.04);
+}
+
+// MiniMap dark styling
+.react-flow__minimap {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+// Controls dark styling
+.react-flow__controls {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+
+  button {
+    background-color: rgba(17, 24, 39, 0.8);
+    border-color: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+
+    &:hover {
+      background-color: rgba(17, 24, 39, 0.95);
+    }
+
+    svg {
+      fill: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+// Dim ReactFlow attribution
+.react-flow__attribution {
+  opacity: 0.3;
 }

@@ -72,7 +72,7 @@ export default function ProjectionTable({ result, currency, isMobile }: Projecti
                 <TableCell align="right">{fmt(row.monthlyContribution, currency)}</TableCell>
                 {!isMobile && <TableCell align="right">{fmt(row.cumulativeContributions, currency)}</TableCell>}
                 <TableCell align="right">{fmt(row.portfolioValue, currency)}</TableCell>
-                <TableCell align="right" sx={{ color: row.growth > 0 ? '#00916e' : undefined }}>
+                <TableCell align="right" sx={{ color: row.growth > 0 ? '#10b981' : undefined }}>
                   {fmt(row.growth, currency)}
                 </TableCell>
               </TableRow>,
@@ -87,7 +87,7 @@ export default function ProjectionTable({ result, currency, isMobile }: Projecti
                         <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.monthlyContribution, currency)}</TableCell>
                         {!isMobile && <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.cumulativeContributions, currency)}</TableCell>}
                         <TableCell align="right" sx={{ color: 'text.secondary' }}>{fmt(yd.portfolioValue, currency)}</TableCell>
-                        <TableCell align="right" sx={{ color: yd.growth > 0 ? '#00916e' : 'text.secondary' }}>
+                        <TableCell align="right" sx={{ color: yd.growth > 0 ? '#10b981' : 'text.secondary' }}>
                           {fmt(yd.growth, currency)}
                         </TableCell>
                       </TableRow>

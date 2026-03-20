@@ -193,12 +193,15 @@ export default function GraphView() {
         onNodeMouseLeave={onNodeMouseLeave}
         deleteKeyCode={null}
         panOnScroll
+        style={{ backgroundColor: '#0a0e1a' }}
       >
         <MiniMap
           nodeColor={(node) => {
             const type = node.type as keyof typeof NODE_TYPE_COLORS;
             return NODE_TYPE_COLORS[type] ?? '#ccc';
           }}
+          style={{ backgroundColor: 'rgba(17,24,39,0.8)', borderRadius: 8 }}
+          maskColor="rgba(0,0,0,0.6)"
           zoomable
           pannable
         />
@@ -208,7 +211,7 @@ export default function GraphView() {
       {/* Floating selection toolbar */}
       {selectedNodes.length > 0 && (
         <Paper
-          elevation={4}
+          elevation={0}
           sx={{
             position: 'absolute',
             bottom: 16,
@@ -221,6 +224,9 @@ export default function GraphView() {
             py: 0.75,
             borderRadius: 2,
             zIndex: 10,
+            bgcolor: 'rgba(17,24,39,0.8)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255,255,255,0.08)',
           }}
         >
           <Typography variant="body2" sx={{ fontWeight: 600 }}>

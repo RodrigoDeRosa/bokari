@@ -227,7 +227,7 @@ const Tour = ({ open, onClose, steps }: TourProps) => {
             y={0}
             width={vw}
             height={vh}
-            fill="rgba(0,0,0,0.5)"
+            fill="rgba(0,0,0,0.6)"
             mask="url(#tour-mask)"
             style={{ pointerEvents: 'auto' }}
             onClick={(e) => e.stopPropagation()}
@@ -238,10 +238,14 @@ const Tour = ({ open, onClose, steps }: TourProps) => {
       {/* Tooltip */}
       <Paper
         ref={tooltipRef}
-        elevation={8}
+        elevation={0}
         sx={{
           zIndex: TOOLTIP_Z,
           p: isMobileViewport ? 2 : 2.5,
+          bgcolor: 'rgba(17,24,39,0.95)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           ...getTooltipStyle(),
         }}
       >

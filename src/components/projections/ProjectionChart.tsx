@@ -50,11 +50,12 @@ function CustomTooltip({ active, label, payload, currency, nodeMap, labelMap }: 
   return (
     <div
       style={{
-        background: 'rgba(0,0,0,0.85)',
-        backdropFilter: 'blur(8px)',
-        borderRadius: 8,
+        background: 'rgba(17,24,39,0.9)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: 10,
         padding: '10px 14px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.4)',
         minWidth: 180,
       }}
     >
@@ -103,7 +104,7 @@ function CustomTooltip({ active, label, payload, currency, nodeMap, labelMap }: 
 
 /* ---------- Crosshair cursor ---------- */
 
-const crosshairStyle = { stroke: 'rgba(150,150,150,0.5)', strokeDasharray: '4 3', strokeWidth: 1 };
+const crosshairStyle = { stroke: 'rgba(255,255,255,0.2)', strokeDasharray: '4 3', strokeWidth: 1 };
 
 /* ---------- Main component ---------- */
 
@@ -161,21 +162,21 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
       <ResponsiveContainer>
         {viewMode === 'total' ? (
           <AreaChart data={totalChartData} margin={{ top: 8, right: 16, left: 8, bottom: 0 }}>
-            {/* Gradient definitions */}
             <defs>
               <linearGradient id="contribGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#00916e" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="#00916e" stopOpacity={0.15} />
+                <stop offset="0%" stopColor="#10b981" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0.1} />
               </linearGradient>
               <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#ff006e" stopOpacity={0.5} />
-                <stop offset="100%" stopColor="#ff006e" stopOpacity={0.15} />
+                <stop offset="0%" stopColor="#f472b6" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#f472b6" stopOpacity={0.1} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-            <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+            <XAxis dataKey="label" tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.5)' }} stroke="rgba(255,255,255,0.1)" />
             <YAxis
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.5)' }}
+              stroke="rgba(255,255,255,0.1)"
               tickFormatter={(v) => formatCurrency(v as number, currency)}
               width={80}
             />
@@ -184,6 +185,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
               cursor={crosshairStyle}
             />
             <Legend
+              wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(value: any) => labelMap[value as string] ?? value}
             />
@@ -192,7 +194,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
               dataKey="contributions"
               name={labelMap.contributions}
               stackId="portfolio"
-              stroke="#00916e"
+              stroke="#10b981"
               fill="url(#contribGradient)"
               strokeWidth={2}
             />
@@ -201,7 +203,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
               dataKey="growth"
               name={labelMap.growth}
               stackId="portfolio"
-              stroke="#ff006e"
+              stroke="#f472b6"
               fill="url(#growthGradient)"
               strokeWidth={2}
             />
@@ -210,11 +212,11 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
                 type="monotone"
                 dataKey="baseTotal"
                 name="baseTotal"
-                stroke="#999"
+                stroke="rgba(255,255,255,0.3)"
                 strokeWidth={1.5}
                 strokeDasharray="6 4"
                 dot={false}
-                opacity={0.5}
+                opacity={0.6}
               />
             )}
           </AreaChart>
@@ -232,10 +234,11 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
                 );
               })}
             </defs>
-            <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-            <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+            <XAxis dataKey="label" tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.5)' }} stroke="rgba(255,255,255,0.1)" />
             <YAxis
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.5)' }}
+              stroke="rgba(255,255,255,0.1)"
               tickFormatter={(v) => formatCurrency(v as number, currency)}
               width={80}
             />
@@ -244,6 +247,7 @@ export default function ProjectionChart({ result, baseResult, currency, viewMode
               cursor={crosshairStyle}
             />
             <Legend
+              wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(value: any) => {
                 const node = result.nodes.find((n) => n.nodeId === value);

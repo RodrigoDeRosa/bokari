@@ -4,13 +4,13 @@
 }
 
 .react-flow .react-flow__handle-top {
-  background-color: white;
-  border-color: #555;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-color: transparent;
   top: -6px;
 }
 
 .react-flow .react-flow__handle-bottom {
-  background-color: #555;
-  border-color: white;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-color: transparent;
   bottom: -6px;
 }

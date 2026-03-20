@@ -1,16 +1,16 @@
 import type { NodeType } from '../types';
 
 export const NODE_TYPE_COLORS: Record<NodeType, string> = {
-  rootNode: '#ffbe0b',
-  fixedNode: '#fb5607',
-  proportionalNode: '#ff006e',
-  relativeNode: '#8338ec',
-  aggregatorNode: '#3a86ff',
-  fixedGroupNode: '#00916e',
-  assetNode: '#0077b6',
+  rootNode: '#fbbf24',
+  fixedNode: '#fb923c',
+  proportionalNode: '#f472b6',
+  relativeNode: '#a78bfa',
+  aggregatorNode: '#60a5fa',
+  fixedGroupNode: '#34d399',
+  assetNode: '#38bdf8',
 };
 
 export const INVESTMENT_PALETTE: string[] = [
-  '#3a86ff', '#ff006e', '#ffbe0b', '#8338ec', '#00916e',
-  '#fb5607', '#06d6a0', '#118ab2', '#e63946', '#457b9d',
+  '#60a5fa', '#f472b6', '#fbbf24', '#a78bfa', '#34d399',
+  '#fb923c', '#2dd4bf', '#38bdf8', '#fb7185', '#7dd3fc',
 ];

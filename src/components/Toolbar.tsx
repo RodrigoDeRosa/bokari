@@ -167,11 +167,34 @@ const Toolbar = ({ onToggleHelp, activeTab, onTabChange }: ToolbarProps) => {
 
   return (
     <>
-      <AppBar position="static" color="default" elevation={1} sx={{ zIndex: 10 }}>
+      <AppBar
+        position="static"
+        elevation={0}
+        sx={{
+          zIndex: 10,
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent, rgba(79,156,255,0.3), rgba(103,232,249,0.2), transparent)',
+          },
+        }}
+      >
         <MuiToolbar variant="dense" sx={{ gap: 0.5, minHeight: 48 }}>
           <Typography
             variant="h6"
-            sx={{ fontWeight: 'bold', mr: isMobile ? 0.5 : 1, color: 'primary.main', fontSize: isMobile ? 16 : 20 }}
+            sx={{
+              fontWeight: 'bold',
+              mr: isMobile ? 0.5 : 1,
+              fontSize: isMobile ? 16 : 20,
+              background: 'linear-gradient(135deg, #4f9cff, #67e8f9)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
           >
             {t('appName')}
           </Typography>

@@ -1,81 +1,83 @@
 @use "variables" as *;
 
-// Shared base styles for all node types
+// Canvas base color — used as opaque backdrop so edges don't bleed through
+$canvas-bg: #0a0e1a;
+
+// Shared base styles for all node types — faux-translucent with glowing borders
 %node-base {
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 12px;
   font-weight: bold;
   text-align: center;
   border-width: 2px;
   border-style: solid;
-  color: white;
+  color: rgba(255, 255, 255, 0.95);
   padding: 6px 4px;
   width: 130px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-  transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+  transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+// Mixin for node type — opaque dark base + color tint layered on top (looks translucent, hides edges)
+@mixin node-style($color) {
+  border-color: $color;
+  background: linear-gradient(rgba($color, 0.15), rgba($color, 0.15)), $canvas-bg;
+  box-shadow: 0 0 12px rgba($color, 0.2), 0 2px 8px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(rgba($color, 0.22), rgba($color, 0.22)), $canvas-bg;
+    box-shadow: 0 0 18px rgba($color, 0.35), 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
 
-// Mixin for selected state — tinted background instead of full white
+// Mixin for selected state — stronger glow + outer ring
 @mixin selected-state($color) {
   &.selectable.selected {
     border-color: $color;
-    background-color: rgba($color, 0.12);
-    color: $color;
-    box-shadow: 0 0 0 2px rgba($color, 0.3), 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(rgba($color, 0.25), rgba($color, 0.25)), $canvas-bg;
+    box-shadow: 0 0 0 3px rgba($color, 0.25), 0 0 24px rgba($color, 0.4), 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
 
 .react-flow__node-fixedNode {
   @extend %node-base;
-  border-color: $fixed-node-color;
-  background-color: $fixed-node-color;
+  @include node-style($fixed-node-color);
   @include selected-state($fixed-node-color);
 }
 
 .react-flow__node-relativeNode {
   @extend %node-base;
-  border-color: $relative-node-color;
-  background-color: $relative-node-color;
+  @include node-style($relative-node-color);
   @include selected-state($relative-node-color);
 }
 
 .react-flow__node-proportionalNode {
   @extend %node-base;
-  border-color: $proportional-node-color;
-  background-color: $proportional-node-color;
+  @include node-style($proportional-node-color);
   @include selected-state($proportional-node-color);
 }
 
 .react-flow__node-rootNode {
   @extend %node-base;
-  border-color: $root-node-color;
-  background-color: $root-node-color;
+  @include node-style($root-node-color);
   @include selected-state($root-node-color);
 }
 
 .react-flow__node-aggregatorNode {
   @extend %node-base;
-  border-color: $aggregator-node-color;
-  background-color: $aggregator-node-color;
+  @include node-style($aggregator-node-color);
   @include selected-state($aggregator-node-color);
 }
 
 .react-flow__node-assetNode {
   @extend %node-base;
-  border-color: $asset-node-color;
-  background-color: $asset-node-color;
+  @include node-style($asset-node-color);
   @include selected-state($asset-node-color);
 }
 
 .react-flow__node-fixedGroupNode {
   @extend %node-base;
   width: 250px;
-  border-color: $fixed-group-node-color;
-  background-color: $fixed-group-node-color;
+  @include node-style($fixed-group-node-color);
   @include selected-state($fixed-group-node-color);
 
   &.selectable.selected {
@@ -86,7 +88,7 @@
 }
 
 .react_flow__edge {
-  stroke: #000;
+  stroke: rgba(255, 255, 255, 0.25);
   stroke-width: 4px;
 }
 
@@ -102,7 +104,7 @@
 }
 
 .react-flow__edge.highlighted .react-flow__edge-path {
-  stroke: #333;
+  stroke: rgba(255, 255, 255, 0.7);
   stroke-width: 2.5px;
   transition: stroke 0.2s ease, stroke-width 0.2s ease;
 }
@@ -118,7 +120,7 @@
   line-height: 1;
   cursor: pointer;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
   transition: background 0.15s ease;
 
   .investment-icon {
@@ -126,7 +128,7 @@
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.18);
 
     .investment-icon {
       opacity: 1;
@@ -134,14 +136,14 @@
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.15);
 
     .investment-icon {
       opacity: 1;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.25);
     }
   }
 }
@@ -162,8 +164,8 @@
   font-size: 9px;
   font-weight: bold;
   color: white;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 3px;
   padding: 0 2px;
   outline: none;
@@ -195,7 +197,7 @@
   padding: 1px 0;
   line-height: 1;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .growth-label {
@@ -214,8 +216,8 @@
   font-size: 9px;
   font-weight: bold;
   color: white;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 3px;
   padding: 0 2px;
   outline: none;

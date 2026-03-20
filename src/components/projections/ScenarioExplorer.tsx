@@ -145,7 +145,7 @@ export default function ScenarioExplorer({
                 py: 1,
                 borderRadius: 1,
                 border: 1,
-                borderColor: delta !== 0 ? (delta > 0 ? 'rgba(0,145,110,0.4)' : 'rgba(237,108,2,0.4)') : 'divider',
+                borderColor: delta !== 0 ? (delta > 0 ? 'rgba(16,185,129,0.4)' : 'rgba(249,115,22,0.4)') : 'divider',
               }}
             >
               {/* Label */}
@@ -187,9 +187,9 @@ export default function ScenarioExplorer({
                     display: 'flex',
                     alignItems: 'center',
                     gap: 0.25,
-                    bgcolor: delta > 0 ? '#00916e' : '#ed6c02',
+                    bgcolor: delta > 0 ? '#10b981' : '#f97316',
                     border: 1,
-                    borderColor: delta > 0 ? '#00916e' : '#ed6c02',
+                    borderColor: delta > 0 ? '#10b981' : '#f97316',
                     borderRadius: 2,
                     px: 0.75,
                     py: 0.125,
@@ -225,16 +225,16 @@ export default function ScenarioExplorer({
             px: 2,
             py: 1,
             borderRadius: 1,
-            bgcolor: netDelta > 0 ? 'rgba(0,145,110,0.08)' : 'rgba(237,108,2,0.08)',
+            bgcolor: netDelta > 0 ? 'rgba(16,185,129,0.08)' : 'rgba(249,115,22,0.08)',
             border: 1,
-            borderColor: netDelta > 0 ? 'rgba(0,145,110,0.25)' : 'rgba(237,108,2,0.25)',
+            borderColor: netDelta > 0 ? 'rgba(16,185,129,0.25)' : 'rgba(249,115,22,0.25)',
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography
               variant="body2"
               fontWeight={600}
-              sx={{ color: netDelta > 0 ? '#00916e' : '#ed6c02' }}
+              sx={{ color: netDelta > 0 ? '#10b981' : '#f97316' }}
             >
               {netDelta > 0
                 ? t('scenarios.investingMore', { amount: fmt(netDelta, currency) })

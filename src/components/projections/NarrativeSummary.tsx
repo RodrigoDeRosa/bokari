@@ -79,7 +79,7 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
       {/* Prominent portfolio value */}
       <Typography
         variant="h4"
-        sx={{ fontWeight: 800, color: '#00916e', my: 0.75, lineHeight: 1.2 }}
+        sx={{ fontWeight: 800, color: '#10b981', my: 0.75, lineHeight: 1.2 }}
       >
         {fmt(portfolio, currency)}
       </Typography>
@@ -95,7 +95,7 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
           t={t}
           i18nKey="narrative.compoundGrowth"
           values={{ growth: fmt(growth, currency) }}
-          components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: '#ff006e' }} /> }}
+          components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: '#f472b6' }} /> }}
         />
         {multiplier > 0 && <> ({t('narrative.multiplier', { value: multiplier.toFixed(1) })})</>}
       </Typography>
@@ -107,9 +107,11 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
             px: 2,
             py: 1.25,
             borderRadius: 1,
-            bgcolor: portfolioDiff >= 0 ? 'rgba(0,145,110,0.06)' : 'rgba(237,108,2,0.06)',
+            bgcolor: portfolioDiff >= 0 ? 'rgba(16,185,129,0.08)' : 'rgba(249,115,22,0.08)',
             borderLeft: 3,
-            borderLeftColor: portfolioDiff >= 0 ? '#00916e' : '#ed6c02',
+            borderLeftColor: portfolioDiff >= 0 ? '#10b981' : '#f97316',
+            border: '1px solid',
+            borderColor: portfolioDiff >= 0 ? 'rgba(16,185,129,0.2)' : 'rgba(249,115,22,0.2)',
           }}
         >
           <Typography variant="body2" sx={{ lineHeight: 1.7, color: 'text.secondary' }}>
@@ -122,7 +124,7 @@ export default function NarrativeSummary({ result, baseResult, currency, horizon
                 diffAmount: fmt(Math.abs(portfolioDiff), currency),
                 comparison: portfolioDiff >= 0 ? t('narrative.more') : t('narrative.less'),
               }}
-              components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: portfolioDiff >= 0 ? '#00916e' : '#ed6c02' }} /> }}
+              components={{ bold: <Typography component="span" sx={{ fontWeight: 700, color: portfolioDiff >= 0 ? '#10b981' : '#f97316' }} /> }}
             />
           </Typography>
         </Box>

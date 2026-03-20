@@ -195,11 +195,11 @@ export default function ProjectionsTab() {
   }
 
   return (
-    <Box sx={{ flex: 1, overflow: 'auto', py: 2, px: 2 }}>
+    <Box sx={{ flex: 1, overflow: 'auto', py: 2, px: 2, bgcolor: '#0a0e1a' }}>
       <Box sx={{ maxWidth: 1100, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
         {result && result.nodes.length > 0 && filteredResult && (
           <>
-            <Paper sx={{ p: isMobile ? 2 : 3, display: 'flex', flexDirection: 'column', gap: 2.5 }} elevation={2}>
+            <Paper sx={{ p: isMobile ? 2 : 3, display: 'flex', flexDirection: 'column', gap: 2.5 }} elevation={0}>
               {/* Narrative summary */}
               <NarrativeSummary
                 result={filteredResult}
